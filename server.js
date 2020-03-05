@@ -12,6 +12,15 @@ app.use(
 );
 app.use(bodyParser.json());
 
+//get route '/'
+app.get('/', (req, res) => {
+    res.send("Hello from sever side");
+})
+
+app.post('/', (req, res) => {
+    res.send('You can post to this endpoint...');
+})
+
 //DB config
 const db = require("./config/keys").mongoURI;
 
