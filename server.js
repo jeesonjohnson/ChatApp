@@ -12,9 +12,14 @@ const db = process.env.MONGO_URI.replace(
   process.env.MONGO_USER
 ).replace("<PASSWORD>", process.env.MONGO_PASSWORD);
 
-//Connect to MongoDB
+//Connect to MongoDB with appropriate parameters
 mongoose
-  .connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(db, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  })
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 

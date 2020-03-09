@@ -34,7 +34,8 @@ const UserSchema = new Schema({
   },
   companies: {
     type: Array,
-    required: true
+    required: true,
+    default: []
   },
   avatar: {
     type: String

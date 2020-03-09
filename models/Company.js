@@ -12,13 +12,15 @@ const CompanySchema = new Schema({
   },
   admins: {
     type: Array,
-    required: [true, "No admins were added"]
+    default:[]
   },
   users: {
-    type: Array
+    type: Array,
+    default: []
   },
   workspaces: {
-    type: Array
+    type: Array,
+    default: []
   }
 });
 
