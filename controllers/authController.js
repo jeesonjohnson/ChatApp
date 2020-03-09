@@ -36,16 +36,10 @@ const createSendToken = (user, statusCode, req, res) => {
 exports.signup = catchAsync(async (req, res, next) => {
   //Create new user
   if (req.body.password != req.body.password_confirm) {
-    res.status(500).json({
-      status: "error",
-      message: "Password and password confirmation do not match"
-    });
+    return next(new AppError("The passwords do not match", 500));
   }
   if (req.body.password.length < 8) {
-    res.status(500).json({
-      status: "error",
-      message: "Password must at least be 8 characters"
-    });
+    return next(new AppError("Password must at least be 8 characters", 500));
   }
   var newUser;
   try {
@@ -59,10 +53,12 @@ exports.signup = catchAsync(async (req, res, next) => {
       admin: req.body.admin
     });
   } catch (_) {
-    res.status(500).json({
-      status: "error",
-      message: "Email is already registered to a user account"
-    });
+    return next(
+      new AppError(
+        "Email is already registered to an account or not valid",
+        500
+      )
+    );
   }
 
   var newCompany = [];
@@ -87,11 +83,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       // Creation in company, must be attributed to company name already taken
     } catch (err) {
       await User.deleteOne(newUser);
-      res.status(500).json({
-        status: "error",
-        err,
-        message: "Company name is already taken"
-      });
+      return next(new AppError("Company name is already taken", 500));
     }
   }
 

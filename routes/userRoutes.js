@@ -12,6 +12,9 @@ router.post("/login", authController.login);
 
 router.route("/").get(userController.getAllUsers);
 
-router.route("/:id").get(userController.getUser); //.delete()
+router
+  .route("/:id")
+  .get(userController.getUser)
+  .patch(userController.updateUser); //.delete()
 
 module.exports = router;

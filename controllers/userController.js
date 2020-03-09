@@ -37,3 +37,19 @@ exports.getUser = catchAsync(async (req, res) => {
     });
   }
 });
+
+exports.updateUser = catchAsync(async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.id, req.body, { new: true });
+  } catch (err) {
+    await User.deleteOne(newUser);
+    res.status(500).json({
+      status: "error",
+      err,
+      message: "Update was not succesfull"
+    });
+  }
+  res.status(201).json({
+    status: "success"
+  });
+});
