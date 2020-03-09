@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const crypto = require('crypto');
 
-const UserSchema = new Schema({
+const userSchema = new Schema({
   name: {
     type: String,
     required: [true, "No name given for user"]
@@ -24,6 +25,7 @@ const UserSchema = new Schema({
   password_confirm: {
     type: String,
     required: [true, "Please confirm your pasword"],
+    // select: false,
     validate: {
       //NOTE: Works only on create or save
       validator: function(el) {
@@ -46,8 +48,8 @@ const UserSchema = new Schema({
   }
 });
 
-//Password encryption
-UserSchema.pre("save", async function(next) {
+//Password encryption using bcrypt hashing
+userSchema.pre("save", async function(next) {
   //Runs function if password was modified
   if (!this.isModified("password")) return next();
 
@@ -59,11 +61,26 @@ UserSchema.pre("save", async function(next) {
   next();
 });
 
-UserSchema.methods.correctPassword = async function(
+userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-const User = (module.exports = mongoose.model("User", UserSchema));
+userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  // False means NOT changed
+  return false;
+};
+
+
+const User = (module.exports = mongoose.model("User", userSchema));

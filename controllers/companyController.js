@@ -7,9 +7,7 @@ exports.getAllCompanies = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     results: companies.length,
-    data: {
-      companies
-    }
+    data: companies
   });
 });
 

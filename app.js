@@ -16,7 +16,13 @@ app.use(
     extended: false
   })
 );
+//Allow parsing of body elements as JSON Objects
 app.use(bodyParser.json());
+
+app.use((req,res,next)=>{
+  req.requestTime = new Date().toISOString;
+  next();
+})
 
 //Routes
 app.use("/users", userRouter);
