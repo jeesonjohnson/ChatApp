@@ -33,8 +33,8 @@ const UserSchema = new Schema({
     }
   },
   companies: {
-    type: Array,
-    default: []
+    type: Array
+    // default: []
   },
   avatar: {
     type: String,

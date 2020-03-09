@@ -78,10 +78,10 @@ exports.signup = catchAsync(async (req, res, next) => {
         workspaces: req.body.company_workspaces
       });
       //Updates the user details of the newly created element
-      User.findOneAndUpdate(
-        { id: newUser.id },
+      await User.findByIdAndUpdate(
+        newUser.id,
         { companies: [newCompany.id] },
-        { upsert: true }
+        { new: true }
       );
       newUser.companies = [newCompany.id];
       // Creation in company, must be attributed to company name already taken
@@ -96,7 +96,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   //Create web token
-  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+  const token = await jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 
