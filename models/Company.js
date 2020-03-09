@@ -12,7 +12,11 @@ const CompanySchema = new Schema({
   },
   admins: {
     type: Array,
-    default:[]
+    default: []
+  },
+  owner: {
+    type: Object,
+    required: [true, "A company must have an owner"]
   },
   users: {
     type: Array,

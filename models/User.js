@@ -34,15 +34,15 @@ const UserSchema = new Schema({
   },
   companies: {
     type: Array,
-    required: true,
     default: []
   },
   avatar: {
-    type: String
+    type: String,
+    default: "This defualt avatar link neds to be changed"
   },
   admin: {
     type: Boolean,
-    required: true
+    default: false
   }
 });
 

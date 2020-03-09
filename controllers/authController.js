@@ -35,48 +35,79 @@ const createSendToken = (user, statusCode, req, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   //Create new user
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    password_confirm: req.body.password_confirm,
-    avatar: req.body.avatar,
-    companies: req.body.companies,
-    admin: req.body.admin
-  });
+  if (req.body.password != req.body.password_confirm) {
+    res.status(500).json({
+      status: "error",
+      message: "Password and password confirmation do not match"
+    });
+  }
+  if (req.body.password.length < 8) {
+    res.status(500).json({
+      status: "error",
+      message: "Password must at least be 8 characters"
+    });
+  }
+  var newUser;
+  try {
+    newUser = await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      password_confirm: req.body.password_confirm,
+      avatar: req.body.avatar,
+      companies: req.body.companies,
+      admin: req.body.admin
+    });
+  } catch (_) {
+    res.status(500).json({
+      status: "error",
+      message: "Email is already registered to a user account"
+    });
+  }
+
+  var newCompany = [];
+  if (newUser.admin) {
+    //Implemented associated validation to the creation of a user account.
+    try {
+      newCompany = await company.create({
+        name: req.body.company_name,
+        avatar: req.body.company_avatar,
+        admins: [newUser.id],
+        users: [newUser.id],
+        owner: newUser.id,
+        workspaces: req.body.company_workspaces
+      });
+      //Updates the user details of the newly created element
+      User.findOneAndUpdate(
+        { id: newUser.id },
+        { companies: [newCompany.id] },
+        { upsert: true }
+      );
+      newUser.companies = [newCompany.id];
+      // Creation in company, must be attributed to company name already taken
+    } catch (err) {
+      await User.deleteOne(newUser);
+      res.status(500).json({
+        status: "error",
+        err,
+        message: "Company name is already taken"
+      });
+    }
+  }
 
   //Create web token
   const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 
-  //Check if user is the admin of a new company
-  if (newUser.admin) {
-    const newCompany = await company.create({
-      name: req.body.company_name,
-      avatar: req.body.company_avatar,
-      admins: newUser.id,
-      users: req.body.company_users,
-      workspaces: req.body.company_workspaces
-    });
-
-    res.status(201).json({
-      status: "success",
-      token,
-      data: {
-        user: newUser,
-        company: newCompany
-      }
-    });
-  } else {
-    res.status(201).json({
-      status: "success",
-      token,
-      data: {
-        user: newUser
-      }
-    });
-  }
+  res.status(201).json({
+    status: "success",
+    token,
+    data: {
+      user: newUser,
+      company: newCompany
+    }
+  });
 });
 
 exports.login = catchAsync(async (req, res, next) => {
