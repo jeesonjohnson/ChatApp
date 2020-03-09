@@ -1,4 +1,5 @@
 const User = require('./../models/User');
+const company = require('./../models/Company');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const jwt = require('jsonwebtoken');
@@ -33,24 +34,50 @@ const signToken = id => {
   };
 
 exports.signup = catchAsync(async (req, res, next) => {
-    const newUser = await User.create({
+  //Create new user  
+  const newUser = await User.create({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
-        password_confirm: req.body.password_confirm
+        password_confirm: req.body.password_confirm,
+        avatar: req.body.avatar,
+        companies: req.body.companies,
+        admin: req.body.admin,
     });
-
+    
+    //Create web token
     const token = jwt.sign({ id: newUser._id}, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
 
-    res.status(201).json({
+    //Check if user is the admin of a new company
+    if(newUser.admin){
+      const newCompany = await company.create({
+        name: req.body.company_name,
+        avatar: req.body.company_avatar,
+        admins: newUser.id,
+        users: req.body.company_users,
+        workspaces: req.body.company_workspaces,
+      });
+
+      res.status(201).json({
+        status: 'success',
+        token,
+        data:{
+            user: newUser,
+            company: newCompany
+        }
+      });
+    }
+    else{
+      res.status(201).json({
         status: 'success',
         token,
         data:{
             user: newUser
         }
-    });
+      });
+    };
 });
 
 exports.login = catchAsync(async (req, res, next) => {

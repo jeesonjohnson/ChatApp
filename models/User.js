@@ -38,6 +38,10 @@ const UserSchema = new Schema({
     },
     avatar: { 
         type: String
+    },
+    admin: {
+        type: Boolean,
+        required: true
     }
 });
 

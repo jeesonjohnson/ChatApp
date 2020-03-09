@@ -1,10 +1,11 @@
+const subdomain = require('express-subdomain');
 const express = require('express');
 const bodyParser = require('body-parser');
 
 const userRouter = require('./routes/userRoutes');
+const companyRouter = require('./routes/companyRoutes');
 
 const app = express();
-
 
 //Bodyparser middleware
 app.use(
@@ -15,6 +16,11 @@ app.use(
 app.use(bodyParser.json());
 
 //Routes
-app.use('/api/1.0.0/users', userRouter);
+app.use('/users', userRouter);
+app.use('/companies', companyRouter);
+
+app.get('*', (req, res) => {
+    res.send("Route not found");
+});
 
 module.exports = app;
