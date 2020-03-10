@@ -155,3 +155,13 @@ exports.deleteUserFromWorkspace = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+exports.getAGivenWorkspace = catchAsync(async (req, res, next) => {
+  var workspaceDetails = await Workspace.findById(req.params.id);
+  res.status(200).json({
+    status: "success",
+    data: {
+      workspaceDetails
+    }
+  });
+});
