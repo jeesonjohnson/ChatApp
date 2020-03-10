@@ -1,6 +1,7 @@
 const subdomain = require("express-subdomain");
 const express = require("express");
 const bodyParser = require("body-parser");
+const compression = require("compression");
 //Error handling utils
 const AppError = require("./utils/appError");
 const globalErrorhandler = require("./utils/errorController")
@@ -17,8 +18,11 @@ app.use(
     extended: false
   })
 );
+//    Middleware
 //Allow parsing of body elements as JSON Objects
 app.use(bodyParser.json());
+//Text compression for heroku
+app.use(compression());
 
 app.use((req,res,next)=>{
   req.requestTime = new Date().toISOString;
