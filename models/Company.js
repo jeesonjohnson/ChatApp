@@ -14,7 +14,7 @@ const CompanySchema = new Schema({
     type: Array,
     default: []
   },
-  owner: {
+  ownerID: {
     type: Object,
     required: [true, "A company must have an owner"]
   },

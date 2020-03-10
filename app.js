@@ -7,6 +7,7 @@ const globalErrorhandler = require("./utils/errorController")
 //Custom routes
 const userRouter = require("./routes/userRoutes");
 const companyRouter = require("./routes/companyRoutes");
+const workspaceRouter = require("./routes/workspaceRoutes");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use((req,res,next)=>{
 //Routes
 app.use("/users", userRouter);
 app.use("/companies", companyRouter);
+app.use("/workspaces", workspaceRouter);
 
 app.get("*", (req, res, next) => {
   next(new AppError(`The route ${req.originalUrl} is not defined`,404));

@@ -76,7 +76,7 @@ exports.signup = catchAsync(async (req, res, next) => {
         avatar: req.body.company_avatar,
         admins: [newUser.id],
         users: [newUser.id],
-        owner: newUser.id,
+        ownerID: newUser.id,
         workspaces: req.body.company_workspaces
       });
       //Updates the user details of the newly created element
