@@ -28,3 +28,13 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     data: req.user
   });
 });
+
+
+exports.addCompany = catchAsync(async (req, res, next) => {
+  var companyDetails = await company.findById(req.query.company_id);
+  await user.findByIdAndUpdate(req.user.id, req.body, { new: true });
+  res.status(201).json({
+    status: "success",
+    data: req.user
+  });
+});

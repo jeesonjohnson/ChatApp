@@ -85,3 +85,21 @@ exports.deleteUserFromCompany = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+
+exports.addUserToCompany = catchAsync(async (req, res, next) => {
+  var companyDetails = await company.findById(req.params.id);
+  req.user.companies.push(req.params.id);
+  companyDetails.users.push(req.user.id);
+  await user.findByIdAndUpdate(req.user.id, req.user, { new: true });
+  await company.findByIdAndUpdate(companyDetails.id, companyDetails, {
+    new: true
+  });
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: req.user,
+      company: companyDetails
+    }
+  });
+});
