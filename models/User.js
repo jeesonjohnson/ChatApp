@@ -34,6 +34,7 @@ const userSchema = new Schema({
       message: "Passwords do not match!"
     }
   },
+  passwordChangedAt: Date,
   companies: {
     type: Array
     // default: []
@@ -58,9 +59,20 @@ userSchema.pre("save", async function(next) {
 
   //Delete password_confirm field
   this.password_confirm = undefined;
+
+  
   next();
 });
 
+//Assigns ability if the user password has been changed recently to reset token
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+// Checks if the encrypted password is the correct password/
 userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword
@@ -68,6 +80,7 @@ userSchema.methods.correctPassword = async function(
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
+// Checks if the user password has been changed, and appropriate function if so
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(

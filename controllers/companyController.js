@@ -11,13 +11,25 @@ exports.getAllCompanies = catchAsync(async (req, res) => {
   });
 });
 
+// Finds details about a given company, provided the company id is given
 exports.getCompany = catchAsync(async (req, res) => {
-  const company = await company.findById();
-
+  const companyData = await company.findById(req.params.id);
   res.status(200).json({
     status: "success",
     data: {
-      company
+      companyData
     }
+  });
+});
+
+//Gets all associated companies that are associated with a given user
+exports.getAllUserCompanies = catchAsync(async (req, res) => {
+  var companies = [];
+  for (var x = 0; x < req.user.companies.length; x++) {
+    companies.push(await company.findById(req.user.companies[x]));
+  }
+  res.status(200).json({
+    status: "success",
+    data: companies
   });
 });

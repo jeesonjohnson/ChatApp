@@ -10,8 +10,10 @@ router.post("/signup", authController.signup);
 //Send data for checking and logging in user
 router.post("/login", authController.login);
 
-router.route("/").get(userController.getAllUsers);
+//Route for getting all users
+router.route("/").get(userController.getAllUsers); //SHOULD BE DELETED ON DEPLOYMENT  
 
+//Route for actions for user account, given am account
 router
   .route("/:id")
   .get(userController.getUser)

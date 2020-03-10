@@ -22,8 +22,9 @@ exports.getUser = catchAsync(async (req, res, next) => {
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
-  await user.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  await user.findByIdAndUpdate(req.user.id, req.body, { new: true });
   res.status(201).json({
-    status: "success"
+    status: "success",
+    data: req.user
   });
 });

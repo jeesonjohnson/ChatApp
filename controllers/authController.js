@@ -6,6 +6,7 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const jwt = require("jsonwebtoken");
 
+// Methods for generating JWT tokens for the user sign in. 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
@@ -35,6 +36,9 @@ const createSendToken = (user, statusCode, req, res) => {
   });
 };
 
+/*
+  Method for registeration of a given user account, appropriate function if the user is as an admin as well. 
+*/
 exports.signup = catchAsync(async (req, res, next) => {
   //Create new user
   if (req.body.password != req.body.password_confirm) {
