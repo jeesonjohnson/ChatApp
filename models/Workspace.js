@@ -6,7 +6,7 @@ const WorkspaceSchema = new Schema({
     type: String,
     required: true
   },
-  admin: {
+  admins: {
     type: Array,
     default:[]
   },
