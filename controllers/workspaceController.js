@@ -40,6 +40,45 @@ exports.createWorkspace = catchAsync(async (req, res, next) => {
   });
 });
 
+//Gets all associated workspaces in a company that are associated with a given user
+exports.getUserCompanyWorkspaces = catchAsync(async (req, res, next) => {
+  //If the user is the owner then all the workspaces are presented to the owner
+  if (req.user.owner) {
+    var ownerCompany = req.user.companies[0];
+    var workspaces = [];
+    var companyDetails = await company.findById(ownerCompany);
+    for (var x = 0; x < companyDetails.workspaces.length; x++) {
+      var workspaceDetails = await Workspace.findById(
+        companyDetails.workspaces[x]
+      );
+      workspaces.push(workspaceDetails);
+    }
+    res.status(200).json({
+      status: "success",
+      data: workspaces
+    });
+  }
+
+  // All the workspace are presented to the user, if they are in fact a member of the users of that workspace.
+  var workspaces = [];
+  var companyDetails = await company.findById(req.params.id);
+  for (var x = 0; x < companyDetails.workspaces.length; x++) {
+    var workspaceDetails = await Workspace.findById(
+      companyDetails.workspaces[x]
+    );
+    //Check if the user is in the list of users for that workspace.
+    for (var y = 0; y < workspaceDetails.users.length; x++) {
+      if (workspaceDetails.users[y] == req.user.id) {
+        workspaces.push(workspaceDetails);
+      }
+    }
+  }
+  res.status(200).json({
+    status: "success",
+    data: workspaces
+  });
+});
+
 //TODO 1)Get user specfic workspaces in a company
 //TODO 2)Add a user to a workspace
 //TODO 3)Delete a user from a workspace
