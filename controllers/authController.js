@@ -6,7 +6,7 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const jwt = require("jsonwebtoken");
 
-// Methods for generating JWT tokens for the user sign in. 
+// Methods for generating JWT tokens for the user sign in.
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
@@ -56,7 +56,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       password_confirm: req.body.password_confirm,
       avatar: req.body.avatar,
       companies: req.body.companies,
-      admin: req.body.admin
+      owner: req.body.owner
     });
   } catch (_) {
     return next(
@@ -68,7 +68,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   var newCompany = [];
-  if (newUser.admin) {
+  if (newUser.owner) {
     //Implemented associated validation to the creation of a user account.
     try {
       newCompany = await company.create({

@@ -43,7 +43,7 @@ const userSchema = new Schema({
     type: String,
     default: "This defualt avatar link neds to be changed"
   },
-  admin: {
+  owner: {
     type: Boolean,
     default: false
   }
