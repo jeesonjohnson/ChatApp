@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 const ToDoCollectionSchema = new Schema({
   workspaceID: {
     type: String,
-    required: [true, "Error with workspace ID"]
+    required: [true, "Error with collection ID"]
   },
   title: {
     type: String,
-    required: [true, "No title given for workspace title"]
+    default: "Untitled"
   },
   to_do_elements: {
     type: Array

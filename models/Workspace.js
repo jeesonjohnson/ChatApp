@@ -6,22 +6,25 @@ const WorkspaceSchema = new Schema({
     type: String,
     required: true
   },
-  admin: {
-    type: String,
-    required: true
+  admins: {
+    type: Array,
+    default:[]
   },
   users: {
-    type: Array
+    type: Array,
+    default:[]
   },
   task_collections: {
-    type: Array
+    type: Array,
+    default:[]
   },
   group_chats: {
     type: Array,
-    required: true
+    default:[]
   },
   private_chats: {
-    type: Array
+    type: Array,
+    default:[]
   }
 });
 

@@ -16,7 +16,7 @@ const PrivateMessageSchema = new Schema({
   },
   time_sent: {
     type: Date,
-    required: [true, "Error with private message time"]
+    default:Date.now()
   },
   file_url: {
     type: String

@@ -7,7 +7,7 @@ const ToDoElementSchema = new Schema({
   },
   title: {
     type: String,
-    required: [true, "No title given for To Do element"]
+    default: "Untitled"
   },
   description: {
     type: String
@@ -17,10 +17,14 @@ const ToDoElementSchema = new Schema({
   },
   progress_status: {
     type: Number,
-    required: [true, "No progress status given for To Do element"]
+    default:0
   },
   due_date: {
     type: Date
+  },
+  creation_date:{
+      type:Date,
+      default:Date.now()
   }
 });
 

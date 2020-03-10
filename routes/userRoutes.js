@@ -10,8 +10,13 @@ router.post("/signup", authController.signup);
 //Send data for checking and logging in user
 router.post("/login", authController.login);
 
-router.route("/").get(userController.getAllUsers);
+//Route for getting all users
+router.route("/").get(userController.getAllUsers); //SHOULD BE DELETED ON DEPLOYMENT
 
-router.route("/:id").get(userController.getUser); //.delete()
+//Route for actions for user account, given am account
+router
+  .route("/:id")
+  .get(userController.getUser)
+  .patch(authController.protect, userController.updateUser); //.delete() needs to be done....
 
 module.exports = router;
