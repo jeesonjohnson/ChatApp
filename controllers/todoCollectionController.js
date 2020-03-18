@@ -101,8 +101,14 @@ exports.deleteACollection = catchAsync(async (req, res, next) => {
 //Adds a given todo element to a collection
 exports.addATodoToCollection = catchAsync(async (req, res, next) => {
   var collectionDetails = await Collection.findById(req.query.collection_id);
-  console.log(collectionDetails);
-  collectionDetails.to_do_elements.push(req.query.todo_id);
+  //Only if the appropaite methods are present then does it add the data for the update field
+  if (req.body.title != "") {
+    collectionDetails.title = req.body.title;
+  }
+  if(req.body.todo_id != ""){
+    collectionDetails.to_do_elements.push(req.query.todo_id);
+  }
+
   await Collection.findByIdAndUpdate(collectionDetails.id, collectionDetails, {
     new: true
   });

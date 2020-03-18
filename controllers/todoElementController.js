@@ -105,8 +105,6 @@ exports.updateATodoElement = catchAsync(async (req, res, next) => {
     creation_date: creationDate
   };
 
-  console.log(updatedTodo);
-
   await TodoElement.findByIdAndUpdate(req.body.todoid, updatedTodo, {
     new: true
   });
