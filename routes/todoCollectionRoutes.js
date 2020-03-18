@@ -4,23 +4,20 @@ const authController = require("./../controllers/authController");
 
 const router = express.Router();
 
-router.route("/all").get(todoCollectionController.getAllCollections); //Should be deleted from production!!!!!!!
+router.route("/alldata").get(todoCollectionController.getAllCollections); //Should be deleted from production!!!!!!!
 
-// //Routes, that allow the user to get applicable workspaces. And create a workspace if they are admin
-// router
-//   .route("/")
-//   .post(authController.protect, workspaceController.createWorkspace)
-//   .get(authController.protect, workspaceController.getUserCompanyWorkspaces);
+router
+  .route("/all")
+  .get(
+    authController.protect,
+    todoCollectionController.getAllCollectionsInWorkspace
+  );
 
-//   //Methods regarding the user association with a given workspace.
-// router
-//   .route("/user")
-//   .post(authController.protect, workspaceController.addUserToWorkspace)
-//   .delete(authController.protect, workspaceController.deleteUserFromWorkspace);
-
-//   //THe below should really be changed to  make it part of default route... do this later!!!!!!!!!!!!!
-// router
-//   .route("/workid/:id")
-//   .get(authController.protect, workspaceController.getAGivenWorkspace);
+router
+  .route("/")
+  .get(authController.protect, todoCollectionController.getAGivenCollection)
+  .delete(authController.protect, todoCollectionController.deleteACollection)
+  .patch(authController.protect, todoCollectionController.addATodoToCollection)
+  .post(authController.protect, todoCollectionController.createCollection);
 
 module.exports = router;
