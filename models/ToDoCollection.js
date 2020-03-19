@@ -11,7 +11,8 @@ const ToDoCollectionSchema = new Schema({
     default: "Untitled"
   },
   to_do_elements: {
-    type: Array
+    type: Array,
+    default: []
   }
 });
 

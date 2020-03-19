@@ -3,17 +3,20 @@ const Schema = mongoose.Schema;
 
 const ToDoElementSchema = new Schema({
   collectionID: {
-    type: String
+    type: Object,
+    required:[true,"A collection ID Is needed"]
   },
   title: {
     type: String,
     default: "Untitled"
   },
   description: {
-    type: String
+    type: String,
+    default:""
   },
   assigned_users: {
-    type: Array
+    type: Array,
+    default:[]
   },
   progress_status: {
     type: Number,
