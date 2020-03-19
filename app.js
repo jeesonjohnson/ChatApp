@@ -13,6 +13,8 @@ const todoCollectionRouter = require("./routes/todoCollectionRoutes");
 const todoElementRouter = require("./routes/todoElementRoutes");
 const groupChatRouter = require("./routes/groupChatRoutes");
 const groupMessageRouter = require("./routes/groupMessageRoutes");
+const privateChatRouter = require("./routes/privateChatRoutes");
+const privateMessageRouter = require("./routes/privateMessageRoutes");
 
 const app = express();
 
@@ -41,6 +43,8 @@ app.use("/todocollection", todoCollectionRouter);
 app.use("/todo", todoElementRouter);
 app.use("/groupchat", groupChatRouter);
 app.use("/groupmessage", groupMessageRouter);
+app.use("/privatechat", privateChatRouter);
+app.use("/privatemessage", privateMessageRouter);
 
 app.get("*", (req, res, next) => {
   next(new AppError(`The route ${req.originalUrl} is not defined`, 404));
