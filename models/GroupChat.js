@@ -2,10 +2,13 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const GroupChatSchema = new Schema({
-  name: {
+  title: {
     type: String,
-    required: [true, "No name given for groupchat"],
-    unqiue: true
+    default: "Untitled Group Chat"
+  },
+  workspaceID: {
+    type: Object,
+    required: [true, "A groupchat must be associated to workspace"]
   },
   users: {
     type: Array,

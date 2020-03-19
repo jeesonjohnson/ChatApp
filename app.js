@@ -11,6 +11,7 @@ const companyRouter = require("./routes/companyRoutes");
 const workspaceRouter = require("./routes/workspaceRoutes");
 const todoCollectionRouter = require("./routes/todoCollectionRoutes");
 const todoElementRouter = require("./routes/todoElementRoutes");
+const groupChatRouter = require("./routes/groupChatRoutes");
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/companies", companyRouter);
 app.use("/workspaces", workspaceRouter);
 app.use("/todocollection", todoCollectionRouter);
 app.use("/todo", todoElementRouter);
+app.use("/groupchat", groupChatRouter);
 
 app.get("*", (req, res, next) => {
   next(new AppError(`The route ${req.originalUrl} is not defined`, 404));
