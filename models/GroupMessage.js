@@ -12,7 +12,7 @@ const GroupMessageSchema = new Schema({
   },
   message: {
     type: String,
-    required: [true, "No message"]
+    default:""
   },
   time_sent: {
     type: Date,

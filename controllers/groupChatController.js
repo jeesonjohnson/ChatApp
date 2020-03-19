@@ -97,7 +97,7 @@ exports.addAUserToGroupChat = catchAsync(async (req, res, next) => {
     groupChatDetails.users.push(req.body.userid);
   }
 
-  await GroupChat.findByIdAndUpdate(groupChatDetails.id, groupChatDetails, {
+  groupChatDetails = await GroupChat.findByIdAndUpdate(groupChatDetails.id, groupChatDetails, {
     new: true
   });
   res.status(200).json({
