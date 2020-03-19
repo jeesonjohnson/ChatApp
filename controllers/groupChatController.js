@@ -3,6 +3,7 @@ const User = require("./../models/User");
 const catchAsync = require("./../utils/catchAsync");
 const Company = require("./../models/Company");
 const GroupChat = require("./../models/GroupChat");
+const GroupMessage = require("./../models/GroupMessage");
 const AppError = require("./../utils/appError");
 
 //SHould be deleted on production
@@ -60,17 +61,22 @@ exports.getAGivenGroupChat = catchAsync(async (req, res, next) => {
 // ################# Delete a group chat form the server ################
 exports.deleteAGroupChat = catchAsync(async (req, res, next) => {
   var groupChatDetails = await GroupChat.findById(req.query.group_id);
-  var workspaceData = await Workspace.findById(collectionDetails.workspaceID);
+  var workspaceData = await Workspace.findById(groupChatDetails.workspaceID);
 
-  // Delete all todo elements form a user account
-  for (var x = 0; x < collectionDetails.to_do_elements.length; x++) {
-    await TodoElement.findByIdAndDelete(collectionDetails.to_do_elements[x]);
+  if (!workspaceData.users.includes(req.user.id)) {
+    return next(
+      new AppError(
+        "You are not a member of this given workspace. You have no right to delete a group chat",
+        401
+      )
+    );
   }
-
+  //Delete all messages in a given group
+  await GroupMessage.deleteMany({ group_id: groupChatDetails.id });
   //Delete a collection form a workspace
-  for (var x = 0; x < workspaceData.task_collections.length; x++) {
-    if (workspaceData.task_collections[x] == collectionDetails.id) {
-      workspaceData.task_collections.splice(x, 1);
+  for (var x = 0; x < workspaceData.group_chats.length; x++) {
+    if (workspaceData.group_chats[x] == groupChatDetails.id) {
+      workspaceData.group_chats.splice(x, 1);
       break;
     }
   }
@@ -79,14 +85,14 @@ exports.deleteAGroupChat = catchAsync(async (req, res, next) => {
   });
 
   //Remove the collection details
-  await Collection.findByIdAndDelete(req.query.collection_id);
+  await GroupMessage.findByIdAndDelete(groupChatDetails.id);
   res.status(200).json({
     status: "success",
     data: "data has been deleted"
   });
 });
 
-//Adds a given todo element to a collection
+// ########### ADD A GIVEN USER TO A GROUP CHAT  ##############
 exports.addAUserToGroupChat = catchAsync(async (req, res, next) => {
   var groupChatDetails = await GroupChat.findById(req.body.groupid);
   //Only if the appropaite methods are present then does it add the data for the update field
@@ -97,9 +103,13 @@ exports.addAUserToGroupChat = catchAsync(async (req, res, next) => {
     groupChatDetails.users.push(req.body.userid);
   }
 
-  groupChatDetails = await GroupChat.findByIdAndUpdate(groupChatDetails.id, groupChatDetails, {
-    new: true
-  });
+  groupChatDetails = await GroupChat.findByIdAndUpdate(
+    groupChatDetails.id,
+    groupChatDetails,
+    {
+      new: true
+    }
+  );
   res.status(200).json({
     status: "success",
     data: groupChatDetails

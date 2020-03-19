@@ -53,13 +53,22 @@ exports.getAGroupMessage = catchAsync(async (req, res, next) => {
 
 // ###################### Get all messages in a given group chat ###################
 exports.getAllMessagesInGroup = catchAsync(async (req, res, next) => {
-  const collectionData = await Collection.findById(req.query.collection_id);
-  var answer = [];
-  for (var x = 0; x < collectionData.to_do_elements.length; x++) {
-    answer.push(await TodoElement.findById(collectionData.to_do_elements[x]));
-  }
+  //Below code is for pagentation of methods
+  const page = req.query.page * 1 || 1; //Ensures javascript parses the number correctly
+  const limit = req.query.limit * 1 || 100;
+  const skip = (page - 1) * limit;
+
+  // Gets all appropriate messages, and sorts them such to be descending based creation, and provides appropriate pagentation
+  let messages = await GroupMessage.find({
+    group_id: req.query.group_id
+  })
+    .sort({ time_sent: "descending" })
+    .skip(skip)
+    .limit(limit);
+
   res.status(200).json({
     status: "success",
-    data: answer
+    result: messages.length,
+    data: messages
   });
 });
