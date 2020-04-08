@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Navbar from "../layout/Navbar.js";
+import Footer from "../layout/Footer.js";
 import "./Home.css"
 
 class Pricing extends Component {
@@ -30,6 +31,7 @@ class Pricing extends Component {
                 </div>
               </div>
             </div>
+            <Footer/>
           </div>
         );
       }

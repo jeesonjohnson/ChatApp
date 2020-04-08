@@ -5,7 +5,7 @@ class BackButton extends Component {
   render() {
     return (
         <Link to="/sign_up" className="btn-flat waves-effect">
-            <i className="material-icons left">keyboard_backspace</i> Back to Sign Up
+            <i className="material-icons left"></i> Back to Sign Up
         </Link>
     );
   }

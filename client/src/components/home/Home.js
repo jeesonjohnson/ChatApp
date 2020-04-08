@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./Home.css"
-import Navbar from "../layout/Navbar";
+import Navbar from "../layout/Navbar.js";
+import Footer from "../layout/Footer.js";
 
 class Home extends Component {
   render() {
@@ -22,6 +23,7 @@ class Home extends Component {
             </div>
           </div>
         </div>
+        <Footer/>
       </div>
     );
   }
