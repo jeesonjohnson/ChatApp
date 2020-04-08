@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Navbar from "../layout/Navbar.js";
+import "./Home.css"
 
 class Resources extends Component {
   render() {
@@ -18,4 +19,6 @@ class Resources extends Component {
       </div>
     );
   }
-}export default Resources;
+}
+
+export default Resources;

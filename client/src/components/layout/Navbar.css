@@ -1,6 +1,6 @@
 nav{
     background-color: #202225;
-    
+    letter-spacing: 1.3px;
 }
 
 div{
@@ -18,11 +18,7 @@ div{
 
 #left-navbar-list{
     margin-left: 100px;
-}
-
-.left-navbar-button{
-    margin-left: 6%;
-    
+    width: 120%;
 }
 
 a{
@@ -31,4 +27,8 @@ a{
 
 .social-media-icons{
     vertical-align: middle;
+}
+
+img{
+    color: #a0f3d7;
 }

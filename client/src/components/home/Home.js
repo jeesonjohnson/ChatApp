@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import "./Home.css"
 import Navbar from "../layout/Navbar";
 
 class Home extends Component {
@@ -6,7 +7,7 @@ class Home extends Component {
     return (
       <div>
         <Navbar/>
-        <div style={{ height: "75vh" }} className="container valign-wrapper">
+        <div style={{ height: "50vh" }} className="container valign-wrapper">
           <div className="row">
             <div className="col s12 center-align">
               <h4>This is the {" "}<span style={{ fontFamily: "monospace" }}>Home</span> page</h4>
@@ -24,4 +25,6 @@ class Home extends Component {
       </div>
     );
   }
-}export default Home;
+}
+
+export default Home;
