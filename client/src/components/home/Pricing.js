@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Navbar from "./../layout/Navbar.js";
+import Navbar from "../layout/Navbar.js";
 
 class Pricing extends Component {
     render() {

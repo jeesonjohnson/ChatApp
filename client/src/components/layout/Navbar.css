@@ -7,6 +7,11 @@ div{
     color: #a0f3d7 !important;
 }
 
+.left-navbar-button{
+    width: 15%;
+    text-align: center;
+}
+
 #logo{
     margin-top: 7px;
 }
@@ -18,6 +23,10 @@ div{
 .left-navbar-button{
     margin-left: 6%;
     
+}
+
+a{
+    color: #a0f3d7 !important;
 }
 
 .social-media-icons{

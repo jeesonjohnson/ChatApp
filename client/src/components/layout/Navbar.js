@@ -6,7 +6,7 @@ class Navbar extends Component {
     return (
       <div className="navbar-fixed">
         <nav>
-            <div id="nav-wrapper" class="nav-wrapper">
+            <div class="nav-wrapper">
                 <img id="logo" class="brand-logo" src="logo.png" height="50" width="50" alt=""/>
                 <ul id="left-navbar-list" class=" hide-on-med-and-down">
                     <li class="left-navbar-button"><a href="/">Why Oogwai?</a></li>
