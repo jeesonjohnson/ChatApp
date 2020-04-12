@@ -6,7 +6,7 @@ import "./Home.css"
 import Navbar from "../layout/Navbar.js";
 import Footer from "../layout/Footer.js";
 
-import { Carousel, Tabs, Tab, Button, Card, Row, Col } from 'react-materialize';
+import { Carousel, Tabs, Tab} from 'react-materialize';
 
 class Home extends Component {
   render() {
@@ -27,27 +27,27 @@ class Home extends Component {
               <Tabs className="tabs z-depth-1 grey darken-4" style={{ backgroundColor: "#2f3136" }}>
                 <Tab active options={{ duration: 300, onShow: null, responsiveThreshold: Infinity, swipeable: false }} title="Tools" >
                   <div className="row" style={{backgroundColor: "#2f3136", margin: 0}}>
-                    <img className="col s2" src="icon_translate.png"/>
+                    <img className="col s2" src="icon_translate.png" alt=""/>
                     <p className="col s10">Google Translate allows you to seamlessly communicate with anyone across the world</p>
                   </div>
                   <div className="row" style={{backgroundColor: "#2f3136", margin: 0}}>
-                    <img className="col s2" src="icon_weather.png"/>
+                    <img className="col s2" src="icon_weather.png" alt=""/>
                     <p className="col s10">With weather support you can plan your meetings and tasks with respect to your environment</p>
                   </div>
                   <div className="row" style={{backgroundColor: "#2f3136", margin: 0}}>
-                    <img className="col s2" src="icon_morningstar.png"/>
+                    <img className="col s2" src="icon_morningstar.png" alt=""/>
                     <p className="col s10">Whether you are tracking your own company, your competitors, or monitoring the market</p>
                   </div>
                 </Tab>
                 <Tab options={{ duration: 300, onShow: null, responsiveThreshold: Infinity, swipeable: false }} title="Communication">
                 <div className="row" style={{backgroundColor: "#2f3136", margin: 0}}>
-                    <img className="col s2" src="icon_twitter.png"/>
+                    <img className="col s2" src="icon_twitter.png" alt=""/>
                     <p className="col s10">Placeholder</p>
                   </div>
                 </Tab>
                 <Tab options={{ duration: 300, onShow: null, responsiveThreshold: Infinity, swipeable: false }} title="Organisation">
                 <div className="row" style={{backgroundColor: "#2f3136", margin: 0}}>
-                    <img className="col s2" src="icon_twitter.png"/>
+                    <img className="col s2" src="icon_twitter.png" alt=""/>
                     <p className="col s10">Placeholder</p>
                   </div>
                 </Tab>

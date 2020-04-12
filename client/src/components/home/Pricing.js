@@ -15,19 +15,34 @@ class Pricing extends Component {
                   <p className="flow-text grey-text text-darken-1">Placeholder text</p>
                   <br />
                   <table class="responsive-table white-text">
-                                <thead>
-                                    <tr>
-                                        <th>Company Account</th>
-                                        <th>User Account</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Body1</td>
-                                        <td>Body2</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Company Account</th>
+                        <th>User Account</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td><td>Body1</td><td>Body2</td>
+                      </tr>
+                      <tr>
+                        <td>2</td><td>Body1</td><td>Body2</td>
+                      </tr>
+                      <tr>
+                        <td>3</td><td>Body1</td><td>Body2</td>
+                      </tr>
+                      <tr>
+                        <td>4</td><td>Body1</td><td>Body2</td>
+                      </tr>
+                      <tr>
+                        <td>5</td><td>Body1</td><td>Body2</td>
+                      </tr>
+                      <tr>
+                        <td>Prices</td><td>£./month</td><td>£0.0/month</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
