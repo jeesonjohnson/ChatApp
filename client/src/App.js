@@ -5,12 +5,13 @@ import Home from "./components/home/Home.js";
 import Pricing from "./components/home/Pricing.js";
 import Resources from "./components/home/Resources.js";
 import SignUp from "./components/auth/signUp.js";
-import SignUpCompany from "./components/auth/signUpCompany.js";
-import SignUpUser from "./components/auth/signUpUser.js";
 import Login from "./components/auth/Login.js";
+
+import Users from "./components/Users.js";
 
 class App extends Component {
   render() {
+    const currentUser = "";
     return (
       <Router>
         <div id="app">
@@ -18,9 +19,11 @@ class App extends Component {
           <Route exact path="/pricing" component={Pricing} />
           <Route exact path="/resources" component={Resources} />
           <Route exact path="/sign_up" component={SignUp} />
-          <Route exact path="/sign_up/company" component={SignUpCompany} />
-          <Route exact path="/sign_up/user" component={SignUpUser} />
           <Route exact path="/login" component={Login} />
+          {//Logout 
+          }
+
+          <Route path="/users" exact strict component={  Users}/>
         </div>
       </Router>
     );

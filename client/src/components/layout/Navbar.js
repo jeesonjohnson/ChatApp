@@ -12,6 +12,7 @@ class Navbar extends Component {
                     <li class="left-navbar-button"><a href="/">Why Oogwai?</a></li>
                     <li class="left-navbar-button"><a href="/pricing">Pricing</a></li>
                     <li class="left-navbar-button"><a href="/resources">Resources</a></li>
+                    <li class="left-navbar-button"><a href="/users">Users(DELETE)</a></li>
                 </ul>
                 
                 <ul id="right-navbar-list" class="right hide-on-med-and-down">
