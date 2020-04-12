@@ -1,0 +1,9 @@
+.modal-footer{
+    visibility: hidden;
+    height: 0px;
+}
+
+.input-field{
+    margin:0;
+    padding:3;
+}   

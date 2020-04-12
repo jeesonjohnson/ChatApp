@@ -11,7 +11,6 @@ import Users from "./components/Users.js";
 
 class App extends Component {
   render() {
-    const currentUser = "";
     return (
       <Router>
         <div id="app">

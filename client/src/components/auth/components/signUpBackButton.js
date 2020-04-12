@@ -1,12 +1,10 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import {  Button } from 'react-materialize';
 
 class BackButton extends Component {
   render() {
     return (
-        <Link to="/sign_up" className="btn-flat waves-effect">
-            <i className="material-icons left"></i> Back to Sign Up
-        </Link>
+        <Button modal="close" style={{margin: 10}}>Close</Button>
     );
   }
 }
