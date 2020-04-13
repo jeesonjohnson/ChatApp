@@ -26,7 +26,7 @@ class Register extends Component {
         preventScrolling: true,
         startingTop: '0%'
       }}
-      trigger={<Button node="button" className="btn btn-large btn-flat waves-effect white black-text pulse" >USER</Button>}
+      trigger={<Button node="button" className="btn btn-large btn-flat waves-effect waves-light white black-text pulse" >USER</Button>}
       >
       
       <UserForm/>

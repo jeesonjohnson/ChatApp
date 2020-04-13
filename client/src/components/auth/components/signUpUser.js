@@ -8,6 +8,9 @@ class Register extends Component {
   constructor() {
     super();
     this.state = {
+      companies: [],
+      avatar: "",
+      owner: false,
       name: "",
       email: "",
       password: "",
@@ -21,18 +24,23 @@ class Register extends Component {
   };
   
   onSubmit = e => {
-    e.preventDefault();const newUser = {
+    e.preventDefault();
+    const newUser = {
+      companies: this.state.companies,
+      avatar: this.state.avatar,
+      owner: this.state.owner,
       name: this.state.name,
       email: this.state.email,
       password: this.state.password,
       password_confirm: this.state.password_confirm
     };
-    console.log(newUser);
 
     axios.post('/users/signup', {newUser})
     .then(res => {
-      console.log(res);
-      console.log(res.data);
+      console.log(res.data.status)
+      if(res.data.status === "success"){
+        window.location.href = '/login'
+      }
     })
   };
   

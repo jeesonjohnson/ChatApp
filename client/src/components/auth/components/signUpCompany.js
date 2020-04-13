@@ -8,12 +8,14 @@ class SignUpCompany extends Component {
   constructor() {
     super();
     this.state = {
-        company_name: "",
-        name: "",
-        email: "",
-        password: "",
-        password2: "",
-        errors: {}
+      avatar: "",
+      company_name: "",
+      owner: true,
+      name: "",
+      email: "",
+      password: "",
+      password_confirm: "",
+      errors: {}
     };
     console.log(window.location.href)
   }
@@ -26,11 +28,13 @@ class SignUpCompany extends Component {
     e.preventDefault();
     
     const newUser = {
-        company_name: this.state.company_name,
-        name: this.state.name,
-        email: this.state.email,
-        password: this.state.password,
-        password2: this.state.password2
+      avatar: this.state.avatar,
+      company_name: this.state.company_name,
+      owner: this.state.owner,
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password,
+      password_confirm: this.state.password_confirm,
     };
 
     console.log(newUser);
@@ -58,8 +62,8 @@ class SignUpCompany extends Component {
             </div>
             <form noValidate onSubmit={this.onSubmit}>
                 <div className="input-field col s12">
-                    <input onChange={this.onChange} value={this.state.company} error={errors.company} id="company_name" type="text"/>
-                    <label htmlFor="name">Company Name</label>
+                    <input onChange={this.onChange} value={this.state.company_name} error={errors.company_name} id="company_name" type="text"/>
+                    <label htmlFor="company_name">Company Name</label>
                 </div>
                 <div className="input-field col s12">
                     <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text"/>
@@ -74,8 +78,8 @@ class SignUpCompany extends Component {
                     <label htmlFor="password">Password</label>
                 </div>
                 <div className="input-field col s12">
-                    <input onChange={this.onChange} value={this.state.password2} error={errors.password2} id="password2" type="password"/>
-                    <label htmlFor="password2">Confirm Password</label>
+                    <input onChange={this.onChange} value={this.state.password_confirm} error={errors.password_confirm} id="password_confirm" type="password"/>
+                    <label htmlFor="password_confirm">Confirm Password</label>
                 </div>
                 <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                     <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "0"}} type="submit" className="btn btn-large waves-effect waves-light hoverable blue accent-3">Sign up</button>
