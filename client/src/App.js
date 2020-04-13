@@ -8,13 +8,14 @@ import SignUp from "./components/auth/signUp.js";
 import Login from "./components/auth/Login.js";
 
 import Users from "./components/Users.js";
+import Dashboard from "./components/auth/Dashboard.js";
 
 class App extends Component {
   render() {
     return (
       <Router>
         <div id="app">
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={Home}/>
           <Route exact path="/pricing" component={Pricing} />
           <Route exact path="/resources" component={Resources} />
           <Route exact path="/sign_up" component={SignUp} />
@@ -22,7 +23,11 @@ class App extends Component {
           {//Logout 
           }
 
-          <Route path="/users" exact strict component={  Users}/>
+          <Route path="/users" exact strict component={Users}/>
+          
+        </div>
+        <div id="#app-dashboard">
+          <Route path="/dashboard" exact strict component={Dashboard}/>
         </div>
       </Router>
     );

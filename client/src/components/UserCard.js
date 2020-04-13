@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 const UserCard = (props) => {
     const user = props.user;
     const key = props.key;
-    console.log("u"+user);
-    console.log("k"+key);
 
     return(
         <div class="card horizontal teal">
