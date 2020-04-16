@@ -12,7 +12,7 @@ class Footer extends Component {
               <h5>Product</h5>
               <ul>
                 <li><Link to="/pricing">Pricing</Link></li>
-                <li><Link to="/api">API</Link></li>
+                <li><Link to="/dashboard">API</Link></li>
               </ul>
             </div>
             <div className="col 4 s4">

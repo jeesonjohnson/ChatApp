@@ -50,13 +50,13 @@ exports.signup = catchAsync(async (req, res, next) => {
   var newUser;
   try {
     newUser = await User.create({
+      avatar: req.body.newUser.avatar,
+      companies: req.body.newUser.companies,
+      owner: req.body.newUser.owner,
       name: req.body.newUser.name,
       email: req.body.newUser.email,
       password: req.body.newUser.password,
-      password_confirm: req.body.newUser.password_confirm,
-      avatar: req.body.newUser.avatar,
-      companies: req.body.newUser.companies,
-      owner: req.body.newUser.owner
+      password_confirm: req.body.newUser.password_confirm
     });
   } catch (_) {
     return next(
@@ -73,7 +73,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     try {
       newCompany = await company.create({
         name: req.body.newUser.company_name,
-        avatar: req.body.newUser.company_avatar,
+        avatar: req.body.newUser.avatar,
         admins: [newUser.id],
         users: [newUser.id],
         ownerID: newUser.id,
@@ -127,14 +127,17 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
 
+  let token = req.headers.cookie.toString();
+  token = token.split('=');
+  token = token[1]
+
+  //if (
+    //req.headers.authorization &&
+    //req.headers.authorization.startsWith("Bearer")
+
+    //token = req.headers.authorization.split(" ")[1];
+  
   if (!token) {
     return next(
       new AppError("You are not logged in! Please log in to get access.", 401)
