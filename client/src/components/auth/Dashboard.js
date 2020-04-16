@@ -81,7 +81,7 @@ class Dashboard extends Component {
       }
       e.currentTarget.className="collection-item selected_workspace"
     }
-    
+
     this.setState({selectedWorkspace: e.currentTarget.childNodes[0].dataset.tooltip})
     //Load workspace objects
     //Load users
@@ -183,6 +183,54 @@ class Dashboard extends Component {
             </div>
             <Button onClick={this.changeCompanyPanelVisiblity.bind(this)} style={{}}><Icon>chevron_left</Icon></Button>
           </div>
+
+          <div className="col" style={{width:"92%", paddingLeft:0, paddingRight:0}}>
+
+<div className="row" style={{borderBottomStyle:"solid", borderBottomColor:"black", borderBottomWidth:"2px", width:"100%", margin:0}}>
+  <div className="" style={{backgroundColor:"#2f3136", width:"12%", float:"left", borderRadius: "50px 0px 0px 0px"}}><p>{this.state.selectedWorkspace}</p></div>
+  <div className="" style={{backgroundColor:"#36393f", width:"88%", float:"left"}}>
+    <p className="col s9 left-align">PLANNER</p>
+    <div className="col s3"><TextInput className="right-align" icon={<Icon>search</Icon>} id="TextInput-4"/></div>
+  </div>
+</div>
+
+<div className="row" style={{width:"100%", margin:0}}>
+  <div  className="col " style={{backgroundColor:"#2f3136", width:"12%", margin:0, padding:0}}>
+    <Button className="col s12 btn-flat" style={{color:"#afafaf"}}><Icon className="left">class</Icon>Planner</Button>
+    <Button className="col s12 btn-flat" style={{color:"#afafaf"}}><Icon className="left">chat</Icon>General</Button>
+    <Button className="col s12 btn-flat" style={{color:"#afafaf"}}><Icon className="left">announcement</Icon>Announcement</Button>
+    <Button className="col s12 btn-flat" style={{color:"#afafaf"}}><Icon className="left">call</Icon>Voice Meeting</Button>
+    <Button className="col s12 btn-flat" style={{color:"#afafaf"}}><Icon className="left">videocam</Icon>Video Meeting</Button>
+    <div>
+      {}
+    </div>
+  </div>
+
+  <div className="col row" style={{backgroundColor:"#36393f", width:"88%", paddingLeft:0, marginLeft:0, marginRight:0, paddingRight:0}}>
+    <div>
+      <div className="col" style={{width:"80%"}}>Planner Panel</div>
+      <div className="col" style={{width:"20%", backgroundColor:"#2f3136"}}>
+        Users
+      </div>
+    </div>
+
+    <div>
+      Calender
+    </div>
+
+    <div>
+      Charts
+    </div>
+    
+    <div>
+      General chat
+    </div>
+
+
+  </div>
+</div>
+
+</div>
 
         </div>
       </div>
