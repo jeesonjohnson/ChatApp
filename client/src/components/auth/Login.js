@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import axios from 'axios';
 import './Auth.css';
-import BackButton from "./components/homeBackButton.js";
+import Navbar from "../layout/Navbar.js";
+import Footer from "../layout/Footer.js";
 
 class Login extends Component {
   constructor() {
@@ -18,24 +20,33 @@ class Login extends Component {
   };
   
   onSubmit = e => {
-    e.preventDefault();const userData = {
+    e.preventDefault();
+    const userData = {
       email: this.state.email,
       password: this.state.password
     };
-    console.log(userData);
+
+    axios.post('/users/login', {userData})
+    .then(res => {
+      //Check response for if login was successful
+      
+      if(res.data.status === "success"){
+        window.location.href = '/dashboard'
+      }
+    })
   };
+  
   
   render() {
     const { errors } = this.state;
     return (
-      <div id="body" className="container">
-        <div style={{  }} className="row">
-          <div className="col s8 offset-s2">
-              <BackButton/>
+      <div>
+      <Navbar />
+      <div style={{ height: "75vh" }} className="container valign-wrapper">
+        <div className="row">
+          <div className="col s12">
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-              <h4>
-                <b>Login</b> below
-              </h4>
+              <h4><b>Login</b> below</h4>
               <p className="grey-text text-darken-1">Don't have an account? <Link to="/sign_up">Register</Link>
               </p>
             </div>
@@ -55,6 +66,8 @@ class Login extends Component {
           </div>
         </div>
       </div>
+      <Footer/>
+    </div>
     );
   }
 }
