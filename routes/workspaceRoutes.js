@@ -10,7 +10,7 @@ router.route("/all").get(workspaceController.getAllWorkspaces); //Should be dele
 router
   .route("/")
   .post(authController.protect, workspaceController.createWorkspace)
-  .get(authController.protect, workspaceController.getUserWorkspacesFromCompany);
+  .get(authController.protect, workspaceController.getUserCompanyWorkspaces);
 
   //Methods regarding the user association with a given workspace.
 router
@@ -20,7 +20,7 @@ router
 
   //THe below should really be changed to  make it part of default route... do this later!!!!!!!!!!!!!
 router
-  .route("/:id")
+  .route("/workid/:id")
   .get(authController.protect, workspaceController.getAGivenWorkspace);
 
 module.exports = router;

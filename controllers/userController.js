@@ -14,23 +14,11 @@ exports.getAllUsers = catchAsync(async (req, res) => {
 });
 
 exports.getUser = catchAsync(async (req, res, next) => {
-  const foundUser = await user.findById(req.user._id);
+  const foundUser = await user.findById(req.params.id);
   res.status(200).json({
     status: "success",
     data: foundUser
   });
-});
-
-exports.isUserLoggedIn = catchAsync(async (req, res, next) => {
-  //
-  var user = ""
-  if(req.headers.cookie !== "" || req.headers.cookie != null){
-    
-    next();
-  }
-  else {
-    return false
-  }
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {

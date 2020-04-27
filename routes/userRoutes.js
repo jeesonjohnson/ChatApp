@@ -13,10 +13,6 @@ router.post("/login", authController.login);
 //Route for getting all users
 router.route("/").get(userController.getAllUsers); //SHOULD BE DELETED ON DEPLOYMENT
 
-router.route("/logout").get(authController.logout)
-
-router.route("/status").get(userController.isUserLoggedIn, authController.protect, userController.getUser);
-
 //Route for actions for user account, given am account
 router
   .route("/:id")
