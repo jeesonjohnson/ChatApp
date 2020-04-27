@@ -1,7 +1,7 @@
 const Workspace = require("./../models/Workspace");
 const User = require("./../models/User");
 const catchAsync = require("./../utils/catchAsync");
-const company = require("./../models/Company");
+const Company = require("./../models/Company");
 const AppError = require("./../utils/appError");
 
 //SHould be deleted on production
@@ -47,13 +47,40 @@ exports.createWorkspace = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getUserWorkspacesFromCompany = catchAsync(async (req, res, next) => {
+  var companyWorkspaceData = {}
+  //Iterate through all companies user is in
+  for(var companyIndex = 0; companyIndex < req.user.companies.length; companyIndex++){
+    var company = await Company.findById(req.user.companies[companyIndex])
+    var workspaces = []
+
+    //Iterate through workspaces of a company
+    for(var workspaceIndex = 0; workspaceIndex < company.workspaces.length; workspaceIndex++){
+      var workspace = await Workspace.findById(company.workspaces[workspaceIndex])
+      
+      //Check if user is in current workspace     
+     for(var userIndex = 0; userIndex < workspace.users.length; userIndex++){
+      if(workspace.users[userIndex] == req.user._id){
+        workspaces.push(workspace)
+        companyWorkspaceData[company.name] = workspaces 
+      }
+     }
+    }
+  }
+  
+  res.status(200).json({
+    status: "success",
+    data: companyWorkspaceData
+  });
+});
+
 //Gets all associated workspaces in a company that are associated with a given user
 exports.getUserCompanyWorkspaces = catchAsync(async (req, res, next) => {
   //If the user is the owner then all the workspaces are presented to the owner
   if (req.user.owner) {
     var ownerCompany = req.user.companies[0];
     var workspaces = [];
-    var companyDetails = await company.findById(ownerCompany);
+    var companyDetails = await Company.findById(ownerCompany);
     for (var x = 0; x < companyDetails.workspaces.length; x++) {
       var workspaceDetails = await Workspace.findById(
         companyDetails.workspaces[x]
@@ -68,7 +95,7 @@ exports.getUserCompanyWorkspaces = catchAsync(async (req, res, next) => {
 
   // All the workspace are presented to the user, if they are in fact a member of the users of that workspace.
   var workspaces = [];
-  var companyDetails = await company.findById(req.query.id);
+  var companyDetails = await Company.findById(req.query.id);
   for (var x = 0; x < companyDetails.workspaces.length; x++) {
     var workspaceDetails = await Workspace.findById(
       companyDetails.workspaces[x]
@@ -80,10 +107,14 @@ exports.getUserCompanyWorkspaces = catchAsync(async (req, res, next) => {
       }
     }
   }
+
+  
+
   res.status(200).json({
     status: "success",
     data: workspaces
   });
+  
 });
 
 //* Allow A given user to be added to a workspace.

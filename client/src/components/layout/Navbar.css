@@ -1,0 +1,34 @@
+nav{
+    background-color: #202225;
+    letter-spacing: 1.3px;
+}
+
+div{
+    color: #a0f3d7 !important;
+}
+
+.left-navbar-button{
+    width: 15%;
+    text-align: center;
+}
+
+#logo{
+    margin-top: 7px;
+}
+
+#left-navbar-list{
+    margin-left: 100px;
+    width: 120%;
+}
+
+a{
+    color: #a0f3d7 !important;
+}
+
+.social-media-icons{
+    vertical-align: middle;
+}
+
+img{
+    color: #a0f3d7;
+}

@@ -1,0 +1,11 @@
+.page-footer{
+    background-color: #202225;
+    letter-spacing: 1.3px;
+    position: absolute;
+    width: 100%;
+    font-size: medium;
+}
+
+.row{
+    text-align: center;
+}

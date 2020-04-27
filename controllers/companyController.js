@@ -29,10 +29,11 @@ exports.getAllUserCompanies = catchAsync(async (req, res, next) => {
   for (var x = 0; x < req.user.companies.length; x++) {
     companies.push(await company.findById(req.user.companies[x]));
   }
-  res.status(200).json({
-    status: "success",
-    data: companies
-  });
+  return companies;
+  // res.status(200).json({
+    // status: "success",
+    // data: companies
+  // });
 });
 
 //Delete a given user form  a company provided the company id and user id
