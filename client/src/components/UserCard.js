@@ -16,7 +16,6 @@ const UserCard = (props) => {
                         { user.name }
                     </Link>
                     <p>{user.email}</p>
-                    <p>Key {user.password}</p>
                     <p>Companies {user.companies}</p>
                     <p>Owner {user.owner.toString()}</p>
                     <p>Avatar {user.avatar}</p>

@@ -12,6 +12,7 @@ import Dashboard from "./components/dashboard/Dashboard.js";
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
+
 class App extends Component {
   render() {
     const theme = createMuiTheme({
@@ -63,5 +64,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;

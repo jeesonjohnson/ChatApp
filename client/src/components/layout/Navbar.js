@@ -1,8 +1,60 @@
 import React, { Component } from "react";
 import './Navbar.css';
+import axios from 'axios';
 
 class Navbar extends Component {
+  constructor(){
+    super()
+    this.state = {
+      loggedIn: false,
+      user: ""
+    }
+  };
+
+  componentDidMount() {
+    axios('/users/status')
+    .then(res =>{
+      if (res === false){
+        this.setState({
+          loggedIn: false
+        })
+      }
+      else {
+        this.setState({
+          loggedIn: true,
+          user: res.data.data.name
+        })
+        
+      }
+    })
+    .catch(err => {
+      console.log('Error from getting user status')
+    })
+
+  }
+
+  logout = e =>{
+    axios('/users/logout')
+    .then(res => {
+      window.location.href = "/"
+    })
+  }
+
   render() {
+    const loggedIn = this.state.loggedIn;
+    const user = this.state.user;
+    var button1 = null;
+    var button2 = null;
+
+    if(loggedIn) { 
+      button1 = <li><a >{user}</a></li>
+      button2 = <li><a onClick={this.logout.bind(this)}>Log out</a></li> 
+    }
+    else {
+      button1 = <li><a href="/sign_up">Sign up</a></li>
+      button2 = <li><a href="/login">Login</a></li>
+    }
+
     return (
       <div className="navbar-fixed">
         <nav>
@@ -19,8 +71,8 @@ class Navbar extends Component {
                     <li><a href="https://twitter.com/"><img className="social-media-icons" src="icon_twitter.png" alt="Twitter"/></a></li>
                     <li><a href="https://www.facebook.com/"><img className="social-media-icons" src="icon_facebook.png" alt="Facebook"/></a></li>
                     <li><a href="https://www.instagram.com/"><img className="social-media-icons" src="icon_instagram.png" alt="Instagram"/></a></li>
-                    <li><a href="/sign_up">Sign up</a></li>
-                    <li><a href="/login">Login</a></li>
+                    {button1}
+                    {button2}
                 </ul>
             </div>
         </nav>
