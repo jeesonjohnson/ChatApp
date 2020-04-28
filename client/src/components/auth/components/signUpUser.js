@@ -65,21 +65,11 @@ class SingUpUser extends Component {
     console.log("Invalid User");
     console.log(this.state.errors);
 
-    reactDOM.render(this.state.errors.name, document.getElementById('name-validate'));
-    reactDOM.render(this.state.errors.email, document.getElementById('email-validate'));
-    reactDOM.render(this.state.errors.password, document.getElementById('password-validate'));
-    reactDOM.render(this.state.errors.password_confirm, document.getElementById('error-validate'));
-  //   // <h3 className="error-validate"> { this.state.errors } </h3> 
-  //   // console.log(res.data.status)
-  //   this.state.errors= handleValidation(newUser, false)[1];
-  //   // {this.state.errors && <div className="error-validate"> { this.state.errors }</div> };
-  //   // <div className="error-validate" value={this.state.errors }></div> ;
-  //   alert(this.state.errors);
-  //   console.log("Errors");
-  //   console.log(this.state.errors);
-  // }    
-      
-      };
+    reactDOM.render(this.state.errors.name, document.getElementById('name2-validate'));
+    reactDOM.render(this.state.errors.email, document.getElementById('email2-validate'));
+    reactDOM.render(this.state.errors.password, document.getElementById('password2-validate'));
+    reactDOM.render(this.state.errors.password_confirm, document.getElementById('password_confirm2-validate'));      
+    };
   };
   
   render() {
@@ -100,34 +90,23 @@ class SingUpUser extends Component {
                 <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text"/>
                 <label htmlFor="name">Name</label>
               </div>
-              <div id="name-validate"></div>
+              <div id="name2-validate"></div>
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.email} error={errors.email} id="email" type="email"/>
                 <label htmlFor="email">Email</label>
               </div>
-              <div id="email-validate"></div>
+              <div id="email2-validate"></div>
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.password} error={errors.password} id="password" type="password"/>
                 <label htmlFor="password">Password</label>
               </div>
-              <div id="password-validate"></div>
+              <div id="password2-validate"></div>
 
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.password_confirm} error={errors.password_confirm} id="password_confirm" type="password"/>
                 <label htmlFor="password_confirm">Confirm Password</label>
               </div>
-              <div id="error-validate"></div>
-              {/* <h3 className="error-validate"></h3> */}
-              {/* <div>
-                {
-                    this.state.errors.map((message) => {
-                        return (<div>{message}</div>);
-                    })
-                }
-              </div> */}
-              {/* <HelpBlock> */}
-                {/* <p className="text-danger">{this.state.errors}</p> */}
-              {/* </HelpBlock> */}
+              <div id="password_confirm2-validate"></div>
               <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                 <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} type="submit" className="btn btn-large waves-effect waves-light hoverable blue accent-3">Sign up</button>
               </div>
