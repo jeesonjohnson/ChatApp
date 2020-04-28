@@ -6,12 +6,12 @@ import '../Auth.css';
 import BackButton from './signUpBackButton.js';
 import handleValidation from './validation.js';
 
-class Register extends Component {
+class SingUpUser extends Component {
   constructor() {
     super();
     this.state = {
-      companies: [],
       avatar: "",
+      companies: [],
       owner: false,
       name: "",
       email: "",
@@ -27,27 +27,30 @@ class Register extends Component {
         password_confirm: '',
       }
     };
+    this.baseState=this.state;
+    console.log(window.location.href);
   }
   
   onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
   };
   
-
-  
   onSubmit = e => {
     e.preventDefault();
+
     const newUser = {
-      companies: this.state.companies, required:true,
-      avatar: this.state.avatar, required:true,
-      owner: this.state.owner,required:true,
-      name: this.state.name,required:true,
-      email: this.state.email,required:true,
-      password: this.state.password,required:true,
-      password_confirm: this.state.password_confirm,required:true,
+      avatar: this.state.avatar,
+      companies: this.state.companies,
+      owner: this.state.owner,
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password,
+      password_confirm: this.state.password_confirm,
     };
-    if( handleValidation(newUser, false)[0]){
-      // if( this.handleValidation(newUser, false)){
+
+    console.log(newUser);
+
+    if(handleValidation(newUser, false)[0]){
       axios.post('/users/signup', {newUser})
       .then(res => {
         console.log(res.data.status)
@@ -57,9 +60,11 @@ class Register extends Component {
       })
       console.log("Valid Created")
   }else{
-    this.state.errors= handleValidation(newUser, true)[1];
+    this.state.errors= handleValidation(newUser, false)[1];
 
-    console.log("Invalid");
+    console.log("Invalid User");
+    console.log(this.state.errors);
+
     reactDOM.render(this.state.errors.name, document.getElementById('name-validate'));
     reactDOM.render(this.state.errors.email, document.getElementById('email-validate'));
     reactDOM.render(this.state.errors.password, document.getElementById('password-validate'));
@@ -95,19 +100,23 @@ class Register extends Component {
                 <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text"/>
                 <label htmlFor="name">Name</label>
               </div>
+              <div id="name-validate"></div>
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.email} error={errors.email} id="email" type="email"/>
                 <label htmlFor="email">Email</label>
               </div>
+              <div id="email-validate"></div>
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.password} error={errors.password} id="password" type="password"/>
                 <label htmlFor="password">Password</label>
               </div>
+              <div id="password-validate"></div>
+
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.password_confirm} error={errors.password_confirm} id="password_confirm" type="password"/>
                 <label htmlFor="password_confirm">Confirm Password</label>
               </div>
-              <div className="error-validate"></div>
+              <div id="error-validate"></div>
               {/* <h3 className="error-validate"></h3> */}
               {/* <div>
                 {
@@ -129,4 +138,4 @@ class Register extends Component {
     );
   }
 }
-export default Register;
+export default SingUpUser;

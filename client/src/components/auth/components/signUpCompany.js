@@ -28,7 +28,7 @@ class SignUpCompany extends Component {
       }
     };
     this.baseState=this.state;
-    console.log(window.location.href)
+    console.log(window.location.href);
   }
   
   onChange = e => {
@@ -63,14 +63,13 @@ class SignUpCompany extends Component {
     this.state.errors= handleValidation(newUser, true)[1];
     console.log("Errors");
     console.log(this.state.errors);
-    // this.setState(this.baseState);
+    
     reactDOM.render(this.state.errors.companies, document.getElementById('company-validate'));
     reactDOM.render(this.state.errors.name, document.getElementById('name-validate'));
     reactDOM.render(this.state.errors.email, document.getElementById('email-validate'));
     reactDOM.render(this.state.errors.password, document.getElementById('password-validate'));
     reactDOM.render(this.state.errors.password_confirm, document.getElementById('error-validate'));
-    // this.setState();
-
+    
 }    
   };
 

@@ -8,6 +8,15 @@ export default function handleValidation(newUser, isCompany){
     let email=newUser.email;
     let password=newUser.password;
     let password_confirm=newUser.password_confirm;
+
+    if(isCompany){
+       console.log("Is Company = TRUE");
+    }
+    else{
+      console.log("Is Company = FALSE");
+   }
+
+
     if(isCompany){
     //Company
       // if(!company){

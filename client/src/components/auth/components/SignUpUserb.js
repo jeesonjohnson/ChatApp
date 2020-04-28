@@ -6,7 +6,7 @@ import '../Auth.css';
 import BackButton from './signUpBackButton.js';
 import handleValidation from './validation.js';
 
-class SignUpUser extends Component {
+class SignUpUserBak extends Component {
   constructor() {
     super();
     this.state = {
@@ -59,7 +59,7 @@ class SignUpUser extends Component {
       })
       console.log("Valid Created")
   }else{
-    this.state.errors= handleValidation(newUser, true)[1];
+    this.state.errors= handleValidation(newUser, false)[1];
     console.log("Errors");
     console.log(this.state.errors);
     this.setState();
@@ -119,4 +119,4 @@ class SignUpUser extends Component {
   }
 }
 
-export default SignUpUser;
+export default SignUpUserBak;
