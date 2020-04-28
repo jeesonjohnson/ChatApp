@@ -58,6 +58,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       password: req.body.newUser.password,
       password_confirm: req.body.newUser.password_confirm
     });
+
   } catch (_) {
     return next(
       new AppError(
@@ -88,6 +89,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       newUser.companies = [newCompany.id];
       // Creation in company, must be attributed to company name already taken
     } catch (err) {
+      console.log(newUser);
       await User.deleteOne(newUser);
       return next(new AppError("Company name is already taken", 500));
     }

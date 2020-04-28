@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from 'axios';
 import '../Auth.css';
 import BackButton from './signUpBackButton.js';
+import handleValidation from './validation.js';
 
 class SignUpCompany extends Component {
   constructor() {
@@ -15,7 +16,15 @@ class SignUpCompany extends Component {
       email: "",
       password: "",
       password_confirm: "",
-      errors: {}
+      errors: {
+        companies: '',
+        avatar: '',
+        owner: '',
+        name: '',
+        email: '',
+        password: '',
+        password_confirm: '',
+      }
     };
     console.log(window.location.href)
   }
@@ -23,7 +32,7 @@ class SignUpCompany extends Component {
   onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
   };
-  
+
   onSubmit = e => {
     e.preventDefault();
     
@@ -38,14 +47,41 @@ class SignUpCompany extends Component {
     };
 
     console.log(newUser);
-
-    axios.post('/users/signup', {newUser})
-    .then(res => {
-
-      console.log(res.data.status);
-      console.log(res.data.token);
-    })
+  
+    if( handleValidation(newUser, true)[0]){
+      // if( this.handleValidation(newUser, true)){
+  
+    // if( this.handleValidation(newUser)){
+      axios.post('/users/signup', {newUser})
+      .then(res => {
+        console.log(res.data.status)
+        if(res.data.status === "success"){
+          window.location.href = '/login'
+        }
+      })
+      console.log("Valid Created")
+  }else{
+    // this.state.errors && <h3 className="error-validate"> { this.state.errors } </h3> 
+    // <h3 className="error-validate"> { this.state.errors } </h3> 
+    // console.log(res.data.status)
+    this.state.errors= handleValidation(newUser, true)[1];
+    alert(this.state.errors);
+    console.log("Errors");
+    console.log(this.state.errors);
+  }    
+  // }    
+      
+      // };
   };
+
+    
+  //   axios.post('/users/signup', {newUser})
+  //   .then(res => {
+
+  //     console.log(res.data.status);
+  //     console.log(res.data.token);
+  //   })
+  // };
 
   render() {
     const { errors } = this.state;
