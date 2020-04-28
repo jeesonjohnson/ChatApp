@@ -6,13 +6,13 @@ import '../Auth.css';
 import BackButton from './signUpBackButton.js';
 import handleValidation from './validation.js';
 
-class Register extends Component {
+class SignUpUser extends Component {
   constructor() {
     super();
     this.state = {
-      companies: [],
       avatar: "",
-      owner: false,
+      company_name: "",
+      owner: true,
       name: "",
       email: "",
       password: "",
@@ -27,27 +27,29 @@ class Register extends Component {
         password_confirm: '',
       }
     };
+    console.log(window.location.href)
   }
   
   onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
   };
-  
 
-  
   onSubmit = e => {
     e.preventDefault();
+    
     const newUser = {
-      companies: this.state.companies, required:true,
-      avatar: this.state.avatar, required:true,
-      owner: this.state.owner,required:true,
-      name: this.state.name,required:true,
-      email: this.state.email,required:true,
-      password: this.state.password,required:true,
-      password_confirm: this.state.password_confirm,required:true,
-    };
+        companies: this.state.companies, required:true,
+        avatar: this.state.avatar, required:true,
+        owner: this.state.owner,required:true,
+        name: this.state.name,required:true,
+        email: this.state.email,required:true,
+        password: this.state.password,required:true,
+        password_confirm: this.state.password_confirm,required:true,
+      };
+      
+    console.log(newUser);
+  
     if( handleValidation(newUser, false)[0]){
-      // if( this.handleValidation(newUser, false)){
       axios.post('/users/signup', {newUser})
       .then(res => {
         console.log(res.data.status)
@@ -58,75 +60,63 @@ class Register extends Component {
       console.log("Valid Created")
   }else{
     this.state.errors= handleValidation(newUser, true)[1];
-
-    console.log("Invalid");
+    console.log("Errors");
+    console.log(this.state.errors);
+    this.setState();
+  //  reactDOM.render(this.state.errors.companies, document.getElementById('company-validate'));
     reactDOM.render(this.state.errors.name, document.getElementById('name-validate'));
     reactDOM.render(this.state.errors.email, document.getElementById('email-validate'));
     reactDOM.render(this.state.errors.password, document.getElementById('password-validate'));
     reactDOM.render(this.state.errors.password_confirm, document.getElementById('error-validate'));
-  //   // <h3 className="error-validate"> { this.state.errors } </h3> 
-  //   // console.log(res.data.status)
-  //   this.state.errors= handleValidation(newUser, false)[1];
-  //   // {this.state.errors && <div className="error-validate"> { this.state.errors }</div> };
-  //   // <div className="error-validate" value={this.state.errors }></div> ;
-  //   alert(this.state.errors);
-  //   console.log("Errors");
-  //   console.log(this.state.errors);
-  // }    
-      
-      };
+    this.setState();
+
+}    
   };
-  
+
   render() {
     const { errors } = this.state;
     return (
-      <div id="form" className="container">
+      <div id="form"  className="container">
         <div className="row">
           <div className="col s8 offset-s2">
             <BackButton />
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-                <h4 style={{ letterSpacing:"0.5px"}}>
-                    Register A User Account
-                </h4>
-              <p className="grey-text text-darken-1">Already have an account? <Link to="/login">Log in</Link></p>
+              <h4 style={{ letterSpacing:"0.5px", paddingBottom: 0}}>
+                Register A Company Account
+              </h4>
+              <p className="grey-text text-darken-1" id="">Already have an account? <Link to="/login">Log in</Link></p>
             </div>
             <form noValidate onSubmit={this.onSubmit}>
-              <div className="input-field col s12">
-                <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text"/>
+                <div className="input-field col s12">
+                 <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text"/>
                 <label htmlFor="name">Name</label>
               </div>
+              <div id="name-validate"></div>
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.email} error={errors.email} id="email" type="email"/>
                 <label htmlFor="email">Email</label>
               </div>
+              <div id="email-validate"></div>
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.password} error={errors.password} id="password" type="password"/>
                 <label htmlFor="password">Password</label>
               </div>
+              <div id="password-validate"></div>
+
               <div className="input-field col s12">
                 <input onChange={this.onChange} value={this.state.password_confirm} error={errors.password_confirm} id="password_confirm" type="password"/>
                 <label htmlFor="password_confirm">Confirm Password</label>
               </div>
-              <div className="error-validate"></div>
-              {/* <h3 className="error-validate"></h3> */}
-              {/* <div>
-                {
-                    this.state.errors.map((message) => {
-                        return (<div>{message}</div>);
-                    })
-                }
-              </div> */}
-              {/* <HelpBlock> */}
-                {/* <p className="text-danger">{this.state.errors}</p> */}
-              {/* </HelpBlock> */}
+              <div id="error-validate"></div>
               <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                 <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} type="submit" className="btn btn-large waves-effect waves-light hoverable blue accent-3">Sign up</button>
               </div>
             </form>
-          </div>
+         </div>
         </div>
       </div>
     );
   }
 }
-export default Register;
+
+export default SignUpUser;
