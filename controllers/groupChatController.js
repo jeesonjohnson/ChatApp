@@ -51,7 +51,7 @@ exports.creatGroupChat = catchAsync(async (req, res, next) => {
 
 // ######## Return a  given group chat given its id ############
 exports.getAGivenGroupChat = catchAsync(async (req, res, next) => {
-  var groupChatDetails = await GroupChat.findById(req.query.group_id);
+ var groupChatDetails = await GroupChat.findById(req.query.group_id);
   res.status(200).json({
     status: "success",
     data: groupChatDetails

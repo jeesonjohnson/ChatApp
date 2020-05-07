@@ -47,33 +47,6 @@ exports.createWorkspace = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUserWorkspacesFromCompany = catchAsync(async (req, res, next) => {
-  var companyWorkspaceData = {}
-  //Iterate through all companies user is in
-  for(var companyIndex = 0; companyIndex < req.user.companies.length; companyIndex++){
-    var company = await Company.findById(req.user.companies[companyIndex])
-    var workspaces = []
-
-    //Iterate through workspaces of a company
-    for(var workspaceIndex = 0; workspaceIndex < company.workspaces.length; workspaceIndex++){
-      var workspace = await Workspace.findById(company.workspaces[workspaceIndex])
-      
-      //Check if user is in current workspace     
-     for(var userIndex = 0; userIndex < workspace.users.length; userIndex++){
-      if(workspace.users[userIndex] == req.user._id){
-        workspaces.push(workspace)
-        companyWorkspaceData[company.name] = workspaces 
-      }
-     }
-    }
-  }
-  
-  res.status(200).json({
-    status: "success",
-    data: companyWorkspaceData
-  });
-});
-
 //Gets all associated workspaces in a company that are associated with a given user
 exports.getUserCompanyWorkspaces = catchAsync(async (req, res, next) => {
   //If the user is the owner then all the workspaces are presented to the owner
@@ -107,8 +80,6 @@ exports.getUserCompanyWorkspaces = catchAsync(async (req, res, next) => {
       }
     }
   }
-
-  
 
   res.status(200).json({
     status: "success",
@@ -189,6 +160,7 @@ exports.deleteUserFromWorkspace = catchAsync(async (req, res, next) => {
 
 exports.getAGivenWorkspace = catchAsync(async (req, res, next) => {
   var workspaceDetails = await Workspace.findById(req.params.id);
+  
   res.status(200).json({
     status: "success",
     data: {

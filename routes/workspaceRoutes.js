@@ -10,7 +10,7 @@ router.route("/all").get(workspaceController.getAllWorkspaces); //Should be dele
 router
   .route("/")
   .post(authController.protect, workspaceController.createWorkspace)
-  .get(authController.protect, workspaceController.getUserWorkspacesFromCompany);
+  .get(authController.protect, workspaceController.getUserCompanyWorkspaces);
 
   //Methods regarding the user association with a given workspace.
 router

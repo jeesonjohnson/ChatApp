@@ -40,24 +40,26 @@ const createSendToken = (user, statusCode, req, res) => {
   Method for registeration of a given user account, appropriate function if the user is as an admin as well. 
 */
 exports.signup = catchAsync(async (req, res, next) => {
+  console.log(res.body);
   //Create new user
-  if (req.body.newUser.password != req.body.newUser.password_confirm) {
+  if (req.body.password != req.body.password_confirm) {
     return next(new AppError("The passwords do not match", 500));
   }
-  if (req.body.newUser.password.length < 8) {
+  if (req.body.password.length < 8) {
     return next(new AppError("Password must at least be 8 characters", 500));
   }
   var newUser;
   try {
     newUser = await User.create({
-      avatar: req.body.newUser.avatar,
-      companies: req.body.newUser.companies,
-      owner: req.body.newUser.owner,
-      name: req.body.newUser.name,
-      email: req.body.newUser.email,
-      password: req.body.newUser.password,
-      password_confirm: req.body.newUser.password_confirm
+      avatar: req.body.avatar,
+      companies: req.body.companies,
+      owner: req.body.owner,
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      password_confirm: req.body.password_confirm
     });
+
   } catch (_) {
     return next(
       new AppError(
@@ -72,8 +74,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     //Implemented associated validation to the creation of a user account.
     try {
       newCompany = await company.create({
-        name: req.body.newUser.company_name,
-        avatar: req.body.newUser.avatar,
+        name: req.body.company_name,
+        avatar: req.body.avatar,
         admins: [newUser.id],
         users: [newUser.id],
         ownerID: newUser.id,
@@ -88,6 +90,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       newUser.companies = [newCompany.id];
       // Creation in company, must be attributed to company name already taken
     } catch (err) {
+      console.log(newUser);
       await User.deleteOne(newUser);
       return next(new AppError("Company name is already taken", 500));
     }

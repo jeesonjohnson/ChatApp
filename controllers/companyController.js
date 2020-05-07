@@ -15,6 +15,7 @@ exports.getAllCompanies = catchAsync(async (req, res, next) => {
 // Finds details about a given company, provided the company id is given
 exports.getCompany = catchAsync(async (req, res, next) => {
   const companyData = await company.findById(req.params.id);
+  
   res.status(200).json({
     status: "success",
     data: {
@@ -29,11 +30,10 @@ exports.getAllUserCompanies = catchAsync(async (req, res, next) => {
   for (var x = 0; x < req.user.companies.length; x++) {
     companies.push(await company.findById(req.user.companies[x]));
   }
-  return companies;
-  // res.status(200).json({
-    // status: "success",
-    // data: companies
-  // });
+  res.status(200).json({
+    status: "success",
+    data: companies
+  });
 });
 
 //Delete a given user form  a company provided the company id and user id
