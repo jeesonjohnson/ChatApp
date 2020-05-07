@@ -2,29 +2,44 @@ import { createStore } from 'redux';
 import { STATES } from 'mongoose';
 
 const initalState = {
+    user: {
+        name: ""
+    },
+    selectedPanel: "Calendar",
     selectedCompany: "",
     selectedWorkspace: "",
-    companyNames: [],
-    workspaceNames: []
+
+    companies: [],
+    workspaces: [],
+
+    groupChats: []
 }
 
 const reducer = (state = initalState, action) => {
     switch (action.type) {
-        case "COMPANY_NAMES_LOADED":
+        case "USER_LOGGED_IN":
             return Object.assign({}, state, {
-                companyNames: action.data.companies
+                user: action.data.user
             })
-        case "COMPANY_SELECTED":
+        case "COMPANIES_LOADED":
             return Object.assign({}, state, {
-                selectedCompany: action.data.selectedCompany
+                companies: action.data.companies,
+                selectedCompany: action.data.selectedCompany,
+                workspaces: action.data.workspaces,
+                selectedWorkspace: action.data.selectedWorkspace
             })
-        case "WORKSPACE_NAMES_LOADED":
+        case "WORKSPACES_LOADED":
             return Object.assign({}, state, {
-                workspaceNames: action.data.workspaces
+                workspaces: action.data.workspaces,
+                selectedWorkspace: action.data.selectedWorkspace
             })
         case "WORKSPACE_SELECTED":
-            return Object.assign({}, state, {
+            return Object.assign({}, state,{
                 selectedWorkspace: action.data.selectedWorkspace
+            })
+        case "SELECTED_PANEL":
+            return Object.assign({}, state, {
+                selectedPanel: action.data.selectedPanel
             })
         default:
             return state;

@@ -47,7 +47,7 @@ class Navbar extends Component {
     var button2 = null;
 
     if(loggedIn) { 
-      button1 = <li><a >{user}</a></li>
+      button1 = <li><a href="/dashboard">{user}</a></li>
       button2 = <li><a onClick={this.logout.bind(this)}>Log out</a></li> 
     }
     else {
@@ -64,7 +64,6 @@ class Navbar extends Component {
                     <li className="left-navbar-button"><a href="/">Why Oogwai?</a></li>
                     <li className="left-navbar-button"><a href="/pricing">Pricing</a></li>
                     <li className="left-navbar-button"><a href="/resources">Resources</a></li>
-                    <li className="left-navbar-button"><a href="/users">Users(DELETE)</a></li>
                 </ul>
                 
                 <ul id="right-navbar-list" className="right hide-on-med-and-down">

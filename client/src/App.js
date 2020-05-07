@@ -1,17 +1,14 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import './App.css';
 import Home from "./components/home/Home.js";
 import Pricing from "./components/home/Pricing.js";
 import Resources from "./components/home/Resources.js";
 import SignUp from "./components/auth/signUp.js";
 import Login from "./components/auth/Login.js";
-
-import Users from "./components/Users.js";
 import Dashboard from "./components/dashboard/Dashboard.js";
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-
 
 class App extends Component {
   render() {
@@ -53,12 +50,11 @@ class App extends Component {
             {//Logout 
             }
 
-            <Route path="/users" exact strict component={Users}/>
-
           </div>
           <div id="#app-dashboard">
-            <Route path="/dashboard" exact strict component={Dashboard}/>
+            <Route exact path="/dashboard" component={Dashboard}/>
           </div>
+          
         </Router>
       </ThemeProvider>
     );
