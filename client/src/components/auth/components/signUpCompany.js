@@ -1,8 +1,10 @@
 import React, { Component } from "react";
+import reactDOM from 'react-dom';
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import '../Auth.css';
 import BackButton from './signUpBackButton.js';
+import handleValidation from './validation.js';
 
 class SignUpCompany extends Component {
   constructor() {
@@ -15,9 +17,18 @@ class SignUpCompany extends Component {
       email: "",
       password: "",
       password_confirm: "",
-      errors: {}
+      errors: {
+        companies: '',
+        avatar: '',
+        owner: '',
+        name: '',
+        email: '',
+        password: '',
+        password_confirm: '',
+      }
     };
-    console.log(window.location.href)
+    this.baseState = this.state;
+    console.log(window.location.href);
   }
   
   onChange = e => {
@@ -39,13 +50,27 @@ class SignUpCompany extends Component {
 
     console.log(newUser);
 
-    axios.post('/users/signup', {newUser})
-    .then(res => {
-
-      console.log(res.data.status);
-      console.log(res.data.token);
-    })
-  };
+    if( handleValidation(newUser, true)[0]){
+      axios.post('/users/signup', {newUser})
+      .then(res => {
+        console.log(res.data.status)
+        if(res.data.status === "success"){
+          window.location.href = '/login'
+        }
+      })
+      console.log("Valid Created")
+  }
+  else{
+    this.state.errors = handleValidation(newUser, true)[1];
+    console.log("Errors");
+    console.log(this.state.errors);
+    reactDOM.render(this.state.errors.companies, document.getElementById('company-validate'));
+    reactDOM.render(this.state.errors.name, document.getElementById('name-validate'));
+    reactDOM.render(this.state.errors.email, document.getElementById('email-validate'));
+    reactDOM.render(this.state.errors.password, document.getElementById('password-validate'));
+    reactDOM.render(this.state.errors.password_confirm, document.getElementById('error-validate'));
+  }    
+};
 
   render() {
     const { errors } = this.state;
@@ -65,25 +90,31 @@ class SignUpCompany extends Component {
                     <input onChange={this.onChange} value={this.state.company_name} error={errors.company_name} id="company_name" type="text"/>
                     <label htmlFor="company_name">Company Name</label>
                 </div>
+                <div id="company-validate"></div>
                 <div className="input-field col s12">
-                    <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text"/>
-                    <label htmlFor="name">User Name</label>
-                </div>
-                <div className="input-field col s12">
-                    <input onChange={this.onChange} value={this.state.email} error={errors.email} id="email" type="email"/>
-                    <label htmlFor="email">Email</label>
-                </div>
-                <div className="input-field col s12">
-                    <input onChange={this.onChange} value={this.state.password} error={errors.password} id="password" type="password"/>
-                    <label htmlFor="password">Password</label>
-                </div>
-                <div className="input-field col s12">
-                    <input onChange={this.onChange} value={this.state.password_confirm} error={errors.password_confirm} id="password_confirm" type="password"/>
-                    <label htmlFor="password_confirm">Confirm Password</label>
-                </div>
-                <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-                    <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "0"}} type="submit" className="btn btn-large waves-effect waves-light hoverable blue accent-3">Sign up</button>
-                </div>
+                <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text"/>
+                <label htmlFor="name">Name</label>
+              </div>
+              <div id="name-validate"></div>
+              <div className="input-field col s12">
+                <input onChange={this.onChange} value={this.state.email} error={errors.email} id="email" type="email"/>
+                <label htmlFor="email">Email</label>
+              </div>
+              <div id="email-validate"></div>
+              <div className="input-field col s12">
+                <input onChange={this.onChange} value={this.state.password} error={errors.password} id="password" type="password"/>
+                <label htmlFor="password">Password</label>
+              </div>
+              <div id="password-validate"></div>
+
+              <div className="input-field col s12">
+                <input onChange={this.onChange} value={this.state.password_confirm} error={errors.password_confirm} id="password_confirm" type="password"/>
+                <label htmlFor="password_confirm">Confirm Password</label>
+              </div>
+              <div id="error-validate"></div>
+              <div className="col s12" style={{ paddingLeft: "11.250px" }}>
+                <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} type="submit" className="btn btn-large waves-effect waves-light hoverable blue accent-3">Sign up</button>
+              </div>              
             </form>
           </div>
         </div>

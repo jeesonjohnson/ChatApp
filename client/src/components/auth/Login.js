@@ -4,6 +4,8 @@ import axios from 'axios';
 import './Auth.css';
 import Navbar from "../layout/Navbar.js";
 import Footer from "../layout/Footer.js";
+import { connect } from 'react-redux';
+import store from "./../../store";
 
 class Login extends Component {
   constructor() {
@@ -29,13 +31,12 @@ class Login extends Component {
     axios.post('/users/login', {userData})
     .then(res => {
       //Check response for if login was successful
-      
-      if(res.data.status === "success"){
+      if(res.data.status === res.data.data.user.email){
+        store.dispatch({ type: 'USER_LOGGED_IN', data: { user: res.data.data.user }})    
         window.location.href = '/dashboard'
       }
     })
   };
-  
   
   render() {
     const { errors } = this.state;
@@ -72,4 +73,14 @@ class Login extends Component {
   }
 }
 
-export default Login;
+const mapStateToProps = state => {
+  return {user: state.user}
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login)
