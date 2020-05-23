@@ -1,11 +1,13 @@
 import axios from 'axios';
 import store from '../../store'
+import {axiosGet} from '../../helpers/jwt'
 
 /*
     COMPANIES
 */
 export function getCompanies(company_id){ 
-    axios.get('/companies/')
+    // axios.get('/companies/')
+    axiosGet("/companies/")
     .then(res => {
         //Set Companies as first company on load, and load workspaces with first one set as selected
         if(company_id === ""){
