@@ -8,10 +8,8 @@ const initalState = {
     selectedPanel: "Calendar",
     selectedCompany: "",
     selectedWorkspace: "",
-
     companies: [],
     workspaces: [],
-
     groupChats: []
 }
 
