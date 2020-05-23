@@ -12,6 +12,9 @@ const initalState = {
     companies: [],
     workspaces: [],
 
+    taskCollectionIDs: [],
+    workspaceTaskCollections: [],
+
     groupChats: []
 }
 
@@ -41,6 +44,21 @@ const reducer = (state = initalState, action) => {
             return Object.assign({}, state, {
                 selectedPanel: action.data.selectedPanel
             })
+        case "COLLECTIONS_LOADED":
+            return Object.assign({}, state,{
+                taskCollectionIDs: action.data.taskCollectionIDs,
+                workspaceTaskCollections: action.data.workspaceTaskCollections
+            })
+        case "COLLECTION_ADDED":
+            return Object.assign({}, state,{
+                taskCollectionIDs: [state.taskCollectionIDs, action.data.collectionID]
+
+            })
+        case "COLLECTION_DELETED":
+            return Object.assign({}, state,{
+                taskCollectionIDs: action.data.taskCollectionIDs,
+                workspaceTaskCollections: action.data.workspaceTaskCollections
+            })        
         default:
             return state;
     }

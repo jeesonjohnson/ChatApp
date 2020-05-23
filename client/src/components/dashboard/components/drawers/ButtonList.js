@@ -13,7 +13,7 @@ import Avatar from '@material-ui/core/Avatar';
 import AddCircle from '@material-ui/icons/Add';
 import { isUndefined, isNullOrUndefined } from 'util';
 
-import { getCompanies } from '../../DataLoading.js';
+import { getCompanies, getTaskCollections } from '../../DataLoading.js';
 
 //Takes a sentence and returns the first letter of each word as one word
 function getAcronym(name) {
@@ -112,7 +112,8 @@ class ButtonList extends Component {
       //Set active workspace button style
       e.currentTarget.className=`${e.currentTarget.className} selected_company`   
       
-      store.dispatch({ type: 'WORKSPACE_SELECTED', data: { selectedWorkspace: e.currentTarget.id }})      
+      store.dispatch({ type: 'WORKSPACE_SELECTED', data: { selectedWorkspace: e.currentTarget.id }})     
+    //   getTaskCollections() 
     }
     
     render() {
@@ -138,7 +139,7 @@ class ButtonList extends Component {
   }
 
 const mapStateToProps = state => {
-  return {selectedCompany: state.selectedCompany, companies: state.companies, workspaces: state.workspaces, selectedWorkspace: state.selectedWorkspace}
+  return {selectedCompany: state.selectedCompany, companies: state.companies, workspaces: state.workspaces, selectedWorkspace: state.selectedWorkspace, taskCollectionIDs: state.taskCollectionIDs, workspaceTaskCollections: state.workspaceTaskCollections}
 }
 
 const mapDispatchToProps = dispatch => {

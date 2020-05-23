@@ -1,6 +1,9 @@
 import axios from 'axios';
 import store from '../../store'
 
+/*
+    COMPANIES
+*/
 export function getCompanies(company_id){ 
     axios.get('/companies/')
     .then(res => {
@@ -21,6 +24,9 @@ export function getCompanies(company_id){
     })
 }    
 
+/*
+    WORKSPACES
+*/
 export function getWorkspaces(workspace_id){
     //Sets the workspaces after the drawer has been loaded in
     if (workspace_id !== "" && workspace_id === store.getState().selectedWorkspace){
@@ -33,8 +39,47 @@ export function getWorkspaces(workspace_id){
                 .then(res => {                    
                     workspacesList.push(res.data.data.workspaceDetails)
                     store.dispatch({ type: 'WORKSPACES_LOADED', data: { workspaces: [].concat(workspacesList), selectedWorkspace: workspacesList[0]._id } })
+                    getTaskCollections()
                 })
             }  
         })
+    }
+}
+
+/*
+    TASK COLLECTIONS
+*/
+function updateTaskCollections(){
+    for(var i in store.getState().workspaces){
+        if(store.getState().workspaces[i]._id === store.getState().selectedWorkspace){
+            return store.getState().workspaces[i].task_collections
+        }
+    }
+}
+
+export function getTaskCollections(){
+    if( updateTaskCollections() != undefined){
+        for(var i in updateTaskCollections()){ 
+            var taskCollections = []
+            
+            axios.get(`/todocollection/`, {params: {collection_id : updateTaskCollections()[i]} } )
+            .then(res => {
+                var taskCollection = {
+                    _id: res.data.data.collectionDetails._id,
+                    title: res.data.data.collectionDetails.title,
+                    to_do_elements: res.data.data.collectionDetails.to_do_elements 
+                }     
+                taskCollections.push(taskCollection)
+
+                if(taskCollection._id === updateTaskCollections()[updateTaskCollections().length-1]){
+                    store.dispatch({ type: 'COLLECTIONS_LOADED', data: { taskCollectionIDs: updateTaskCollections(), workspaceTaskCollections: taskCollections } })
+                    
+                }
+            })
+            .catch(function (error){
+                console.error(error);
+
+            })
+        }
     }
 }
