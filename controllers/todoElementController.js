@@ -45,7 +45,7 @@ exports.createTodo = catchAsync(async (req, res, next) => {
 
 //Returns a given todo element provided the correct id
 exports.getAGivenTodo = catchAsync(async (req, res, next) => {
-  var todoDetails = await Collection.findById(req.query.todo_id);
+  var todoDetails = await TodoElement.findById(req.query.todo_id);
   res.status(200).json({
     status: "success",
     data: {

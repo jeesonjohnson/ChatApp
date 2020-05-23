@@ -6,20 +6,10 @@ const Collection = require("./../models/ToDoCollection");
 const TodoElement = require("./../models/ToDoElement");
 const AppError = require("./../utils/appError");
 
-//SHould be deleted on production
-exports.getAllCollections = catchAsync(async (req, res, next) => {
-  const collectionData = await Collection.find();
-  res.status(200).json({
-    status: "success",
-    results: collectionData.length,
-    data: collectionData
-  });
-});
-
 //Create a new todocollection
 exports.createCollection = catchAsync(async (req, res, next) => {
   var workspaceDetails = await Workspace.findById(req.body.workspaceid);
-  console.log(workspaceDetails);
+  // console.log(workspaceDetails);
   //Only an admin should be able to create a workspace
   if (!workspaceDetails.users.includes(req.user.id)) {
     return next(
@@ -48,6 +38,7 @@ exports.createCollection = catchAsync(async (req, res, next) => {
 //Returns a given collection provided the correct id
 exports.getAGivenCollection = catchAsync(async (req, res, next) => {
   var collectionDetails = await Collection.findById(req.query.collection_id);
+
   res.status(200).json({
     status: "success",
     data: {

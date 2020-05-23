@@ -32,6 +32,8 @@ import EditUserModal from './components/modals/editUserModal.js';
 import WorkspaceMenu from './components/menus/menu.js';
 import { getCompanies } from './DataLoading.js';
 
+import ToDoPage from './toDoList/toDoPage.js';
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -206,7 +208,7 @@ function Dashboard() {
         <Grid container direction="column" justify="space-between" alignItems="stretch" md={2} spacing={0} style={{float:"left"}}>
 
             <Grid item md={12} >
-              <div style={{height:"10vh",backgroundColor:"#2f3136"}} className="valign-wrapper center-align">
+              <div style={{ height:"10vh",backgroundColor:"#2f3136"}} className="valign-wrapper center-align">
                 <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                   {selectedPanel}
                 </Typography>  
@@ -223,7 +225,7 @@ function Dashboard() {
             </Grid>
 
             <Grid item md={12} >
-              <div style={{height:"10vh", backgroundColor:"#202225"}} >
+              <div style={{ height:"10vh", backgroundColor:"#202225"}} >
                 <Card elevation={0} style={{backgroundColor:"#202225", shadow:"none"}}>
                     <CardHeader
                       avatar={<Avatar aria-label="avatar" className={classes.avatar}>{user.name[0]}</Avatar>}
@@ -242,17 +244,15 @@ function Dashboard() {
         <Grid container direction="column" justify="space-between" alignItems="stretch" md={10} spacing={0} style={{}}>
 
             <Grid item md={12} >
-              <div style={{}} >
-                <div style={{backgroundColor:"#2f3136", width:"100%", height:"10vh", paddingTop:"2vh", paddingBottom:"2vh"}}>
-                  <IconButton style={{float:"right", marginRight:"10px"}} type="submit" aria-label="search">
-                    <SearchIcon />
-                  </IconButton>
-                  <InputBase style={{width:"25%", float:"right"}}
-                    className={classes.input}
-                    placeholder="Search"
-                    inputProps={{ 'aria-label': 'search' }}
-                  />
-                </div>
+              <div style={{backgroundColor:"#2f3136", width:"100%", maxHeight:75, height:"10vh", paddingTop:"2vh", paddingBottom:"2vh"}}>
+                <IconButton style={{float:"right", marginRight:"10px"}} type="submit" aria-label="search">
+                  <SearchIcon />
+                </IconButton>
+                <InputBase style={{width:"25%", float:"right"}}
+                  className={classes.input}
+                  placeholder="Search"
+                  inputProps={{ 'aria-label': 'search' }}
+                />
               </div>
             </Grid>
 
@@ -288,37 +288,10 @@ function Dashboard() {
                     : null}
   
                   {store.getState().selectedPanel === "Tasks" ? 
-                    <Grid item xs={12} md={8} lg={9}>
-                      <Paper className={fixedHeightPaper}>
-                        {/* <Tasks /> */}
-                        {"Tasks"}
-                      </Paper>
+                    <Grid item xs={12} md={12} lg={12}>
+                      <ToDoPage/>
                     </Grid>
                     : null}
-
-                    {/* Chart
-                    <Grid item xs={12} md={8} lg={9}>
-                      <Paper className={fixedHeightPaper}>
-                        {/* <Chart /> */}
-                        {/* {"1"} */}
-                      {/* </Paper> */}
-                    {/* </Grid> */}
-
-                    {/* Recent Deposits */}
-                    {/* <Grid item xs={12} md={4} lg={3}> */}
-                      {/* <Paper className={fixedHeightPaper}> */}
-                        {/* <Deposits /> */}
-                        {/* {"2"} */}
-                      {/* </Paper> */}
-                    {/* </Grid> */}
-                    
-                    {/* Recent Orders */}
-                    {/* <Grid item xs={12}> */}
-                      {/* <Paper className={classes.paper}> */}
-                        {/* <Orders /> */}
-                        {/* {"3"} */}
-                      {/* </Paper> */}
-                    {/* </Grid> */} 
 
                   </Grid>
                 </Container>

@@ -10,7 +10,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import Button from '@material-ui/core/Button';
 
+import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -62,12 +64,28 @@ function EditUserModal() {
             <div className={classes.paper}>
               <Typography component="h1" variant="h5" color="inherit" noWrap>Account Details</Typography>
               <Divider />
-              <TextField id="standard-basic" label="Name" />
-              <TextField id="standard-basic" label="Email" />
-              <TextField id="standard-basic" label="Current Password" />
-              <TextField id="standard-basic" label="New Password" />
-              <TextField id="standard-basic" label="Confirm Password" />
+              <Grid container >
+                <Grid container item xs={12} md={12} lg={12}>
+                  <TextField id="standard-basic" label="Name" />  
+                  <TextField id="standard-basic" label="Email" />
+                </Grid>
 
+                <Grid item xs={12} md={8} lg={9}>
+                  <TextField id="standard-basic" label="Current Password" />
+                  <TextField id="standard-basic" label="New Password" />
+                  <TextField id="standard-basic" label="Confirm Password" />
+                </Grid>
+
+                <Grid item xs={12} md={8} lg={9}>
+                  <Button variant="contained" color="secondary">Confirm</Button>
+                </Grid>
+
+                <Grid item xs={12} md={8} lg={9}>
+                  <Divider style={{marginTop:20, marginBottom:20}}/>
+                  <TextField id="standard-basic" label="NAME" />
+                  <Button variant="contained" style={{backgroundColor:"#af0000", color:"#ffffff"}}>Delete Account</Button>
+                </Grid>
+              </Grid>
             </div>
           </Fade>
         </Modal>
