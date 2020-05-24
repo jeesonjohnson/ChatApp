@@ -49,7 +49,7 @@ function WorkspaceButtonList() {
   const classes = useStyles();
 
   const workspaceID = useSelector((state) => state.selectedWorkspace);
-
+  
   //Below just stores all workspace data as per Backend response
   const workspaceData = useSelector((state) => state.allSelectedWorkspaceData);
 
@@ -63,7 +63,6 @@ function WorkspaceButtonList() {
 
   useEffect( () => {
     loadGroupChats()
-
   }, [store.getState().selectedWorkspace, workspaceData])
 
   const handleClick = (e) => {
@@ -79,13 +78,16 @@ function WorkspaceButtonList() {
   };
   
   //Loads the data for groupchats
-  const loadGroupChats = () => {
+  const loadGroupChats = async () => {
     if(workspaceData.group_chats != undefined){ //Checks if the groupchats were loaded in
       if(workspaceData.group_chats.length > 0){ //Checks if there are any groupchats for the workspace
+        var a = []
         workspaceData.group_chats.map((group_chat) => (
-          group_chats_names.push({title: group_chat.title, _id: group_chat._id}) //Adds each groupchat with title and id to be used for the group button (NOTE: _id is stored the groupchat icon)
+          a.push({title: group_chat.title, _id: group_chat._id}) //Adds each groupchat with title and id to be used for the group button (NOTE: _id is stored the groupchat icon)
         ))
+        setGroupChatsNames(a)
       }
+      else {setGroupChatsNames([])}
     }
   };
 
@@ -165,9 +167,9 @@ function WorkspaceButtonList() {
         {group_chats_names === [] || group_chats_names === undefined ? //Check if there are any groupchats to load
           null
           :
-          group_chats_names.map((group_chat, index) => (
-            loadButton(group_chat.title, <GroupIcon id={group_chat._id}/>, true) //LoadButton needs three bits of data (1. Button text, 2. Button Icon, 3. Boolean for whether the button is nested inside the list)
-          ))
+            group_chats_names.map((group_chat, index) => (
+                loadButton(group_chat.title, <GroupIcon id={group_chat._id}/>, true)) //LoadButton needs three bits of data (1. Button text, 2. Button Icon, 3. Boolean for whether the button is nested inside the list)
+            )
         }
       </Collapse>
 

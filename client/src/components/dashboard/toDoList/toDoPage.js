@@ -7,7 +7,6 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import ToDo from './components/toDo.js'
 import { getTaskCollections, getTaskCollectionsIDs } from '../DataLoading.js';
-import useTodoState from '../toDoList/components/useTodoState.js';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -25,13 +24,6 @@ import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-// class ToDoPage extends Component {
-
-//     async loadTaskCollections(){
-//         await this.setState({viewedWorkspace: store.getState().selectedWorkspace })
-//         await getTaskCollections()
-//         this.forceUpdate()
-//     }
 
 //     deleteTaskCollection(collection){
 //         // this.setState({ deleteModelOpen : true})
@@ -41,27 +33,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 //         document.getElementById(collection.parentNode.parentNode.parentNode.id).remove() //Deletes task collection rendered elements
 //     }
     
-
-//     addTaskCollection(key){       
-//         if(key === "Enter"){
-//             this.setState({  newCollection: ""})
-//             document.getElementById("addCollectionName").value = ""
-
-//             axios.post(`/todocollection/`, {
-//                 name: this.state.newCollection,
-//                 workspaceid: store.getState().selectedWorkspace
-//             })
-//             .then(res => {
-//                 this.loadTaskCollections()
-//             })
-//         }
-//     }
-
-//     unfocusCollection(e){
-//         e.value = ""
-//         this.setState({ newCollection: ""})
-//     }
-
 //     addTask(){
 //         //Each collection should have ADD TASK button at top
 //         /*
@@ -142,22 +113,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 //                     </div>
 //                     )
 //                 )}
-                
-//                 {this.state.newCollection === "" ? 
-//                 <TextField id="addCollectionName" size="small" onBlur={e => this.unfocusCollection(e.currentTarget)} onChange={e => this.setState({ newCollection: e.target.value })} label="Collection Name" variant="outlined" color="secondary"/>
-//                 :
-//                 <TextField id="addCollectionName" size="small" onKeyPress={e => this.addTaskCollection(e.key)} onBlur={e => this.unfocusCollection(e.currentTarget)} onChange={e => this.setState({ newCollection: e.target.value })} label="Collection Name" variant="outlined" color="secondary"/>
-//                 }
-//             </Grid>
-//         )
-//     }
-// }
 
 
-
-// //     return (
-// //     <Grid>
-// //         <div>Tester</div>
 
 // //         {/* { 
 // //         store.getState().workspaceTaskCollections.map((collection, index) => (
@@ -178,15 +135,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 // //                     {/* </Typography>
 // //                 </Paper>
                 
-// //                 <Paper style={{marginTop: 10}}>
-// //                     <Typography>
-// //                         Add Task
-// //                         <IconButton color="secondary" onClick={e => console.log(e)}>
-// //                             <PlaylistAdd/>
-// //                         </IconButton>
-// //                     </Typography>
-// //                 </Paper>
-
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -210,7 +158,9 @@ const ToDoPage = () => {
   
     const [taskCollections, setTaskCollections] = useState([])
 
-    const handleAddTaskOpen = () => {
+    const handleAddTaskOpen = (e, title) => {
+        console.log(e)
+        console.log(title)
         setAddTaskOpen(true);
       };
     
@@ -278,7 +228,7 @@ const ToDoPage = () => {
                             <CardHeader style={{paddingTop:0, paddingBottom:0}}  
                                 action={
                                     <div>
-                                        <IconButton aria-label="settings" variant="contained" onClick={handleAddTaskOpen}>
+                                        <IconButton aria-label="settings" variant="contained" id={collection._id} onClick={e => handleAddTaskOpen(e.currentTarget, collection.title)}>
                                             <PlaylistAdd style={{color: "#f1b92e"}} />
                                         </IconButton>
 

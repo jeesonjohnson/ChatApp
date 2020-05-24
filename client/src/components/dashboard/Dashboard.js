@@ -33,6 +33,7 @@ import WorkspaceMenu from './components/menus/menu.js';
 import { getCompanies } from './DataLoading.js';
 
 import ToDoPage from './toDoList/toDoPage.js';
+import Chat from '../dashboard/groupchat/Chat.js';
 
 const drawerWidth = 240;
 
@@ -258,17 +259,15 @@ function Dashboard() {
 
             <Grid item md={12} style={{overflow:"scroll"}}>
               <div style={{height:"90vh"}} >
-                {/* Calendar layout */}
-                {/* Charts layout */}
-                {/* Tasks layout */}
                 {/* General layout */}
                 {/* Announcements layout */}
                 {/* Text chat layout */}
                 {/*  */}
 
               <Container item maxWidth="lg" className={classes.container} >
-                  <Grid container spacing={3} >
+                <Grid container spacing={3} >
                     
+                  {/* Calendar layout */}
                   {store.getState().selectedPanel === "Calendar" ? 
                     <Grid item xs={12} md={8} lg={9}>
                       <Paper className={fixedHeightPaper}>
@@ -278,6 +277,7 @@ function Dashboard() {
                     </Grid>
                     : null}
 
+                  {/* Charts layout */}
                   {store.getState().selectedPanel === "Charts" ? 
                     <Grid item xs={12} md={8} lg={9}>
                       <Paper className={fixedHeightPaper}>
@@ -287,11 +287,26 @@ function Dashboard() {
                     </Grid>
                     : null}
   
+                  {/* Tasks layout */}
                   {store.getState().selectedPanel === "Tasks" ? 
                     <Grid item xs={12} md={12} lg={12} >
                       <ToDoPage/>
                     </Grid>
                     : null}
+
+                    {store.getState().selectedPanel != "Calendar" && store.getState().selectedPanel != "Charts" && store.getState().selectedPanel != "Tasks" && store.getState().allSelectedWorkspaceData != undefined ? //Checks if non-standard-defined name and there is data for the workspace
+                      store.getState().allSelectedWorkspaceData.group_chats.length > 0 ? //Checks there are group chats available
+                        store.getState().allSelectedWorkspaceData.group_chats.map((group_chat) => { //Loop through each group chat
+                          if(group_chat.title === store.getState().selectedPanel){ //Render the page if the selected panel name is the same as the current group chat being checked
+                            return(<Chat {...group_chat} />)
+                          }
+                        })
+                        :
+                        null
+                      :
+                      null
+                    //store.getState().allSelectedWorkspaceData.group_chats //Array of objects // .map((group) => if store.getState().selectedPanel === store.getState().allSelectedWorkspaceData.groupChats[i].title) 
+                    }
 
                   </Grid>
                 </Container>
