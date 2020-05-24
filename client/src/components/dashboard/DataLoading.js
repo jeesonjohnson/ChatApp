@@ -10,19 +10,24 @@ export function getCompanies(company_id){
     axiosGet("/companies/")
     .then(res => {
         //Set Companies as first company on load, and load workspaces with first one set as selected
-        if(company_id === ""){
-            store.dispatch({ type: 'COMPANIES_LOADED', data: { companies: res.data.data, selectedCompany: res.data.data[0]._id, workspaces: [], selectedWorkspace: res.data.data[0].workspaces[0] } })
-            getWorkspaces(res.data.data[0].workspaces[0])
-        }
-        //Set companies after loaded for the first time, load the first workspaces of the selected company
-        else if (company_id !== ""){
-            for(var i in store.getState().companies){
-                if(store.getState().companies[i]._id === company_id){
-                    store.dispatch({ type: 'COMPANIES_LOADED', data: { companies: res.data.data, selectedCompany: res.data.data[i]._id, workspaces: [], selectedWorkspace: res.data.data[i].workspaces[0] } })
-                    getWorkspaces(res.data.data[i].workspaces[0])
+         if(store.getState().companies != 0){
+             
+         
+            if(company_id === ""){
+                store.dispatch({ type: 'COMPANIES_LOADED', data: { companies: res.data.data, selectedCompany: res.data.data[0]._id, workspaces: [], selectedWorkspace: res.data.data[0].workspaces[0] } })
+                getWorkspaces(res.data.data[0].workspaces[0])
+            }
+            //Set companies after loaded for the first time, load the first workspaces of the selected company
+            else if (company_id !== ""){
+                for(var i in store.getState().companies){
+                    if(store.getState().companies[i]._id === company_id){
+                        store.dispatch({ type: 'COMPANIES_LOADED', data: { companies: res.data.data, selectedCompany: res.data.data[i]._id, workspaces: [], selectedWorkspace: res.data.data[i].workspaces[0] } })
+                        getWorkspaces(res.data.data[i].workspaces[0])
+                    }
                 }
             }
         }
+         
     })
 }    
 
