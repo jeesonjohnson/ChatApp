@@ -137,12 +137,10 @@ export function getTaskCollections() {
 }
 
 /*
-    Get all associated chats in a given workspace
+    Get all associated chats in a given workspace, and store to the local array value
 */
 export function getAllWorkspaceSpecificData(workspace_id) {
   axios.get(`/workspaces/${workspace_id}`).then((res) => {
-      console.log("HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-      console.log(res);
     store.dispatch({
         type: "ALL_WORKSPACE_DATA",
         data: {
