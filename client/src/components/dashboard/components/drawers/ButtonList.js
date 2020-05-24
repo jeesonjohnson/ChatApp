@@ -13,7 +13,7 @@ import Avatar from '@material-ui/core/Avatar';
 import AddCircle from '@material-ui/icons/Add';
 import { isUndefined, isNullOrUndefined } from 'util';
 
-import { getCompanies, getTaskCollections } from '../../DataLoading.js';
+import { getCompanies, getTaskCollections,getAllWorkspaceSpecificData } from '../../DataLoading.js';
 
 //Takes a sentence and returns the first letter of each word as one word
 function getAcronym(name) {
@@ -113,7 +113,8 @@ class ButtonList extends Component {
       e.currentTarget.className=`${e.currentTarget.className} selected_company`   
       
       store.dispatch({ type: 'WORKSPACE_SELECTED', data: { selectedWorkspace: e.currentTarget.id }})     
-    //   getTaskCollections() 
+      //When a user selects a workspace, all the data assocaited to a workspace is also saved
+      getAllWorkspaceSpecificData(e.currentTarget.id);
     }
     
     render() {

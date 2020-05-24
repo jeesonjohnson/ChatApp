@@ -3,6 +3,8 @@ const User = require("./../models/User");
 const catchAsync = require("./../utils/catchAsync");
 const Company = require("./../models/Company");
 const AppError = require("./../utils/appError");
+const GroupChat =  require("./../models/GroupChat")
+const PrivateChat = require("./../models/PrivateChat")
 
 //SHould be deleted on production
 exports.getAllWorkspaces = catchAsync(async (req, res, next) => {
@@ -158,8 +160,19 @@ exports.deleteUserFromWorkspace = catchAsync(async (req, res, next) => {
   });
 });
 
+
+//Get a given workspace given its id
 exports.getAGivenWorkspace = catchAsync(async (req, res, next) => {
   var workspaceDetails = await Workspace.findById(req.params.id);
+
+  //Get the associated groupChats in a workspace
+  var groupChats =  await GroupChat.find().where("workspaceID").in([req.params.id]).exec();
+  workspaceDetails.group_chats = groupChats;
+
+  //Get the assocaied private chats in a group
+  var privateChats = await PrivateChat.find().where("workspaceID").in([req.params.id]).exec();
+  workspaceDetails.private_chats = privateChats;
+
   
   res.status(200).json({
     status: "success",
