@@ -2,6 +2,8 @@ const subdomain = require("express-subdomain");
 const express = require("express");
 const bodyParser = require("body-parser");
 const compression = require("compression");
+const http =  require("http");
+const socketio = require("socket.io")
 //Error handling utils
 const AppError = require("./utils/appError");
 const globalErrorhandler = require("./utils/errorController");
@@ -18,6 +20,32 @@ const privateMessageRouter = require("./routes/privateMessageRoutes");
 
 const app = express();
 
+// ######################### SOCKET IO(live chat) ##########################
+//Setting up chat, and socket io
+const server = http.createServer(app);
+const io = socketio(server);
+
+//starting sockets
+io.on(`connection`,(socket)=>{
+  console.log("A user has JOINEEEEEEEEEEEEEEEEEEEEED");
+
+  socket.on('chatjoin',({name,room},callback)=>{
+    const error = tru
+ 
+  });
+
+
+  socket.on('disconnect',()=>{
+    console.log("A user has leffffffffffffffffffffffffffft");
+  })
+});
+
+
+
+
+
+
+//#########################   MAIN BACKEND  ###########################
 //Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
