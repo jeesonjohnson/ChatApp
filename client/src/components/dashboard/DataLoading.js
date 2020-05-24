@@ -36,7 +36,7 @@ export function getCompanies(company_id) {
             },
           });
           getWorkspaces(res.data.data[i].workspaces[0]);
-          getAllWorkspaceSpecificData(res.data.data[0].workspaces[0]);
+          getAllWorkspaceSpecificData(res.data.data[i].workspaces[0]);
 
         }
       }

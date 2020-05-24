@@ -53,11 +53,18 @@ function WorkspaceButtonList() {
   //Below just stores all workspace data as per Backend response
   const workspaceData = useSelector((state) => state.allSelectedWorkspaceData);
 
+  const [selectedPanel, setSelectedPanel] = React.useState("Calendar");
   const [plannerOpen, setPlannerOpen] = React.useState(true);
   const [chatOpen, setChatOpen] = React.useState(false);
   const [voiceOpen, setVoiceOpen] = React.useState(false);
   const [videoOpen, setVideoOpen] = React.useState(false);
-  const [selectedPanel, setSelectedPanel] = React.useState("Calendar");
+  
+  const [group_chats_names, setGroupChatsNames] = React.useState([]);
+
+  useEffect( () => {
+    loadGroupChats()
+
+  }, [store.getState().selectedWorkspace, workspaceData])
 
   const handleClick = (e) => {
     if (e.currentTarget.innerText === "Planner") {
@@ -71,40 +78,15 @@ function WorkspaceButtonList() {
     }
   };
   
-  //Need to do this!
+  //Loads the data for groupchats
   const loadGroupChats = () => {
-    if(!workspaceData.group_chats){
-
-      console.log("Here")
-      console.log(typeof(workspaceData.group_chats))
-      console.log(JSON.stringify(workspaceData.group_chats[0]))
+    if(workspaceData.group_chats != undefined){ //Checks if the groupchats were loaded in
+      if(workspaceData.group_chats.length > 0){ //Checks if there are any groupchats for the workspace
+        workspaceData.group_chats.map((group_chat) => (
+          group_chats_names.push({title: group_chat.title, _id: group_chat._id}) //Adds each groupchat with title and id to be used for the group button (NOTE: _id is stored the groupchat icon)
+        ))
+      }
     }
-    // console.log("JERERERERERERERE")
-    // workspaceData.group_chats.map((group)=>{
-    //   console.log(group.title)
-    // })
-    // return workspaceData.group_chats.map((group, i) =>{
-    //   console.log(group)
-    //   return (<li>{group.title}</li>)
-    //   // loadButtonContent(group.title, <ListIcon />, true)
-    // }
-    // );
-    // return workspaceData.group_chats.map((group) => {
-    //   console.log("hereeeeeeeee")
-    //   console.log(group)
-    //   // <ListItem
-    //   //   button
-    //   //   className={true}
-    //   //   onClick={handleSelected}
-    //   //   id={group.title}
-    //   // >
-    //   //   <ListItemIcon>
-    //   //     <ChatIcon />
-    //   //   </ListItemIcon>
-    //   //   <ListItemText primary={group.title} />
-    //   // </ListItem>;
-    //   // loadButtonContent(group.title,<ChatIcon />,true)
-    // });
   };
 
   const handleSelected = (e) => {
@@ -180,9 +162,12 @@ function WorkspaceButtonList() {
       </ListItem>
 
       <Collapse in={chatOpen} timeout="auto" unmountOnExit>
-        {
-          //Here cointains the names of the chats
-          loadGroupChats()
+        {group_chats_names === [] || group_chats_names === undefined ? //Check if there are any groupchats to load
+          null
+          :
+          group_chats_names.map((group_chat, index) => (
+            loadButton(group_chat.title, <GroupIcon id={group_chat._id}/>, true) //LoadButton needs three bits of data (1. Button text, 2. Button Icon, 3. Boolean for whether the button is nested inside the list)
+          ))
         }
       </Collapse>
 

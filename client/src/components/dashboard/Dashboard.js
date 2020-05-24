@@ -256,7 +256,7 @@ function Dashboard() {
               </div>
             </Grid>
 
-            <Grid item md={12} >
+            <Grid item md={12} style={{overflow:"scroll"}}>
               <div style={{height:"90vh"}} >
                 {/* Calendar layout */}
                 {/* Charts layout */}
@@ -266,7 +266,7 @@ function Dashboard() {
                 {/* Text chat layout */}
                 {/*  */}
 
-              <Container item maxWidth="lg" className={classes.container}>
+              <Container item maxWidth="lg" className={classes.container} >
                   <Grid container spacing={3} >
                     
                   {store.getState().selectedPanel === "Calendar" ? 
@@ -288,7 +288,7 @@ function Dashboard() {
                     : null}
   
                   {store.getState().selectedPanel === "Tasks" ? 
-                    <Grid item xs={12} md={12} lg={12}>
+                    <Grid item xs={12} md={12} lg={12} >
                       <ToDoPage/>
                     </Grid>
                     : null}
