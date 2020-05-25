@@ -8,7 +8,8 @@ const globalErrorhandler = require("./utils/errorController");
 //Live chat communication
 const http = require("http");
 const socketio = require("socket.io");
-const chat = require("./controllers/chatStreaming.js");
+const chat = require("./controllers/usersLiveChat.js");
+const cors = require('cors');
 //Custom routes
 const userRouter = require("./routes/userRoutes");
 const companyRouter = require("./routes/companyRoutes");
@@ -22,45 +23,6 @@ const privateMessageRouter = require("./routes/privateMessageRoutes");
 
 const app = express();
 
-// ######################### SOCKET IO(live chat) ##########################
-//Setting up chat, and socket io
-const server = http.createServer(app);
-const io = socketio(server);
-
-//starting sockets
-io.on(`connection`, (socket) => {
-  console.log("A user has JOINEEEEEEEEEEEEEEEEEEEEED");
-
-  socket.on("chatjoin", ({ name, room }, callback) => {
-    //Assing a user to chat values
-    const { error, user } = chat.addUser({ id: socket.id, name, room });
-    if (error) return callback(error);
-
-    socket.join(user.room);
-
-    callback();
-  });
-
-  socket.on("sendMessage", (message, callback) => {
-    const user = getUser(socket.id);
-    io.to(user.room).emit("message", { user: user.name, text: message });
-    callback();
-  });
-
-  socket.on("disconnect", () => {
-    const user = removeUser(socket.id);
-    if (user) {
-      io.to(user.room).emit("message", {
-        user: "UserBot",
-        text: `${user.name} has left.`,
-      });
-      io.to(user.room).emit("roomData", {
-        room: user.room,
-        users: getUsersInRoom(user.room),
-      });
-    }
-  });
-});
 
 //#########################   MAIN BACKEND  ###########################
 //Bodyparser middleware
@@ -96,5 +58,60 @@ app.get("*", (req, res, next) => {
 });
 
 app.use(globalErrorhandler);
+
+
+app.use(cors());
+// ######################### SOCKET IO(live chat) ##########################
+// //Setting up chat, and socket io
+// const server = http.createServer(app);
+// //Before const io = socketio(server);
+// const io = require("socket.io")(server, {
+//   handlePreflightRequest: (req, res) => {
+//     const headers = {
+//       "Access-Control-Allow-Headers": "Content-Type, Authorization",
+//       "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
+//       "Access-Control-Allow-Credentials": true,
+//     };
+//     res.writeHead(200, headers);
+//     res.end();
+//   },
+// });
+
+
+// //starting sockets
+// io.on(`connection`, (socket) => {
+//   console.log("A user has JOINEEEEEEEEEEEEEEEEEEEEED");
+
+//   socket.on("chatjoin", ({ name, room }, callback) => {
+//     //Assing a user to chat values
+//     const { error, user } = chat.addUser({ id: socket.id, name, room });
+//     if (error) return callback(error);
+
+//     socket.join(user.room);
+
+//     callback();
+//   });
+
+//   socket.on("sendMessage", (message, callback) => {
+//     const user = getUser(socket.id);
+//     io.to(user.room).emit("message", { user: user.name, text: message });
+//     callback();
+//   });
+
+//   socket.on("disconnect", () => {
+//     const user = removeUser(socket.id);
+//     if (user) {
+//       io.to(user.room).emit("message", {
+//         user: "UserBot",
+//         text: `${user.name} has left.`,
+//       });
+//       io.to(user.room).emit("roomData", {
+//         room: user.room,
+//         users: getUsersInRoom(user.room),
+//       });
+//     }
+//   });
+// });
+
 
 module.exports = app;
