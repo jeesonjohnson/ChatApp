@@ -2,11 +2,13 @@ const subdomain = require("express-subdomain");
 const express = require("express");
 const bodyParser = require("body-parser");
 const compression = require("compression");
-const http =  require("http");
-const socketio = require("socket.io")
 //Error handling utils
 const AppError = require("./utils/appError");
 const globalErrorhandler = require("./utils/errorController");
+//Live chat communication
+const http = require("http");
+const socketio = require("socket.io");
+const chat = require("./controllers/chatStreaming.js");
 //Custom routes
 const userRouter = require("./routes/userRoutes");
 const companyRouter = require("./routes/companyRoutes");
@@ -26,30 +28,45 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 //starting sockets
-io.on(`connection`,(socket)=>{
+io.on(`connection`, (socket) => {
   console.log("A user has JOINEEEEEEEEEEEEEEEEEEEEED");
 
-  socket.on('chatjoin',({name,room},callback)=>{
-    const error = tru
- 
+  socket.on("chatjoin", ({ name, room }, callback) => {
+    //Assing a user to chat values
+    const { error, user } = chat.addUser({ id: socket.id, name, room });
+    if (error) return callback(error);
+
+    socket.join(user.room);
+
+    callback();
   });
 
+  socket.on("sendMessage", (message, callback) => {
+    const user = getUser(socket.id);
+    io.to(user.room).emit("message", { user: user.name, text: message });
+    callback();
+  });
 
-  socket.on('disconnect',()=>{
-    console.log("A user has leffffffffffffffffffffffffffft");
-  })
+  socket.on("disconnect", () => {
+    const user = removeUser(socket.id);
+    if (user) {
+      io.to(user.room).emit("message", {
+        user: "UserBot",
+        text: `${user.name} has left.`,
+      });
+      io.to(user.room).emit("roomData", {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      });
+    }
+  });
 });
-
-
-
-
-
 
 //#########################   MAIN BACKEND  ###########################
 //Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
-    extended: false
+    extended: false,
   })
 );
 //    Middleware
