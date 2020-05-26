@@ -10,6 +10,9 @@ const GroupMessageSchema = new Schema({
     type: String,
     required: [true, "No author given"]
   },
+  author_id:{
+    type:String,
+  },
   message: {
     type: String,
     default:""

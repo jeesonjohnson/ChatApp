@@ -10,6 +10,9 @@ const PrivateMessageSchema = new Schema({
     type: String,
     required: [true, "No author given for private message"]
   },
+  author_id:{
+    type:String,
+  },
   message: {
     type: String,
     required: [true, "No message given for private message"]

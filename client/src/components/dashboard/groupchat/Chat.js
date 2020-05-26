@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import queryString from "query-string";
 import io from "socket.io-client";
 import { connect } from "react-redux";
+import axios from "axios";
 
 // import TextContainer from './TextContainer/TextContainer';
 import Messages from "./Messages/Messages";
@@ -24,8 +25,9 @@ const Chat = (props) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const ENDPOINT = "localhost:8083"; //'https://project-chat-application.herokuapp.com/';//'localhost:8083';
-  
+
   const roomTitle = props.title;
+  
 
   useEffect(() => {
     const room = props._id;
@@ -35,6 +37,12 @@ const Chat = (props) => {
 
     setRoom(room);
     setName(name);
+    
+    //Loading messages in a chat:
+    // axios.get("/group")
+    setMessages((messages) => [...messages, message]);
+
+
 
     socket.emit("join", { name, room }, (error) => {
       if (error) {
@@ -58,16 +66,32 @@ const Chat = (props) => {
     });
   }, []);
 
+  //Send message to server
   const sendMessage = (event) => {
     event.preventDefault();
+    const currentUserID = store.getState().user._id;
 
     if (message) {
+      //Save Message to server
+      const postMessage = {
+        group_id: room,
+        message: message,
+        author: name,
+        author_id:currentUserID,
+      };
+      axios.post("/groupmessage/", postMessage).then((res) => {
+
+      }).catch(error=>{
+        if(error.response){
+          console.log("ERROROROROROOROROROR HERE")
+          console.log(error.response.data);
+        }
+      });
+
+      //Send message over sockets
       socket.emit("sendMessage", message, () => setMessage(""));
     }
   };
-
-
-  
 
   return (
     <div className="overallChatContainer">

@@ -19,7 +19,7 @@ exports.getAllMessages = catchAsync(async (req, res, next) => {
 // ################## Create a group message ###################
 exports.createAGroupMessage = catchAsync(async (req, res, next) => {
   var groupChat = await GroupChat.findById(req.body.group_id);
-  if (!groupChat.users.includes(req.user.id)) {
+  if (!groupChat.users.includes(req.body.author_id)) {
     return next(
       new AppError(
         "You are not a member of this chat, you have no right to send messages",
@@ -27,10 +27,12 @@ exports.createAGroupMessage = catchAsync(async (req, res, next) => {
       )
     );
   }
+  console.log("HERERERER");
+  console.log(req.body);
   //Actual create a group message.
   var newGroupMessage = await GroupMessage.create({
     group_id: req.body.group_id,
-    author: req.user.id,
+    author: req.body.author_id,
     message: req.body.message,
     time_sent: Date.now(),
     file_url: req.body.file_url
