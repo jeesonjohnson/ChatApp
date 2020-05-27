@@ -38,12 +38,25 @@ const Chat = (props) => {
     setRoom(room);
     setName(name);
     
-    //Loading messages in a chat:
-    // axios.get("/group")
-    setMessages((messages) => [...messages, message]);
+    //Loading OLD messages into chat. 
+    axios.get(`/groupmessage/all/?group_id=${room}&page=1&limit=50`).then((result)=>{
+      var tempMessageStore =[];
+      var resultsStore = result.data.data;
+
+      for(var i = 0;i<resultsStore.length;i++){
+        var temp ={
+          "text":resultsStore[i].message,
+          "user":resultsStore[i].author
+        }
+        tempMessageStore.push(temp);
+      }
+
+      setMessages((messages) => [...messages, ...tempMessageStore]);
+    })
 
 
 
+    //Definition of what occurs when a person joins a chat
     socket.emit("join", { name, room }, (error) => {
       if (error) {
         alert(error);
@@ -72,6 +85,9 @@ const Chat = (props) => {
     const currentUserID = store.getState().user._id;
 
     if (message) {
+      console.log("Actual messages");
+      console.log(messages);
+
       //Save Message to server
       const postMessage = {
         group_id: room,
@@ -93,6 +109,7 @@ const Chat = (props) => {
     }
   };
 
+  
   return (
     <div className="overallChatContainer">
       <div className="outerChatContainer">

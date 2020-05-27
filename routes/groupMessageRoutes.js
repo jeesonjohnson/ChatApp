@@ -8,7 +8,7 @@ router.route("/alldata").get(groupMessageController.getAllMessages); //Should be
 
 router
   .route("/all")
-  .get(authController.protect, groupMessageController.getAllMessagesInGroup); 
+  .get(groupMessageController.getAllMessagesInGroup); 
 
 router
   .route("/")
