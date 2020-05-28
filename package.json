@@ -33,6 +33,7 @@
     "mongoose": "^5.9.3",
     "promisify": "0.0.3",
     "react-bootstrap": "^1.0.1",
+    "react-youtube": "^7.11.2",
     "socket.io": "^2.3.0",
     "util": "^0.12.2",
     "validator": "^12.2.0"
