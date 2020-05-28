@@ -64,7 +64,7 @@ exports.getAllMessagesInGroup = catchAsync(async (req, res, next) => {
   let messages = await GroupMessage.find({
     group_id: req.query.group_id
   })
-    .sort({ time_sent: "descending" })
+    .sort({ time_sent: "ascending" })
     .skip(skip)
     .limit(limit);
 
