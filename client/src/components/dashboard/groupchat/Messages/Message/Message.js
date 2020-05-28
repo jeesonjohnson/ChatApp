@@ -4,8 +4,8 @@ import ReactEmoji from 'react-emoji';
 import './Message.css';
 
 //Methods regarding API call
-import Weather from "./API/Weather/Weather"
-
+import Weather from "./API/Weather/Weather";
+import Error from "./API/Error/Error";
 
 
 
@@ -39,16 +39,16 @@ const Message = ({ message: { text, user }, name }) => {
         <div className="messageContainer justifyEnd">
           <p className="sentText pr-10">{trimmedName}</p>
           <div className="messageBox backgroundBlue">
-            <p className="messageText colorWhite">{ReactEmoji.emojify(text)}</p>
-            <div>{APICallExists ? ActualAPIRender:"no api call"}</div>
+            <p className="messageText colorWhite">{ReactEmoji.emojify(noAPIText)}</p>
+            <div>{APICallExists ? ActualAPIRender:null}</div>
           </div>
         </div>
         )
         : (
           <div className="messageContainer justifyStart">
             <div className="messageBox backgroundLight">
-              <p className="messageText colorDark">{ReactEmoji.emojify(text)}</p>
-              {APICallExists ? ActualAPIRender:"no api call"}
+              <p className="messageText colorDark">{ReactEmoji.emojify(noAPIText)}</p>
+              {APICallExists ? ActualAPIRender:null}
             </div>
             <p className="sentText pl-10 ">{user}</p>
           </div>
@@ -77,7 +77,7 @@ function whichAPI(message){
       return <Weather response={actualData}/>
     default:
       console.log("THE DEFULAT WAS INTIITALISED")
-      return null
+      return <Error/>
   }
 
 }
