@@ -17,6 +17,7 @@ import store from "../../../store";
 import "./Chat.css";
 
 let socket;
+const WEATHER_API_KEY = "";
 
 const Chat = (props) => {
   const [name, setName] = useState("");
@@ -27,7 +28,6 @@ const Chat = (props) => {
   const ENDPOINT = "localhost:8083"; //'https://project-chat-application.herokuapp.com/';//'localhost:8083';
 
   const roomTitle = props.title;
-  
 
   useEffect(() => {
     const room = props._id;
@@ -37,24 +37,24 @@ const Chat = (props) => {
 
     setRoom(room);
     setName(name);
-    
-    //Loading OLD messages into chat. 
-    axios.get(`/groupmessage/all/?group_id=${room}&page=1&limit=50`).then((result)=>{
-      var tempMessageStore =[];
-      var resultsStore = result.data.data;
 
-      for(var i = 0;i<resultsStore.length;i++){
-        var temp ={
-          "text":resultsStore[i].message,
-          "user":resultsStore[i].author
+    //Loading OLD messages into chat.
+    axios
+      .get(`/groupmessage/all/?group_id=${room}&page=1&limit=50`)
+      .then((result) => {
+        var tempMessageStore = [];
+        var resultsStore = result.data.data;
+
+        for (var i = 0; i < resultsStore.length; i++) {
+          var temp = {
+            text: resultsStore[i].message,
+            user: resultsStore[i].author,
+          };
+          tempMessageStore.push(temp);
         }
-        tempMessageStore.push(temp);
-      }
 
-      setMessages((messages) => [...messages, ...tempMessageStore]);
-    })
-
-
+        setMessages((messages) => [...messages, ...tempMessageStore]);
+      });
 
     //Definition of what occurs when a person joins a chat
     socket.emit("join", { name, room }, (error) => {
@@ -85,31 +85,103 @@ const Chat = (props) => {
     const currentUserID = store.getState().user._id;
 
     if (message) {
-      console.log("Actual messages");
-      console.log(messages);
-
-      //Save Message to server
-      const postMessage = {
+      var postMessage = {
         group_id: room,
         message: message,
         author: name,
-        author_id:currentUserID,
+        author_id: currentUserID,
       };
-      axios.post("/groupmessage/", postMessage).then((res) => {
 
-      }).catch(error=>{
-        if(error.response){
-          console.log("ERROROROROROOROROROR HERE")
-          console.log(error.response.data);
+      const apiStartLocation = message.indexOf(">>");
+      //If a message contains an API call we, need to make the API call and save the associated data
+      if (apiStartLocation >= 0) {
+        //No api then returns -1
+        var stringSplitToApi = message
+          .substring(apiStartLocation + 2)
+          .split(" ");
+        var apiToken = stringSplitToApi[0].toUpperCase();
+        var apiMessage = stringSplitToApi[1].toLowerCase();
+        console.log(
+          "APIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII TOKEN"
+        );
+        console.log(apiToken);
+
+        switch (apiToken) {
+          case "WEATHER":
+            axios
+              .get(
+                "https://cors-anywhere.herokuapp.com/https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=439d4b804bc8187953eb36d2a8c26a02"
+              )
+              .then((result) => {
+                postMessage =
+                  postMessage.message +
+                  `<APICALLTAG><WEATHER>${JSON.stringify(
+                    result.data
+                  )}</WEATHER></APICALLTAG>`;
+
+                var postStructure = {
+                  group_id: room,
+                  message: postMessage,
+                  author: name,
+                  author_id: currentUserID,
+                };
+                console.log(
+                  "THe message that was to be senttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+                );
+                console.log(postStructure);
+                console.log(typeof(postStructure));
+                axios
+                  .post("/groupmessage/", postStructure)
+                  .then((res) => {
+                    socket.emit("sendMessage", postMessage, () =>
+                      setMessage("")
+                    );
+                  })
+                  .catch((error) => {
+                    if (error.response) {
+                      console.log("ERROROROROROOROROROR HERE");
+                      console.log(error.response.data);
+                    }
+                  });
+                // message.text = message.text+`<APICALLTAG><WEATHER>${JSON.stringify(result.data)}</WEATHER></APICALLTAG>`;
+                var temp = JSON.parse(JSON.stringify(message));
+                console.log("TEMP STRUCUTRE");
+                console.log(temp);
+                console.log(typeof temp);
+                // temp.text = temp.text+`<APICALLTAG><WEATHER>${JSON.stringify(result.data)}</WEATHER></APICALLTAG>`;
+                //Send message over sockets
+                // socket.emit("sendMessage", temp, () => setMessage(""));
+              });
+            // weatherAPICall(
+            //   socket,
+            //   apiToken,
+            //   apiMessage,
+            //   postMessage,
+            //   setMessage,
+            //   message
+            // );
+            break;
         }
-      });
-
-      //Send message over sockets
-      socket.emit("sendMessage", message, () => setMessage(""));
+      } else {
+        //Save non API Message to server
+        axios
+          .post("/groupmessage/", postMessage)
+          .then((res) => {})
+          .catch((error) => {
+            if (error.response) {
+              console.log("ERROROROROROOROROROR HERE");
+              console.log(error.response.data);
+            }
+          });
+        //Send message over sockets
+        console.log("NORMAL MESSAGE");
+        console.log(typeof message);
+        console.log(message);
+        socket.emit("sendMessage", message, () => setMessage(""));
+      }
     }
   };
 
-  
   return (
     <div className="overallChatContainer">
       <div className="outerChatContainer">
@@ -126,6 +198,40 @@ const Chat = (props) => {
     </div>
   );
 };
+
+function weatherAPICall(
+  socket,
+  apiToken,
+  apiMessage,
+  postMessage,
+  setMessage,
+  rawMessage
+) {
+  console.log("REMEMBER TO CHANGE THIS PART HERE!");
+
+  axios
+    .get(
+      "https://cors-anywhere.herokuapp.com/https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=439d4b804bc8187953eb36d2a8c26a02"
+    )
+    .then((result) => {
+      postMessage =
+        postMessage.message +
+        `<APICALLTAG><WEATHER>${JSON.stringify(result)}</WEATHER></APICALLTAG>`;
+      console.log("THe message that was to be sent");
+      console.log(postMessage);
+      axios
+        .post("/groupmessage/", postMessage)
+        .then((res) => {})
+        .catch((error) => {
+          if (error.response) {
+            console.log("ERROROROROROOROROROR HERE");
+            console.log(error.response.data);
+          }
+        });
+      //Send message over sockets
+      socket.emit("sendMessage", rawMessage, () => setMessage(""));
+    });
+}
 
 //<TextContainer users={users}/> was removed from hwere the div space is!!!!!!!!!!!!!
 //Redundant code about state!
