@@ -11,12 +11,14 @@ import Store from "../../../../../store/index"
 import YouTube from "react-youtube";
 
 
-const Message = ({ message: { text, user }, name }) => {
+const Message = ({ message: { text, user,name }}) => {
   let isSentByCurrentUser = false;
+  console.log("Individual Message Data");
+  console.log(text,user,name);
 
-  const trimmedName = name.trim().toLowerCase();
   if (user === Store.getState().user._id) {
     isSentByCurrentUser = true;
+    name=Store.getState().user.name;
   }
 
   //Methods for displaying API call
@@ -43,7 +45,7 @@ const Message = ({ message: { text, user }, name }) => {
 
   return isSentByCurrentUser ? (
     <div className="messageContainer justifyEnd">
-      <p className="sentText pr-10">{trimmedName}</p>
+      <p className="sentText pr-10">{name}</p>
       <div className="messageBox backgroundBlue">
         <p className="messageText colorWhite">
           {ReactEmoji.emojify(noAPIText)}

@@ -124,67 +124,6 @@ const Chat = (props) => {
               message
             );
             break;
-          // axios
-          //   .get(
-          //     `https://cors-anywhere.herokuapp.com/https://samples.openweathermap.org/data/2.5/weather?q=${apiMessage.toLowerCase()}&appid=${WEATHER_API_KEY}`
-          //   )
-          //   .then((result) => {
-          //     if (result.cod != "200") {
-          //       postMessage =
-          //         postMessage.message +
-          //         `<APICALLTAG><ERROR>${JSON.stringify(
-          //           result.data
-          //         )}</ERROR></APICALLTAG>`;
-          //     } else {
-          //       postMessage =
-          //         postMessage.message +
-          //         `<APICALLTAG><WEATHER>${JSON.stringify(
-          //           result.data
-          //         )}</WEATHER></APICALLTAG>`;
-          //     }
-
-          //     var postStructure = {
-          //       group_id: room,
-          //       message: postMessage,
-          //       author: name,
-          //       author_id: currentUserID,
-          //     };
-          //     console.log(
-          //       "THe message that was to be senttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
-          //     );
-          //     console.log(postStructure);
-          //     console.log(typeof postStructure);
-          //     axios
-          //       .post("/groupmessage/", postStructure)
-          //       .then((res) => {
-          //         socket.emit("sendMessage", postMessage, () =>
-          //           setMessage("")
-          //         );
-          //       })
-          //       .catch((error) => {
-          //         if (error.response) {
-          //           console.log("ERROROROROROOROROROR HERE");
-          //           console.log(error.response.data);
-          //         }
-          //       });
-          //     // message.text = message.text+`<APICALLTAG><WEATHER>${JSON.stringify(result.data)}</WEATHER></APICALLTAG>`;
-          //     var temp = JSON.parse(JSON.stringify(message));
-          //     console.log("TEMP STRUCUTRE");
-          //     console.log(temp);
-          //     console.log(typeof temp);
-          //     // temp.text = temp.text+`<APICALLTAG><WEATHER>${JSON.stringify(result.data)}</WEATHER></APICALLTAG>`;
-          //     //Send message over sockets
-          //     // socket.emit("sendMessage", temp, () => setMessage(""));
-          //   });
-          // // weatherAPICall(
-          // //   socket,
-          // //   apiToken,
-          // //   apiMessage,
-          // //   postMessage,
-          // //   setMessage,
-          // //   message
-          // // );
-          // break;
         }
       } else {
         //Save non API Message to server
