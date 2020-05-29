@@ -34,6 +34,7 @@ import { getCompanies } from './DataLoading.js';
 
 import ToDoPage from './toDoList/toDoPage.js';
 import Chat from '../dashboard/groupchat/Chat.js';
+import Calendar from './components/calendar/calendar'
 
 const drawerWidth = 240;
 
@@ -272,10 +273,13 @@ function Dashboard() {
                     <Grid item xs={12} md={8} lg={9}>
                       <Paper className={fixedHeightPaper}>
                         {/* <Calendar /> */}
-                        {"Calendar"}
+                        <h4>Calendar</h4>
+                        <br />
+                        <Calendar />
                       </Paper>
                     </Grid>
-                    : null}
+                    : null
+                  }
 
                   {/* Charts layout */}
                   {store.getState().selectedPanel === "Charts" ? 
