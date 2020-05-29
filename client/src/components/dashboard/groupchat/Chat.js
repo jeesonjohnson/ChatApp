@@ -32,6 +32,7 @@ const Chat = (props) => {
   useEffect(() => {
     const room = props._id;
     const name = store.getState().user.name;
+    const user_id = store.getState().user._id;
 
     socket = io(ENDPOINT);
 
@@ -48,16 +49,22 @@ const Chat = (props) => {
         for (var i = 0; i < resultsStore.length; i++) {
           var temp = {
             text: resultsStore[i].message,
-            user: resultsStore[i].author,
+            user: resultsStore[i].author_id,
+            name: resultsStore[i].author,
           };
           tempMessageStore.push(temp);
         }
 
         setMessages((messages) => [...messages, ...tempMessageStore]);
+        console.log("Raw results from backend store are");
+        console.log(resultsStore);
+        console.log("Messages however are")
+        console.log(messages);
+        console.log(tempMessageStore);
       });
 
     //Definition of what occurs when a person joins a chat
-    socket.emit("join", { name, room }, (error) => {
+    socket.emit("join", { name, room,user_id }, (error) => {
       if (error) {
         alert(error);
       }
@@ -71,6 +78,8 @@ const Chat = (props) => {
 
   useEffect(() => {
     socket.on("message", (message) => {
+      console.log("A message was recivedddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+      console.log(message);
       setMessages((messages) => [...messages, message]);
     });
 
@@ -101,10 +110,6 @@ const Chat = (props) => {
           .split(" ");
         var apiToken = stringSplitToApi[0].toUpperCase();
         var apiMessage = stringSplitToApi[1].toLowerCase();
-        console.log(
-          "APIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII TOKEN"
-        );
-        console.log(apiToken);
 
         switch (apiToken) {
           case "WEATHER":
@@ -193,9 +198,6 @@ const Chat = (props) => {
             }
           });
         //Send message over sockets
-        console.log("NORMAL MESSAGE");
-        console.log(typeof message);
-        console.log(message);
         socket.emit("sendMessage", message, () => setMessage(""));
       }
     }
@@ -253,11 +255,6 @@ function weatherAPICall(
         author: name,
         author_id: currentUserID,
       };
-      console.log(
-        "THe message that was to be senttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
-      );
-      console.log(postStructure);
-      console.log(typeof postStructure);
       axios
         .post("/groupmessage/", postStructure)
         .then((res) => {
@@ -269,23 +266,7 @@ function weatherAPICall(
             console.log(error.response.data);
           }
         });
-      // message.text = message.text+`<APICALLTAG><WEATHER>${JSON.stringify(result.data)}</WEATHER></APICALLTAG>`;
-      var temp = JSON.parse(JSON.stringify(message));
-      console.log("TEMP STRUCUTRE");
-      console.log(temp);
-      console.log(typeof temp);
-      // temp.text = temp.text+`<APICALLTAG><WEATHER>${JSON.stringify(result.data)}</WEATHER></APICALLTAG>`;
-      //Send message over sockets
-      // socket.emit("sendMessage", temp, () => setMessage(""));
     });
-  // weatherAPICall(
-  //   socket,
-  //   apiToken,
-  //   apiMessage,
-  //   postMessage,
-  //   setMessage,
-  //   message
-  // );
 }
 
 //<TextContainer users={users}/> was removed from hwere the div space is!!!!!!!!!!!!!

@@ -32,7 +32,8 @@ exports.createAGroupMessage = catchAsync(async (req, res, next) => {
   //Actual create a group message.
   var newGroupMessage = await GroupMessage.create({
     group_id: req.body.group_id,
-    author: req.body.author_id,
+    author_id: req.body.author_id,
+    author:req.body.author,
     message: req.body.message,
     time_sent: Date.now(),
     file_url: req.body.file_url

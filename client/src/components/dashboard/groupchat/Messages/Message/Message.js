@@ -6,7 +6,7 @@ import "./Message.css";
 //Methods regarding Weather API call
 import Weather from "./API/Weather/Weather";
 import Error from "./API/Error/Error";
-
+import Store from "../../../../../store/index"
 //Regarding youtube API call
 import YouTube from "react-youtube";
 
@@ -15,8 +15,7 @@ const Message = ({ message: { text, user }, name }) => {
   let isSentByCurrentUser = false;
 
   const trimmedName = name.trim().toLowerCase();
-
-  if (user === trimmedName) {
+  if (user === Store.getState().user._id) {
     isSentByCurrentUser = true;
   }
 
@@ -42,7 +41,6 @@ const Message = ({ message: { text, user }, name }) => {
     youtubeVideo = true;
   }
 
-  //RIGHJT NOW THE TEXT IS PRESENT BUT ONLY THE NOAPITEXT HAS THE ACTUAL IMAGE... NOT ETHE CURRENT IMAGE DOESNT FIT ON HERE
   return isSentByCurrentUser ? (
     <div className="messageContainer justifyEnd">
       <p className="sentText pr-10">{trimmedName}</p>
@@ -61,15 +59,12 @@ const Message = ({ message: { text, user }, name }) => {
         <div>{APICallExists ? ActualAPIRender : null}</div>
         <div>{youtubeVideo ? playYoutube(text) : null}</div>
       </div>
-      <p className="sentText pl-10 ">{user}</p>
+      <p className="sentText pl-10 ">{name}</p>
     </div>
   );
 };
 
 function whichAPI(message) {
-  console.log("Un restrictde message");
-  console.log(message);
-
   var APITag = message
     .substring(message.indexOf("<", 0), message.indexOf(">", 0) + 1)
     .toUpperCase();
@@ -81,28 +76,17 @@ function whichAPI(message) {
       message.indexOf(APITagEnd)
     )
   );
-  console.log("THE ACTUAL DATA BEING PASSED IN");
-  console.log(actualData);
-
-  console.log("Test vaklues");
-  console.log(APITag);
-  console.log(APITagEnd);
 
   switch (APITag) {
     case "<WEATHER>":
-      console.log(
-        "The weather was returenedRRRRRRRRRRRRRRRRRRRRRRRRR YAYYYYYYYYYYYYYYYYYYYYYYY"
-      );
       return <Weather response={actualData} />;
     default:
-      console.log("THE DEFULAT WAS INTIITALISED");
       return <Error />;
   }
 }
 
 function playYoutube(text) {
   var youtubeNameIndex = text.toLowerCase().indexOf("youtube");
-  console.log(text.substring(youtubeNameIndex));
   var videoID="FXPKJUE86d0";
   var idEnd;
   if(youtubeNameIndex>=0){
@@ -110,12 +94,10 @@ function playYoutube(text) {
     videoID = videoID.substring(videoID.indexOf("?v=")+3);
     idEnd = videoID.indexOf(" ")>=0?videoID.indexOf(" "):videoID.length;
     videoID = videoID.substring(0,idEnd);
-    console.log(videoID);
   }else{
     videoID = text.substring(text.indexOf("youtu.be/"));
     idEnd = videoID.indexOf(" ")>=0?videoID.indexOf(" "):videoID.length;
     videoID = videoID.substring(9,idEnd);
-    console.log(idEnd,videoID);
   }
 
   const opts = {

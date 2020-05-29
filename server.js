@@ -46,15 +46,15 @@ liveChatApp.use(cors());
 
 
 io.on('connect', (socket) => {
-  socket.on('join', ({ name, room }, callback) => {
-    const { error, user } = addUser({ id: socket.id, name, room });
+  socket.on('join', ({ name, room, user_id }, callback) => {
+    const { error, user } = addUser({ id: socket.id, name, room,user_id});
 
     if(error) return callback(error);
 
     socket.join(user.room);
 
-    socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.`});
-    socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
+    socket.emit('message', { user:user.id,name: 'admin', text: `${user.name}, welcome to room ${user.room}.`,user_id:user_id});
+    socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!`,user_id: user_id});
 
     io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
@@ -63,8 +63,7 @@ io.on('connect', (socket) => {
 
   socket.on('sendMessage', (message, callback) => {
     const user = getUser(socket.id);
-
-    io.to(user.room).emit('message', { user: user.name, text: message });
+    io.to(user.room).emit('message', { user:user.user_id,name: user.name, text: message });
 
     callback();
   });
