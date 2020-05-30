@@ -9,12 +9,11 @@ import Error from "./API/Error/Error";
 import Store from "../../../../../store/index"
 //Regarding youtube API call
 import YouTube from "react-youtube";
-
+//Regarding Maps
+import Map from "./API/Map/Map";
 
 const Message = ({ message: { text, user,name }}) => {
   let isSentByCurrentUser = false;
-  console.log("Individual Message Data");
-  console.log(text,user,name);
 
   if (user === Store.getState().user._id) {
     isSentByCurrentUser = true;
@@ -42,6 +41,7 @@ const Message = ({ message: { text, user,name }}) => {
   ) {
     youtubeVideo = true;
   }
+  
 
   return isSentByCurrentUser ? (
     <div className="messageContainer justifyEnd">
@@ -72,16 +72,26 @@ function whichAPI(message) {
     .toUpperCase();
   //Done this way to ensure no "<" inside of a message body messes with the data
   var APITagEnd = `</${APITag.substring(1)}`;
-  var actualData = JSON.parse(
-    message.substring(
-      message.indexOf(APITag) + APITag.length,
-      message.indexOf(APITagEnd)
-    )
-  );
+  var actualData = "Error";
+  try{
+    actualData = JSON.parse(
+      message.substring(
+        message.indexOf(APITag) + APITag.length,
+        message.indexOf(APITagEnd)
+      )
+    );
+  }catch(err){
+    console.log("There was an error trying to generate the api result, the error being:");
+    console.log(err);
+  }
 
   switch (APITag) {
     case "<WEATHER>":
       return <Weather response={actualData} />;
+    case "<MAP>":
+      return <Map response={actualData}/>
+    case "<ERROR":
+      return <Error />;
     default:
       return <Error />;
   }

@@ -1,0 +1,11 @@
+.mapOuterBox
+{
+    align-items: center;
+    align-content: center;
+    padding-bottom: 5px;
+}
+
+.mapStyling {
+    height:400px;
+    width: 600px;
+  }

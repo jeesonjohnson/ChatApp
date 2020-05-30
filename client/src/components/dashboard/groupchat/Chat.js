@@ -56,11 +56,6 @@ const Chat = (props) => {
         }
 
         setMessages((messages) => [...messages, ...tempMessageStore]);
-        console.log("Raw results from backend store are");
-        console.log(resultsStore);
-        console.log("Messages however are")
-        console.log(messages);
-        console.log(tempMessageStore);
       });
 
     //Definition of what occurs when a person joins a chat
@@ -78,8 +73,6 @@ const Chat = (props) => {
 
   useEffect(() => {
     socket.on("message", (message) => {
-      console.log("A message was recivedddddddddddddddddddddddddddddddddddddddddddddddddddddd");
-      console.log(message);
       setMessages((messages) => [...messages, message]);
     });
 
@@ -124,6 +117,17 @@ const Chat = (props) => {
               message
             );
             break;
+          case "MAP":
+            mapAPICALL(apiMessage,
+              postMessage,
+              room,
+              name,
+              currentUserID,
+              socket,
+              setMessage,
+              message
+            );
+            break;
         }
       } else {
         //Save non API Message to server
@@ -158,6 +162,62 @@ const Chat = (props) => {
     </div>
   );
 };
+
+function mapAPICALL(
+  apiMessage,
+  postMessage,
+  room,
+  name,
+  currentUserID,
+  socket,
+  setMessage,
+  message
+) {
+  console.log("Main request is to");
+  console.log(`http://api.postcodes.io/postcodes/${apiMessage.toLowerCase()}`);
+  axios
+    .get(
+      `http://api.postcodes.io/postcodes/${apiMessage.toLowerCase()}`
+    )
+    .then((result) => {
+      console.log("MAIN RESULT");
+      console.log(result);
+      //POst code generator website api.postcodes.io/postcodes/<POSTCODE>
+      if (result.data.status !== 200) {
+        postMessage =
+          postMessage.message +
+          `<APICALLTAG><ERROR>${JSON.stringify(
+            result.data
+          )}</ERROR></APICALLTAG>`;
+      } else {
+        postMessage =
+          postMessage.message +
+          `<APICALLTAG><MAP>${JSON.stringify(
+            result.data.result
+          )}</MAP></APICALLTAG>`;
+      }
+      console.log("Data passed into map prop is");
+      console.log(result.data.result);
+
+      var postStructure = {
+        group_id: room,
+        message: postMessage,
+        author: name,
+        author_id: currentUserID,
+      };
+      axios
+        .post("/groupmessage/", postStructure)
+        .then((res) => {
+          socket.emit("sendMessage", postMessage, () => setMessage(""));
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log("ERROROROROROOROROROR HERE");
+            console.log(error.response.data);
+          }
+        });
+    });
+}
 
 function weatherAPICall(
   apiMessage,
@@ -207,6 +267,7 @@ function weatherAPICall(
         });
     });
 }
+
 
 //<TextContainer users={users}/> was removed from hwere the div space is!!!!!!!!!!!!!
 //Redundant code about state!
