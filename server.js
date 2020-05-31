@@ -78,5 +78,5 @@ io.on('connect', (socket) => {
   })
 });
 
-server.listen(8083, () => console.log(`Server has started. PORT 8083, live chat`));
+server.listen(process.env.PORT || 8083, () => console.log(`Server has started. PORT 8083, live chat`));
 
