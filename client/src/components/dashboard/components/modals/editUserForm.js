@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom'
+
 import '../../../auth/Auth.css';
 
 import store from './../../../../store/index'
@@ -34,17 +36,34 @@ class EditUser extends Component
     }
 
     handleClick = () => {
-        const userData = {
-            id: "5eca648150b7441e705e1617",
-            email: "me@email.com",
-            password: "Memail123"
+        if(this.state.new_password.length < 8){
+            ReactDOM.render("New password requires minimum of 8 characters", document.getElementById('error-display'))
+        }else if(this.state.new_password !== this.state.confirm_password){
+            ReactDOM.render("Passwords do not match", document.getElementById('error-display'))
+        }else{
+            const userData = {
+                email: this.state.email,
+                current_password: this.state.current_password,
+                new_password: this.state.new_password
+            }
+            axios.patch(`/users/${store.getState().user._id}`,userData)
+            .then(res => {
+                if(res.data.status === "success"){
+                    console.log(res.data.data)
+                    axios('/users/logout')
+                    .then(res => {
+                        window.location.href = "/"
+                        window.alert("Password changed successfully.\nPlease log back in again")
+                    })
+                }else{
+                    ReactDOM.render(res.data.error, document.getElementById('error-display'))
+                }
+
+            }).catch(err => {
+                console.log("Server error" + err)
+            })
         }
-        axios.patch(`/users/${store.getState().user._id}`,{userData})
-        .then(res => {
-            console.log(res.data.data)
-        }).catch(err => {
-            console.log("Server error" + err)
-        })
+       
     }
    
 
@@ -54,16 +73,16 @@ class EditUser extends Component
             <div className={this.props.classes.paper}>
                 <Typography component="h1" variant="h5" color="inherit" noWrap>Account Details</Typography>
                 <Divider />
+                <div><h6 id= "error-display" style = {{color: "#c91714"}}></h6></div>
                 <Grid container >
                     <Grid container item xs={12} md={12} lg={12}>
-                    <TextField id="name" label="Name" onChange = {this.handleChange} />  
                     <TextField id="email" label="Email" onChange = {this.handleChange}/>
                     </Grid>
 
                     <Grid item xs={12} md={8} lg={9}>
                     <TextField id="current_password" label="Current Password" onChange = {this.handleChange}/>
-                    <TextField id="new_password" label="New Password" onChange = {this.handleChange}/>
-                    <TextField id="confirm_password" label="Confirm Password" onChange = {this.handleChange}/>
+                    <TextField type= "password" id="new_password" label="New Password" onChange = {this.handleChange}/>
+                    <TextField type= "password" id="confirm_password" label="Confirm Password" onChange = {this.handleChange}/>
                     </Grid>
 
                     <Grid item xs={12} md={8} lg={9}>

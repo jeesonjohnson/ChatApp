@@ -1,5 +1,6 @@
 const user = require("./../models/User");
 const catchAsync = require("./../utils/catchAsync");
+const bcrypt = require("bcryptjs");
 
 //This method should be altered such that it becomes for only a given workspace...
 exports.getAllUsers = catchAsync(async (req, res) => {
@@ -35,7 +36,28 @@ exports.isUserLoggedIn = catchAsync(async (req, res, next) => {
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
-  await user.findByIdAndUpdate(req.user.id, req.body, { new: true });
+  const {email, current_password, new_password} = req.body
+  const checkUser = await user.findOne({email}).select("+password");
+
+  if(!checkUser || !(await checkUser.correctPassword(current_password, checkUser.password))) {
+    res.json({
+      status: "failed",
+      error: "Credentials provided for the account is invalid"
+    })
+    return next(new AppError("Credentials provided for the account is invalid", 401));
+  }
+
+  if(current_password === new_password){
+    res.json({
+      status: "failed",
+      error: "New password cannot be same as the current password"
+    })
+
+    return next(new AppError("New password is same as the previous one", 401));
+  }
+
+  const changePass = {password: await bcrypt.hash(new_password, 10)}
+  await user.findByIdAndUpdate(req.user.id, changePass, { new: true });
   res.status(201).json({
     status: "success",
     data: req.user
