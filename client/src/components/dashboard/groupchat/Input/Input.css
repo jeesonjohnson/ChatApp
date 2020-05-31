@@ -7,10 +7,19 @@
     border: none;
     border-radius: 0;
     padding: 5%;
-    width: 80%;
+    width: 75%;
     font-size: 1.2em;
-    color: white;
+    color: black;
+    border-right: 2px solid #D3D3D3;
     background-color: #36393f;
+  }
+
+  .fileUploadButton{
+    width:5%;
+    color:black;
+    border: 2px solid #D3D3D3;
+    background-color:black;
+
   }
   
   input:focus, textarea:focus, select:focus{

@@ -145,7 +145,7 @@ const Chat = (props) => {
       }
     }
   };
-
+  const currentUserID = store.getState().user._id;
   return (
     <div className="overallChatContainer">
       <div className="outerChatContainer">
@@ -153,9 +153,13 @@ const Chat = (props) => {
           <InfoBar room={roomTitle} user={name} />
           <Messages messages={messages} name={name} />
           <Input
-            message={message}
-            setMessage={setMessage}
-            sendMessage={sendMessage}
+          message={message}
+          setMessage={setMessage}
+          sendMessage={sendMessage}
+          socket={socket}
+          room={room}
+          name={name}
+          currentUserID={currentUserID}
           />
         </div>
       </div>

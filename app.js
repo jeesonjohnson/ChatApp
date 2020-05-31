@@ -10,6 +10,8 @@ const http = require("http");
 const socketio = require("socket.io");
 const chat = require("./controllers/usersLiveChat.js");
 const cors = require('cors');
+//File uploading function
+const fileUpload = require('express-fileupload');
 //Custom routes
 const userRouter = require("./routes/userRoutes");
 const companyRouter = require("./routes/companyRoutes");
@@ -36,6 +38,8 @@ app.use(
 app.use(bodyParser.json());
 //Text compression for heroku
 app.use(compression());
+//For file upload
+app.use(fileUpload());
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString;
@@ -53,6 +57,26 @@ app.use("/groupmessage", groupMessageRouter);
 app.use("/privatechat", privateChatRouter);
 app.use("/privatemessage", privateMessageRouter);
 
+// Upload Endpoint
+app.post('/upload', (req, res) => {
+  if (req.files === null) {
+    return res.status(400).json({ msg: 'No file uploaded' });
+  }
+
+  const file = req.files.file;
+
+  file.mv(`${__dirname}/client/public/uploads/${file.name}`, err => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send(err);
+    }
+    res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
+  });
+});
+
+
+
+
 app.get("*", (req, res, next) => {
   next(new AppError(`The route ${req.originalUrl} is not defined`, 404));
 });
@@ -61,57 +85,6 @@ app.use(globalErrorhandler);
 
 
 app.use(cors());
-// ######################### SOCKET IO(live chat) ##########################
-// //Setting up chat, and socket io
-// const server = http.createServer(app);
-// //Before const io = socketio(server);
-// const io = require("socket.io")(server, {
-//   handlePreflightRequest: (req, res) => {
-//     const headers = {
-//       "Access-Control-Allow-Headers": "Content-Type, Authorization",
-//       "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
-//       "Access-Control-Allow-Credentials": true,
-//     };
-//     res.writeHead(200, headers);
-//     res.end();
-//   },
-// });
-
-
-// //starting sockets
-// io.on(`connection`, (socket) => {
-//   console.log("A user has JOINEEEEEEEEEEEEEEEEEEEEED");
-
-//   socket.on("chatjoin", ({ name, room }, callback) => {
-//     //Assing a user to chat values
-//     const { error, user } = chat.addUser({ id: socket.id, name, room });
-//     if (error) return callback(error);
-
-//     socket.join(user.room);
-
-//     callback();
-//   });
-
-//   socket.on("sendMessage", (message, callback) => {
-//     const user = getUser(socket.id);
-//     io.to(user.room).emit("message", { user: user.name, text: message });
-//     callback();
-//   });
-
-//   socket.on("disconnect", () => {
-//     const user = removeUser(socket.id);
-//     if (user) {
-//       io.to(user.room).emit("message", {
-//         user: "UserBot",
-//         text: `${user.name} has left.`,
-//       });
-//       io.to(user.room).emit("roomData", {
-//         room: user.room,
-//         users: getUsersInRoom(user.room),
-//       });
-//     }
-//   });
-// });
 
 
 module.exports = app;

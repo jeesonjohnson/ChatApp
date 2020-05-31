@@ -1,0 +1,13 @@
+.svg_scale{
+    /* transform: scale(10); */
+    width: 600px;
+    height: 600px;
+  }
+  
+  .downloadTitle{
+     color: red;
+     font-size: 30px;
+     text-decoration: none;
+     
+  
+  }

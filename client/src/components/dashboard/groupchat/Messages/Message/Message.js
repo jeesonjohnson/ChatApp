@@ -11,6 +11,8 @@ import Store from "../../../../../store/index"
 import YouTube from "react-youtube";
 //Regarding Maps
 import Map from "./API/Map/Map";
+//Regarding fileupload
+import FileWidget from "./API/FileUpload/FileWidget";
 
 const Message = ({ message: { text, user,name }}) => {
   let isSentByCurrentUser = false;
@@ -41,6 +43,12 @@ const Message = ({ message: { text, user,name }}) => {
   ) {
     youtubeVideo = true;
   }
+
+  var fileUpload = false;
+  if(text.toLowerCase().indexOf(">>file")>=0){
+    noAPIText="";
+    fileUpload=true;
+  }
   
 
   return isSentByCurrentUser ? (
@@ -50,6 +58,7 @@ const Message = ({ message: { text, user,name }}) => {
         <p className="messageText colorWhite">
           {ReactEmoji.emojify(noAPIText)}
         </p>
+        <div>{fileUpload ? <FileWidget text={text}/> : null}</div>
         <div>{APICallExists ? ActualAPIRender : null}</div>
         <div>{youtubeVideo ? playYoutube(text) : null}</div>
       </div>
@@ -58,6 +67,7 @@ const Message = ({ message: { text, user,name }}) => {
     <div className="messageContainer justifyStart">
       <div className="messageBox backgroundLight">
         <p className="messageText colorDark">{ReactEmoji.emojify(noAPIText)}</p>
+        <div>{fileUpload ? <FileWidget text={text}/> : null}</div>
         <div>{APICallExists ? ActualAPIRender : null}</div>
         <div>{youtubeVideo ? playYoutube(text) : null}</div>
       </div>
