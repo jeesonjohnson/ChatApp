@@ -40,20 +40,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   const checkUser = await user.findOne({email}).select("+password");
 
   if(!checkUser || !(await checkUser.correctPassword(current_password, checkUser.password))) {
-    res.json({
-      status: "failed",
-      error: "Credentials provided for the account is invalid"
-    })
     return next(new AppError("Credentials provided for the account is invalid", 401));
-  }
-
-  if(current_password === new_password){
-    res.json({
-      status: "failed",
-      error: "New password cannot be same as the current password"
-    })
-
-    return next(new AppError("New password is same as the previous one", 401));
   }
 
   const changePass = {password: await bcrypt.hash(new_password, 10)}

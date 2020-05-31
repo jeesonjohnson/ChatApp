@@ -40,6 +40,8 @@ class EditUser extends Component
             ReactDOM.render("New password requires minimum of 8 characters", document.getElementById('error-display'))
         }else if(this.state.new_password !== this.state.confirm_password){
             ReactDOM.render("Passwords do not match", document.getElementById('error-display'))
+        }else if(this.state.current_password === this.state.new_password){
+            ReactDOM.render("New password cannot be same as the current password", document.getElementById('error-display'))
         }else{
             const userData = {
                 email: this.state.email,
@@ -55,12 +57,10 @@ class EditUser extends Component
                         window.location.href = "/"
                         window.alert("Password changed successfully.\nPlease log back in again")
                     })
-                }else{
-                    ReactDOM.render(res.data.error, document.getElementById('error-display'))
                 }
 
             }).catch(err => {
-                console.log("Server error" + err)
+                ReactDOM.render("Credentials provided for the account is invalid", document.getElementById('error-display'))
             })
         }
        
