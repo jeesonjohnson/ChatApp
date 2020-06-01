@@ -18,13 +18,19 @@ exports.getAllTodoElements = catchAsync(async (req, res, next) => {
 
 //Create a new todocollection
 exports.createTodo = catchAsync(async (req, res, next) => {
-  var CollectionDetails = await Collection.findById(req.body.collectionid);
+  var CollectionDetails = await Collection.findById(req.body.collection_id);
+  
   //Creates the todo element with appropriate parameters
-  var dueDate = Date(req.body.due_date);
   var creationDate = Date(req.body.creation_date);
+
+  console.log(req.body.due_date)
+  if(req.body.due_date !== ""){
+    var dueDate = new Date(req.body.due_date);
+  }
+
   var newTodo = await TodoElement.create({
     title: req.body.title,
-    collectionID: req.body.collectionid,
+    collectionID: req.body.collection_id,
     description: req.body.description,
     assigned_users: req.body.assigned_users,
     progress_status: req.body.progress_status,
