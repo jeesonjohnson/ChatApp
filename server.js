@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-
+const express = require('express');
+const morgan = require("morgan");
+const PORT = process.env.PORT || 8082;
 //Set environment variables
 dotenv.config({ path: "./config.env" });
 
@@ -23,60 +25,71 @@ mongoose
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 
-app.listen(process.env.PORT, () =>
-  console.log(`Server running on port ${process.env.PORT}`)
+
+//Methods for trying hosting
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+}
+
+app.use(morgan('tiny'));
+
+
+app.listen(PORT, () =>
+  console.log(`Server running on port ${PORT}`)
 );
 
 
-//Live chat methods
-const express = require('express');
-const http = require("http");
-const socketio = require("socket.io");
-const chat = require("./controllers/usersLiveChat.js");
-const cors = require('cors');
-const { addUser, removeUser, getUser, getUsersInRoom } = require('./controllers/usersLiveChat');
+// //Live chat methods
+// const http = require("http");
+// const socketio = require("socket.io");
+// const chat = require("./controllers/usersLiveChat.js");
+// const cors = require('cors');
+// const { addUser, removeUser, getUser, getUsersInRoom } = require('./controllers/usersLiveChat');
 
 
-const liveChatApp = express();
-const server = http.createServer(liveChatApp);
-const io = socketio(server);
+// const liveChatApp = express();
+// const server = http.createServer(liveChatApp);
+// const io = socketio(server);
 
 
-liveChatApp.use(cors());
+// liveChatApp.use(cors());
 
 
-io.on('connect', (socket) => {
-  socket.on('join', ({ name, room, user_id }, callback) => {
-    const { error, user } = addUser({ id: socket.id, name, room,user_id});
+// io.on('connect', (socket) => {
+//   socket.on('join', ({ name, room, user_id }, callback) => {
+//     const { error, user } = addUser({ id: socket.id, name, room,user_id});
 
-    if(error) return callback(error);
+//     if(error) return callback(error);
 
-    socket.join(user.room);
+//     socket.join(user.room);
 
-    // socket.emit('message', { user:user.id,name: 'admin', text: `${user.name}, welcome to room ${user.room}.`,user_id:user_id});
-    // socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!`,user_id: user_id});
+//     // socket.emit('message', { user:user.id,name: 'admin', text: `${user.name}, welcome to room ${user.room}.`,user_id:user_id});
+//     // socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!`,user_id: user_id});
 
-    io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+//     io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
-    callback();
-  });
+//     callback();
+//   });
 
-  socket.on('sendMessage', (message, callback) => {
-    const user = getUser(socket.id);
-    io.to(user.room).emit('message', { user:user.user_id,name: user.name, text: message });
+//   socket.on('sendMessage', (message, callback) => {
+//     const user = getUser(socket.id);
+//     io.to(user.room).emit('message', { user:user.user_id,name: user.name, text: message });
 
-    callback();
-  });
+//     callback();
+//   });
 
-  socket.on('disconnect', () => {
-    const user = removeUser(socket.id);
+//   socket.on('disconnect', () => {
+//     const user = removeUser(socket.id);
 
-    if(user) {
-      io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
-      io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
-    }
-  })
-});
+//     if(user) {
+//       io.to(user.room).emit('message', { user: 'Admin', text: `${user.name} has left.` });
+//       io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
+//     }
+//   })
+// });
 
-server.listen(process.env.PORT || 8083, () => console.log(`Server has started. PORT 8083, live chat`));
+// server.listen(process.env.PORT || 8083, () => console.log(`Server has started. PORT 8083, live chat`));
 
