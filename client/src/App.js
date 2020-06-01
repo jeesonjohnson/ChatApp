@@ -45,11 +45,11 @@ class App extends Component {
       <ThemeProvider theme={theme}>
         <Router>
           <div id="app" style={{fontFamily:"Roboto"}}>
-            <Route exact path="/" component={Home}/>
-            <Route exact path="/pricing" component={Pricing} />
-            <Route exact path="/resources" component={Resources} />
-            <Route exact path="/sign_up" component={SignUp} />
-            <Route exact path="/login" component={Login} />
+            <Route path="/" component={Home}/>
+            <Route path="/pricing" component={Pricing} />
+            <Route path="/resources" component={Resources} />
+            <Route path="/sign_up" component={SignUp} />
+            <Route path="/login" component={Login} />
             {//Logout 
             }
 
