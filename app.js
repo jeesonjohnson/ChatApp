@@ -28,11 +28,17 @@ const app = express();
 
 //#########################   MAIN BACKEND  ###########################
 //Bodyparser middleware
-app.use(
-  bodyParser.urlencoded({
-    extended: false,
-  })
-);
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: false,
+//   })
+// );
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true})); 
+
+
+
 //    Middleware
 //Allow parsing of body elements as JSON Objects
 app.use(bodyParser.json());
