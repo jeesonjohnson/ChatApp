@@ -5,11 +5,12 @@
   "main": "server.js",
   "scripts": {
     "build": "cd client && npm run build",
-    "install-client":"cd client && npm install",
-    "server": "node server.js",
+    "install-client": "cd client && npm install",
+    "start": "node server.js",
+    "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "heroku-postbuild":"npm run install-client && npm run build"
+    "heroku-postbuild": "npm run install-client && npm run build"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
     "material-ui-dropzone": "^3.0.0",
     "material-ui-icons": "^1.0.0-beta.36",
     "mongoose": "^5.9.3",
+    "morgan": "^1.10.0",
     "promisify": "0.0.3",
     "react-bootstrap": "^1.0.1",
     "react-dropzone": "^11.0.1",
