@@ -16,12 +16,13 @@ class Login extends Component {
       errors: {}
     };
   }
-  
+
+
   onChange = e => {
     this.setState({ [e.target.id]: e.target.value });
   };
   
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
     const userData = {
       email: this.state.email,
@@ -29,10 +30,10 @@ class Login extends Component {
     };
 
     axios.post('/users/login', {userData})
-    .then(res => {
+    .then(async res => {
       //Check response for if login was successful
       if(res.data.status === res.data.data.user.email){
-        store.dispatch({ type: 'USER_LOGGED_IN', data: { user: res.data.data.user }})    
+        await store.dispatch({ type: 'USER_LOGGED_IN', data: { user: res.data.data.user }})    
         window.location.href = '/dashboard'
       }
     })
