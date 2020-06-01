@@ -27,16 +27,16 @@ mongoose
   .catch(err => console.log(err));
 
 
-//Methods for trying hosting
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
+  // Serve any static files
+  app.use(express.static(path.join(__dirname, 'client/build')));
+    
+  // Handle React routing, return all requests to React app
+  app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
 }
-
-app.use(morgan('tiny'));
-
 
 app.listen(PORT, () =>
   console.log(`Server running on port ${PORT}`)

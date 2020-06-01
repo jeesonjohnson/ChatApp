@@ -33,6 +33,9 @@ const app = express();
 //     extended: false,
 //   })
 // );
+//Methods for trying hosting
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 
