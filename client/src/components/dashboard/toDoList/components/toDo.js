@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { connect } from 'react-redux';
 import store from '../../../../store';
@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import Avatar from '@material-ui/core/Avatar';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
-import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox2 from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
@@ -16,107 +16,133 @@ import DateFnsUtils from '@date-io/date-fns';
 import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
+import { Checkbox } from 'react-materialize';
+
+import EditTaskModal from './editTaskModal.js';
 import {PieChart, Pie, Cell, Label} from 'recharts';
 
-function Todo ( props ) {    
-    const [taskDetails, setTaskDetails] = useState({})
+function Todo ( {classes, collection, todo} ) {    
+    const colors = [ "#a0f3d7", "#52776c" ] //Light and Dark teal
+    const [taskDetails, setTaskDetails] = React.useState({})
     const [toDoChecked, setToDoChecked] = React.useState(false);
-    const [selectedDate, setSelectedDate] = React.useState(new Date(Date.now()));
-
+    
     const loadToDoElement = async () => {
-        const response = await axios.get('/todo/', { params: { todo_id: props.todo } })
+        const response = await axios.get('/todo/', { params: { todo_id: todo } })
         .then(res => {
             return res.data.data.todoDetails
         })
         
         setTaskDetails(response)
+
+        if(taskDetails.progress_status === 100){
+            setToDoChecked(true)
+        }
+    }
+    
+    useEffect( () => {
+        loadToDoElement( todo )
+        
+    }, [])
+    
+    const loadPieChart = () => {
+        const progress_data = [
+            {
+              "name": "Completed",
+              "value": taskDetails.progress_status 
+            },
+            {
+              "name": "In Progress",
+              "value": 100 - taskDetails.progress_status
+            }
+        ]
+        
+        return(
+            <PieChart width={75} height={75} >
+                <Pie data={progress_data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={20} outerRadius={30} >
+                    <Label value={`${taskDetails.progress_status}%`} offset={0} position="center" />
+                    {
+                        progress_data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={colors[index]} />
+                        ))
+                    }
+                </Pie>
+            </PieChart>
+        )
     }
 
-    useEffect( () => {
-        loadToDoElement( props.todo )
-    }, [])
-
-
-    
-      const data02 = [
-        {
-          "name": "Completed",
-          "value": taskDetails.progress_status 
-        },
-        {
-          "name": "In Progress",
-          "value": 100 - taskDetails.progress_status
-        }
-      ];
-
-    //   const colors = [ "#f1b92e", "#725bda" ] //Purple and yellow
-    const colors = [ "#a0f3d7", "#52776c" ] //Light and Dark teal
+    const handleToDoChecked = (event) => {
+        setToDoChecked(event.currentTarget.checked);
+    };
 
     return(
-    <Paper style={{marginTop: 10}} xs={4}>
+    <Paper style={{marginTop: 10, maxWidth:220}} >
         {taskDetails === {} ?
             null
             :
-            <Grid >
-                <Grid item container >
-                    <Typography item className="valign-wrapper">
-                        <Checkbox item checked={taskDetails.progress_status === 100 ? true : false} onChange={e => setToDoChecked(e.target.checked)} inputProps={{ 'aria-label': 'primary checkbox' }} label="tes"/>
-                        
-                        {taskDetails.title}
-                        
-                        <IconButton> 
-                            {//onClick={e => this.deleteTaskCollection(e.currentTarget)}>
+            <Grid container >
+                <Grid item container xs={12} className="valign-wrapper" style={{marginLeft:10}} > 
+                    <Checkbox item xs={11} checked={toDoChecked} filledIn id={`Checkbox_${todo}`} label={taskDetails.title} onChange={e=> handleToDoChecked(e)} />
+                    <EditTaskModal item xs={1} {...{classes, collection, todo}} style={{right:0}} />
+                </Grid>
+
+                {!toDoChecked ? 
+                    <Grid item xs={12}>
+                        {loadPieChart()}
+                    </Grid>
+                : null}
+
+                {!toDoChecked ?
+                    <Grid item xs={12}>
+                        <Typography style={{noWrap:"pre", overflow:"auto"}}>{taskDetails.description}</Typography>
+                    </Grid>
+                : null}
+
+                {!toDoChecked ?
+                    <Grid item xs={12} >
+                        <MuiPickersUtilsProvider utils={DateFnsUtils} item>
+                            <Grid item>
+                                <KeyboardDatePicker disabled margin="normal" id="date-picker-dialog" type="datatime-local" label="Start Date" format="dd/MM/yyyy" value={taskDetails.creation_date} />
+                            </Grid>
+                            <Grid item>
+                                <KeyboardDatePicker disabled margin="normal" id="date-picker-dialog" type="datatime-local" label="Due Date" format="dd/MM/yyyy" value={taskDetails.due_date}  />
+                            </Grid>
+                        </MuiPickersUtilsProvider>
+                    </Grid>
+                : null}
+
+                {!toDoChecked ?
+                    <Grid item container xs={12} >
+                        <AvatarGroup max={4} xs={12} item>
+                            {taskDetails.assigned_users !== undefined ?
+                                taskDetails.assigned_users.length > 0 ?
+                                    taskDetails.assigned_users.map((name, index) => (
+                                        <Avatar alt="assigned_user" src="" style={{width:30, height:30}}>{name[0]}</Avatar>
+                                    ))
+                                    :
+                                    null
+                                :
+                                null
                             }
-                            <MoreVertIcon aria-label="delete" style={{color:"#f1b92e"}}/>
-                        </IconButton>
-                    </Typography>
-                    
-                    <PieChart width={75} height={75} >
-                        <Pie data={data02} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={20} outerRadius={30} >
-                            <Label value={`${taskDetails.progress_status}%`} offset={0} position="center" />
-                            {
-                                data02.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={colors[index]} />
-                                ))
-                            }
-                        </Pie>
-                    </PieChart>
-                </Grid>
-
-                <Grid item >
-                        <Typography >{taskDetails.description}</Typography>
-                </Grid>
-
-                <Grid item  >
-                    <MuiPickersUtilsProvider utils={DateFnsUtils} xs={6} item>
-                        <Grid container item>
-                            <KeyboardDatePicker margin="normal" id="date-picker-dialog" label="Start Date" format="MM/dd/yyyy" value={taskDetails.creation_date} onChange={e => setSelectedDate(e)} KeyboardButtonProps={{'aria-label': 'change date'}} />
-                        </Grid>
-                        <Grid container item>
-                            <KeyboardDatePicker margin="normal" id="date-picker-dialog" label="Due Date" format="MM/dd/yyyy" value={taskDetails.due_date} onChange={e => setSelectedDate(e)} KeyboardButtonProps={{'aria-label': 'change date'}} />
-                        </Grid>
-                    </MuiPickersUtilsProvider>
-
-                </Grid>
-
-                <Grid item container >
-                    <AvatarGroup max={4} xs={12} item>
-                        {
-                            ["A","B","C","D","E"].map((name, index) => (
-                                <Avatar alt="Remy Sharp" src="" style={{width:30, height:30}}>{name}</Avatar>
-                            ))
-                        }
-                    </AvatarGroup>
-                </Grid>
+                        </AvatarGroup>
+                    </Grid>
+                : null}
 
             </Grid>
+                
             //, taskDetails.creation_date, taskDetails.due_date, taskDetails.progress_status, taskDetails.description, taskDetails.assigned_users
         }
     </Paper>
 )}
 
 const mapStateToProps = state => {
-    return {selectedCompany: state.selectedCompany, companies: state.companies, workspaces: state.workspaces, selectedWorkspace: state.selectedWorkspace, taskCollectionIDs: state.taskCollectionIDs, workspaceTaskCollections: state.workspaceTaskCollections}
+    return {
+        selectedCompany: state.selectedCompany, 
+        companies: state.companies, 
+        workspaces: state.workspaces, 
+        selectedWorkspace: state.selectedWorkspace, 
+        taskCollectionIDs: state.taskCollectionIDs, 
+        workspaceTaskCollections: state.workspaceTaskCollections
+    }
 }
       
 const mapDispatchToProps = dispatch => {
