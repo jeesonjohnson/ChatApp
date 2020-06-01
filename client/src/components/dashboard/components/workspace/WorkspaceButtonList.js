@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
+
 import { makeStyles } from "@material-ui/core/styles";
-import ListSubheader from "@material-ui/core/ListSubheader";
+
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -9,7 +9,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import StarBorder from "@material-ui/icons/StarBorder";
 
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ListIcon from "@material-ui/icons/ListAltRounded";
@@ -25,7 +24,7 @@ import GroupIcon from "@material-ui/icons/Group";
 
 import { connect } from "react-redux";
 import store from "../../../../store";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#36393f",
   },
 }));
-
 
 function WorkspaceButtonList() {
   const classes = useStyles();
@@ -79,7 +77,7 @@ function WorkspaceButtonList() {
   
   //Loads the data for groupchats
   const loadGroupChats = async () => {
-    if(workspaceData.group_chats != undefined){ //Checks if the groupchats were loaded in
+    if(workspaceData.group_chats !== undefined){ //Checks if the groupchats were loaded in
       if(workspaceData.group_chats.length > 0){ //Checks if there are any groupchats for the workspace
         var a = []
         workspaceData.group_chats.map((group_chat) => (
@@ -91,7 +89,7 @@ function WorkspaceButtonList() {
     }
   };
 
-  const handleSelected = (e) => {
+  const handleSelected = async (e) => {
     setSelectedPanel(e.currentTarget.id);
     store.dispatch({
       type: "SELECTED_PANEL",
