@@ -83,9 +83,9 @@ app.post('/upload', (req, res) => {
 
 
 
-app.get("*", (req, res, next) => {
-  next(new AppError(`The route ${req.originalUrl} is not defined`, 404));
-});
+// app.get("*", (req, res, next) => {
+//   next(new AppError(`The route ${req.originalUrl} is not defined`, 404));
+// });
 
 app.use(globalErrorhandler);
 
