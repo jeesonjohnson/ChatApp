@@ -50,7 +50,8 @@ const reducer = (state = initalState, action) => {
       });
     case "COLLECTION_ADDED":
       return Object.assign({}, state, {
-        taskCollectionIDs: [state.taskCollectionIDs, action.data.collectionID],
+        taskCollectionIDs: [state.taskCollectionIDs, action.data.id],
+        workspaceTaskCollections : [state.workspaceTaskCollections, action.data.workspaceid]
       });
     case "COLLECTION_DELETED":
       return Object.assign({}, state, {

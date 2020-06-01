@@ -6,7 +6,7 @@ import Pricing from "./components/home/Pricing.js";
 import Resources from "./components/home/Resources.js";
 import SignUp from "./components/auth/signUp.js";
 import Login from "./components/auth/Login.js";
-import Dashboard from "./components/dashboard/Dashboard.js";
+import Dashboard from "./components/dashboard/Dashboard.js"
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
@@ -54,7 +54,7 @@ class App extends Component {
             }
 
           </div>
-          <div id="#app-dashboard">
+          <div id="#app-dashboard" style={{overflow:"hidden"}}>
             <Route exact path="/dashboard" component={Dashboard}/>
           </div>
           

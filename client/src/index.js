@@ -9,7 +9,7 @@ import store from './store/index.js';
 window.store = store 
 
 ReactDOM.render(
-  <React.StrictMode>
+  <React.StrictMode  style={{overflow:"hidden"}}>
     <Provider store={store}>
       <App />
     </Provider>

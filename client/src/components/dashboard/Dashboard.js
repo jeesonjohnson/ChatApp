@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import axios from 'axios'
-import store from './../../store';
+import store from '../../store';
 import { connect } from 'react-redux';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,26 +15,36 @@ import Paper from '@material-ui/core/Paper';
 import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Avatar from '@material-ui/core/Avatar';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputBase from '@material-ui/core/InputBase';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Button from '@material-ui/core/Button';
+import MenuIcon from '@material-ui/icons/Menu';
+
 
 import SettingsIcon from '@material-ui/icons/Settings';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SearchIcon from '@material-ui/icons/Search';
 
-import MobileDashboard from '../dashboard/mobileScreen/MobileDashboard.js';
+import MobileDashboard from './mobileScreen/MobileDashboard.js';
 import { CompanyDrawer, WorkspaceDrawer } from './components/drawers/Drawers.js';
 import WorkspacePanelItems from './components/workspace/WorkspaceButtonList.js';
 import EditUserModal from './components/modals/editUserModal.js';
 import WorkspaceMenu from './components/menus/menu.js';
-import { getCompanies } from './DataLoading.js';
+import { getCompanies, checkIfAdmin } from './DataLoading.js';
 
+import Calendar from './calendar/calendar.js';
+// import Calendar from './components/calendar/calendar.js';
+import Chat from './groupchat/Chat.js';
+import Chart from './chart/Charts.js';
 import ToDoPage from './toDoList/toDoPage.js';
-import Chat from '../dashboard/groupchat/Chat.js';
-import Calendar from './components/calendar/calendar'
+import Announcements from './announcements/announcements.js';
+
 
 const drawerWidth = 240;
 
@@ -42,7 +52,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     height:"100vh",
-    backgroundColor: '#202225'
+    backgroundColor: '#202225',
+    width:"100%"
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
@@ -59,9 +70,6 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButtonHidden: {
     display: 'none',
-  },
-  title: {
-    flexGrow: 1,
   },
   drawerPaper: {
     position: 'relative',
@@ -87,9 +95,10 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     marginTop: '1vh',
-    overflow: 'auto',
+    overflowX: "auto", 
+    overflowY: "hidden", 
+    width:"100%",
     backgroundColor: '#36393f',
-    borderTopLeftRadius: 50,
   },
   mobile_content: {
     flexGrow: 1,
@@ -105,6 +114,9 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column',
+  },
+  title:{
+    flexGrow: 1
   },
   fixedHeight: {
     height: 240,
@@ -135,54 +147,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function checkIfAdmin(){
-  for(var currentCompany in store.getState().companies){
-    if (store.getState().companies[currentCompany] === store.getState().selectedCompany){
-      for(var currentUser in store.getState().companies[currentCompany]){
-        if(store.getState().companies[currentCompany].admins[currentUser] === store.getState().user._id){
-          return("Admin")
-        }
-      }
-    } 
-    else {
-      return("User")
-    }
-  }
-}
-
 function Dashboard() {
-
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  var user = store.getState().user
-  useSelector(state=> state.selectedPanel)
-  useSelector(state=> state.selectedWorkspace)
+  
+  var selected_workspace_name = "";
+  var selectedWorkspace =  {}
+  var selectedPanel = useSelector(state => state.selectedPanel)
+  var user = useSelector(state=> state.user)
+  var role = user.owner && store.getState().selectedCompany === user.companies[0] ? "Owner" : checkIfAdmin()
 
   useEffect(() => { 
+    //Load user if no name found
     if( store.getState().user.name === ""){
-      axios.get(`/users/status`).then(res =>{
+      axios.get(`/users/status`)
+      .then(res =>{
         store.dispatch({ type: 'USER_LOGGED_IN', data: { user: res.data.data }})  
         user = store.getState().user
         getCompanies("")
       })
     }
-
-  });
+  }, [store.getState().selectedCompany, store.getState().selectedWorkspace, store.getState().selectedPanel]);
   
-  const selected_workspace_name = useSelector(state=> state.selectedWorkspace);
-  const selected_workspace_id = useSelector(state=> state.selectedWorkspace);
-  var selectedWorkspace =  {}
-  var selectedPanel = ""
-  var role = user.owner && store.getState().selectedCompany === user.companies[0] ? "Owner" : checkIfAdmin()
   
   if(store.getState().workspaces[0] !== undefined){
     for (var i in store.getState().workspaces){
       if (store.getState().workspaces[i]._id === store.getState().selectedWorkspace){
         selectedWorkspace = store.getState().workspaces[i] // Sets the name of the selected Workspace
-        selectedPanel = selectedWorkspace.name
+        selected_workspace_name = selectedWorkspace.name
       }
-    }
-
+    }    
   }
   
   //Menu Item 
@@ -197,38 +191,50 @@ function Dashboard() {
   };
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{overflow:"hidden"}}>
       <CssBaseline />
       
       <Hidden smDown>
         <CompanyDrawer classes={classes} />
 
         <WorkspaceDrawer classes={classes} />
-
-        <main className={classes.content} style={{overflow:"hidden" }}> 
  
-        <Grid container direction="column" justify="space-between" alignItems="stretch" md={2} spacing={0} style={{float:"left"}}>
-
+        {/* Workspace Panel buttons */}
+        <Grid container md={2} spacing={0} style={{minWidth:200}}>
+            {/* Workspace name area */}
             <Grid item md={12} >
-              <div style={{ height:"10vh",backgroundColor:"#2f3136"}} className="valign-wrapper center-align">
-                <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                  {selectedPanel}
-                </Typography>  
-                  <WorkspaceMenu classNames={selectedPanel} />
+              <div >
+
+              <Card style={{height:"10vh", backgroundColor:"#2f3136", borderTopLeftRadius:50, marginTop:"1vh", width:'100%'}} className="valign-wrapper center-align" >
+                <CardHeader
+                  avatar={<Avatar alt="Logo" src="logo.png"  />} //{/*className={classes.avatar}>*/}
+                  action={
+                    <IconButton aria-label="settings" style={{}}>
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                  title={selected_workspace_name !== undefined ? <Typography style={{width:"100%"}}>{selected_workspace_name}</Typography> : null}
+                  // subheader={user.name !== undefined && role !== undefined ? user.name + " : " + role : null}
+                />
+                
+              </Card>
+
               </div>
             </Grid>
 
+            {/* List of Page buttons */}
             <Grid item md={12} >
-              <div style={{height:"80vh", backgroundColor:"#2f3136", overflow:"auto"}}>
+              <div style={{height:"79vh", backgroundColor:"#2f3136", overflow:"auto" }}>
                 <List style={{backgroundColor:"#2f3136",  minWidth:"46px" }} >
                   <WorkspacePanelItems />
                 </List>
               </div>
             </Grid>
 
+            {/* User Card */}
             <Grid item md={12} >
-              <div style={{ height:"10vh", backgroundColor:"#202225"}} >
-                <Card elevation={0} style={{backgroundColor:"#202225", shadow:"none"}}>
+              <div style={{ height:"10vh", backgroundColor:"#202225", verticalAlign:"text-top"}} >
+                <Card elevation={0} style={{backgroundColor:"#202225", shadow:"none", paddingTop:0}}>
                     <CardHeader
                       avatar={<Avatar aria-label="avatar" className={classes.avatar}>{user.name[0]}</Avatar>}
                       // action={<IconButton aria-label="settings"><SettingsIcon /></IconButton>}
@@ -243,83 +249,88 @@ function Dashboard() {
 
         </Grid>
 
-        <Grid container direction="column" justify="space-between" alignItems="stretch" md={10} spacing={0} style={{}}>
+        {/* Content panel */}
+        <Grid container id="main" className={classes.content} > 
+        
 
-            <Grid item md={12} >
-              <div style={{backgroundColor:"#2f3136", width:"100%", maxHeight:75, height:"10vh", paddingTop:"2vh", paddingBottom:"2vh"}}>
-                <IconButton style={{float:"right", marginRight:"10px"}} type="submit" aria-label="search">
+          {/* Top bar with search */}
+          <AppBar container id="appbar" position="static" style={{backgroundColor:"#2f3136"}} width={document.getElementById('main') !== null ? document.getElementById('main').scrollWidth : null}>
+            <Toolbar>
+              <Typography variant="h6" />
+                <InputBase style={{width:"25%", float:"right"}} placeholder="Search" inputProps={{ 'aria-label': 'search' }} />
+                <IconButton  edge="start" color="inherit" aria-label="menu">
                   <SearchIcon />
                 </IconButton>
-                <InputBase style={{width:"25%", float:"right"}}
-                  className={classes.input}
-                  placeholder="Search"
-                  inputProps={{ 'aria-label': 'search' }}
-                />
-              </div>
-            </Grid>
+            </Toolbar>
+          </AppBar>
+          
 
-            <Grid item md={12} style={{overflow:"scroll"}}>
-              <div style={{height:"90vh"}} >
-                {/* General layout */}
-                {/* Announcements layout */}
-                {/* Text chat layout */}
-                {/*  */}
+          {/* Main body of content */}
+          {/* <Grid container direction="column" spacing={0} style={{width:"100%",overflow:"scroll"}} > */}
+          <div style={{width:"100%", overflow:"auto"}} >   
+              {/* <Grid item md={12} > */}
+                  {/* General layout */}
+                  {/* Text chat layout */}
 
-              <Container item maxWidth="lg" className={classes.container} >
-                <Grid container spacing={3} >
-                    
-                  {/* Calendar layout */}
-                  {store.getState().selectedPanel === "Calendar" ? 
+                <div item className={classes.container} style={{height:"90vh", paddingLeft: 25 }}>
+
+                  {/* Tasks layout */}
+                    {selectedPanel === "Tasks" ? 
+                      <ToDoPage />
+                    : 
+                    null
+                    }
+
+                  {/* Announcements layout */}
+                  {selectedPanel === "Announcements" ? 
                     <Grid item xs={12} md={8} lg={9}>
-                      <Paper className={fixedHeightPaper}>
-                        {/* <Calendar /> */}
-                        <h4>Calendar</h4>
+                      {/* <Paper className={fixedHeightPaper}> */}
+                        <Announcements />
+                      {/* </Paper> */}
+                    </Grid>
+                  : 
+                  null
+                  }
+
+                  {/* Calendar layout */}
+                  {selectedPanel === "Calendar" ? 
+                    <Grid item xs={12} md={12} lg={12}>
                         <br />
                         <Calendar />
-                      </Paper>
                     </Grid>
-                    : null
+                  : 
+                  null
                   }
 
                   {/* Charts layout */}
-                  {store.getState().selectedPanel === "Charts" ? 
-                    <Grid item xs={12} md={8} lg={9}>
-                      <Paper className={fixedHeightPaper}>
-                        {/* <Chart /> */}
-                        {"Charts"}
-                      </Paper>
-                    </Grid>
-                    : null}
-  
-                  {/* Tasks layout */}
-                  {store.getState().selectedPanel === "Tasks" ? 
-                    <Grid item xs={12} md={12} lg={12} >
-                      <ToDoPage/>
-                    </Grid>
-                    : null}
+                  {selectedPanel === "Charts" ? 
+                    <div>
+                      <Chart />
+                    </div>  
+                  : 
+                  null
+                  }
 
-                    {store.getState().selectedPanel != "Calendar" && store.getState().selectedPanel != "Charts" && store.getState().selectedPanel != "Tasks" && store.getState().allSelectedWorkspaceData != undefined ? //Checks if non-standard-defined name and there is data for the workspace
-                      store.getState().allSelectedWorkspaceData.group_chats.length > 0 ? //Checks there are group chats available
-                        store.getState().allSelectedWorkspaceData.group_chats.map((group_chat) => { //Loop through each group chat
-                          if(group_chat.title === store.getState().selectedPanel){ //Render the page if the selected panel name is the same as the current group chat being checked
-                            return(<Chat {...group_chat} />)
-                          }
-                        })
-                        :
-                        null
-                      :
-                      null
-                    //store.getState().allSelectedWorkspaceData.group_chats //Array of objects // .map((group) => if store.getState().selectedPanel === store.getState().allSelectedWorkspaceData.groupChats[i].title) 
-                    }
+                  {/* Chat layout */}
+                  {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "Announcements" && store.getState().allSelectedWorkspaceData.group_chats !== undefined ? //Checks if non-standard-defined name and there is data for the workspace
+                    store.getState().allSelectedWorkspaceData.group_chats.length > 0 ? //Checks there are group chats available
+                      store.getState().allSelectedWorkspaceData.group_chats.map((group_chat) => { //Loop through each group chat
+                        if(group_chat.title === selectedPanel){ //Render the page if the selected panel name is the same as the current group chat being checked
+                          return(<Chat {...group_chat} />)
+                        }
+                      })
+                    :
+                    null
+                  :
+                  null
+                  }
 
-                  </Grid>
-                </Container>
-              </div>
-            </Grid>
-
+                  </div>
+                {/* </div> */}
+              {/* </Grid> */}
+          </div>
         </Grid>
 
-        </main>
       </Hidden>
 
       <Hidden mdUp>
@@ -330,7 +341,16 @@ function Dashboard() {
 }
 
 const mapStateToProps = state => {
-  return {selectedCompany: state.selectedCompany, companies: state.companies, workspaces: state.workspaces, selectedWorkspace: state.selectedWorkspace, user: state.user}
+  return {
+    selectedCompany: state.selectedCompany, 
+    companies: state.companies, 
+    workspaces: state.workspaces, 
+    selectedWorkspace: state.selectedWorkspace, 
+    user: state.user, 
+    selectedPanel: state.selectedPanel, 
+    allSelectedWorkspaceData: state.allSelectedWorkspaceData, 
+    taskCollectionIDs: state.taskCollectionIDs, 
+    workspaceTaskCollections: state.workspaceTaskCollections}
 }
 
 const mapDispatchToProps = dispatch => {
