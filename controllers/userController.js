@@ -15,7 +15,14 @@ exports.getAllUsers = catchAsync(async (req, res) => {
 });
 
 exports.getUser = catchAsync(async (req, res, next) => {
-  
+  const foundUser = await user.findById(req.params.id);
+  res.status(200).json({
+    status: "success",
+    data: foundUser
+  });
+});
+
+exports.getCurrentUser = catchAsync(async (req, res, next) => { 
   const foundUser = await user.findById(req.user._id);
   res.status(200).json({
     status: "success",
@@ -59,4 +66,15 @@ exports.addCompany = catchAsync(async (req, res, next) => {
     status: "success",
     data: req.user
   });
+});
+
+exports.getUsersByName = catchAsync(async (req, res, next) => {
+  let regexName = new RegExp(req.query.name) 
+  
+  const foundUsers = await user.find({'name': regexName, '_id': {$nin:req.query.users}}, {'_id':1, 'name':1, 'email':1} )
+
+  res.status(200).json({
+    status: "success",
+    data: foundUsers
+  })
 });

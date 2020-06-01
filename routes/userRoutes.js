@@ -15,7 +15,9 @@ router.route("/").get(userController.getAllUsers); //SHOULD BE DELETED ON DEPLOY
 
 router.route("/logout").get(authController.logout)
 
-router.route("/status").get(userController.isUserLoggedIn, authController.protect, userController.getUser);
+router.route("/status").get(userController.isUserLoggedIn, authController.protect, userController.getCurrentUser);
+
+router.route("/names").get(userController.getUsersByName)
 
 //Route for actions for user account, given am account
 router

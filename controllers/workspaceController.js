@@ -17,7 +17,8 @@ exports.getAllWorkspaces = catchAsync(async (req, res, next) => {
 });
 
 exports.createWorkspace = catchAsync(async (req, res, next) => {
-  var companyDetails = await company.findById(req.body.company);
+  var companyDetails = await Company.findById(req.body.company);
+
   //Only an admin should be able to create a workspace
   if (!companyDetails.admins.includes(req.user.id)) {
     return next(
@@ -30,17 +31,20 @@ exports.createWorkspace = catchAsync(async (req, res, next) => {
   //So that if the owner of a company creates the workspace their id is not repeated...
   var compAdmins = [req.user.id];
   var compUsers = [req.user.id];
+  
   if (companyDetails.ownerID != req.user.id) {
     compAdmins.push(companyDetails.ownerID);
     compUsers.push(companyDetails.ownerID);
   }
+  
   var newWorkspace = await Workspace.create({
     name: req.body.name,
     admins: compAdmins,
     users: compUsers
   });
+  
   companyDetails.workspaces.push(newWorkspace.id);
-  await company.findByIdAndUpdate(companyDetails.id, companyDetails, {
+  await Company.findByIdAndUpdate(companyDetails._id, companyDetails, {
     new: true
   });
   res.status(200).json({
@@ -93,15 +97,19 @@ exports.getUserCompanyWorkspaces = catchAsync(async (req, res, next) => {
 //* Allow A given user to be added to a workspace.
 exports.addUserToWorkspace = catchAsync(async (req, res, next) => {
   var workspaceDetails = await Workspace.findById(req.body.workspace_id);
+
   if (!workspaceDetails.admins.includes(req.user.id)) {
     return next(new AppError("Only admins can add people to a workspace", 201));
   }
+  
   //If the user is an admin, then add the user to the workspace admins
-  if (req.body.admin == "true") {
+  if (req.body.admin) {
     workspaceDetails.admins.push(req.body.user_id);
   }
+  
   //Add a given user to the workspace
   workspaceDetails.users.push(req.body.user_id);
+  
   await Workspace.findByIdAndUpdate(workspaceDetails.id, workspaceDetails, {
     new: true
   });
@@ -180,4 +188,9 @@ exports.getAGivenWorkspace = catchAsync(async (req, res, next) => {
       workspaceDetails
     }
   });
+});
+
+exports.deleteWorkspace = catchAsync(async (req, res, next) => {
+  console.log(req.body)
+  console.log(req.query)
 });

@@ -21,6 +21,7 @@ router
   //THe below should really be changed to  make it part of default route... do this later!!!!!!!!!!!!!
 router
   .route("/:id")
-  .get(authController.protect, workspaceController.getAGivenWorkspace);
+  .get(authController.protect, workspaceController.getAGivenWorkspace)
+  .delete(authController.protect, workspaceController.deleteWorkspace);
 
 module.exports = router;
