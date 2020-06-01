@@ -79,7 +79,7 @@ export function getWorkspaces(workspace_id) {
                   selectedWorkspace: workspacesList[0]._id,
                 },
               });
-              getTaskCollections();
+              // getTaskCollections();
             });
         }
       });
@@ -99,13 +99,12 @@ function updateTaskCollections() {
   }
 }
 
-export function getTaskCollections() {
+export const getTaskCollections = async () => {
   if (updateTaskCollections() != undefined) {
     for (var i in updateTaskCollections()) {
       var taskCollections = [];
 
-      axios
-        .get(`/todocollection/`, {
+      axios.get(`/todocollection/`, {
           params: { collection_id: updateTaskCollections()[i] },
         })
         .then((res) => {
@@ -129,7 +128,7 @@ export function getTaskCollections() {
             });
           }
         })
-        .catch(function (error) {
+        .catch(function (error) { 
           console.error(error);
         });
     }
@@ -147,7 +146,36 @@ export function getAllWorkspaceSpecificData(workspace_id) {
           workspaceData: res.data.data.workspaceDetails,
         },
       });
-
-
   });
+}
+
+export function checkIfAdmin(){
+  for(var currentCompany in store.getState().companies){
+    if (store.getState().companies[currentCompany] === store.getState().selectedCompany){
+      for(var currentUser in store.getState().companies[currentCompany]){
+        if(store.getState().companies[currentCompany].admins[currentUser] === store.getState().user._id){
+          return("Admin")
+        }
+      }
+    } 
+    else {
+      return("User")
+    }
+  }
+}
+
+//Takes a sentence and returns the first letter of each word as one word
+export function getAcronym(name) {
+  if(name !== undefined || name !== ""){
+    var wordList = name.split(" ")
+    var acronym = ""
+    
+    for(var wordIndex = 0; wordIndex < wordList.length; wordIndex++){
+      wordList[wordIndex].charAt(0)
+      
+      acronym = acronym + wordList[wordIndex].charAt(0)
+    }
+  
+    return acronym
+  }
 }
