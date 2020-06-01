@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.229bffaa.chunk.css",
+    "main.js": "/static/js/main.97bc36ad.chunk.js",
+    "main.js.map": "/static/js/main.97bc36ad.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.cfae3202.js",
+    "runtime-main.js.map": "/static/js/runtime-main.cfae3202.js.map",
+    "static/js/2.3936856a.chunk.js": "/static/js/2.3936856a.chunk.js",
+    "static/js/2.3936856a.chunk.js.map": "/static/js/2.3936856a.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.cfd5b0735be9c1fe167ce1fad7493a90.js": "/precache-manifest.cfd5b0735be9c1fe167ce1fad7493a90.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/main.229bffaa.chunk.css.map": "/static/css/main.229bffaa.chunk.css.map",
+    "static/js/2.3936856a.chunk.js.LICENSE.txt": "/static/js/2.3936856a.chunk.js.LICENSE.txt",
+    "static/media/pinDrop.png": "/static/media/pinDrop.d85aec3c.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.cfae3202.js",
+    "static/js/2.3936856a.chunk.js",
+    "static/css/main.229bffaa.chunk.css",
+    "static/js/main.97bc36ad.chunk.js"
+  ]
+}
