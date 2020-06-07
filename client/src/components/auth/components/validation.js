@@ -1,5 +1,3 @@
-import React, { Component } from "react";
-
 export default function handleValidation(newUser, isCompany){
     // let fields = this.state.fields;
     let errors = {};
@@ -63,7 +61,7 @@ export default function handleValidation(newUser, isCompany){
        errors["email"] = "";
     }
     let errpass = String();
-    if(password != password_confirm){    
+    if(password !== password_confirm){    
       formIsValid = false;
       errors["password"] = "Passwords do not match";
     }
@@ -76,7 +74,7 @@ export default function handleValidation(newUser, isCompany){
        let lastAtPos = email.lastIndexOf('@');
        let lastDotPos = email.lastIndexOf('.');
 
-       if (!(lastAtPos < lastDotPos && lastAtPos > 0 && email.indexOf('@@') == -1 && lastDotPos > 2 && (email.length - lastDotPos) > 2)) {
+       if (!(lastAtPos < lastDotPos && lastAtPos > 0 && email.indexOf('@@') === -1 && lastDotPos > 2 && (email.length - lastDotPos) > 2)) {
           formIsValid = false;
           errors["email"] = "Email is not valid";
         }

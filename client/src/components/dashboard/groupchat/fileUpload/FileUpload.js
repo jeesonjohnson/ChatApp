@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+
 //UI methods
 import { DropzoneDialog } from "material-ui-dropzone";
-import Button from "@material-ui/core/Button";
 import IconButton from '@material-ui/core/IconButton';
 import { Modal } from "@material-ui/core";
 import ProgressBar from "./Progress";

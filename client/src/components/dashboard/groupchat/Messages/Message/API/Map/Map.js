@@ -1,10 +1,8 @@
-import React, { Component, useState } from "react";
+import React from "react";
 import "./Map.css";
 import L from "leaflet";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 import pinDrop from "./icons/pinDrop.png";
-
-import axios from "axios";
 
 export default function MapComponent(props) {
   var latitude = props.response.latitude;

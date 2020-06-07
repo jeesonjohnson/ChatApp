@@ -1,6 +1,10 @@
 .form {
     display: flex;
-    border-top: 2px solid #D3D3D3;
+    /* border-top: 2px solid #D3D3D3; */
+    /* background-color: #2f3136; */
+    background-color: #2f3136;
+    border-radius: 50px 50px 50px 50px;
+    padding-left: 30px;
   }
   
   .input {
@@ -10,29 +14,32 @@
     width: 75%;
     font-size: 1.2em;
     color: black;
-    border-right: 2px solid #D3D3D3;
-    background-color: #36393f;
+    /* border-right: 2px solid #D3D3D3; */
+    background-color: #2f3136 !important;
   }
-
+  
   .fileUploadButton{
     width:5%;
     color:black;
-    border: 2px solid #D3D3D3;
-    background-color:black;
-
+    /* border: 2px solid #D3D3D3; */
+    background-color: #2f3136;
   }
   
   input:focus, textarea:focus, select:focus{
     outline: none;
+    border-bottom: none;
+    background-color: #36393f;
   }
   
   .sendButton {
     color: #fff !important;
     text-transform: uppercase;
     text-decoration: none;
-    background: #2979FF;
+    /* background: #2979FF; */
+    background: #725bda;
     padding: 20px;
     display: inline-block;
     border: none;
     width: 20%;
+    border-radius: 0px 50px 50px 0px;
   }

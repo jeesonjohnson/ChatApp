@@ -1,9 +1,9 @@
-const User = require("./../models/User");
-const company = require("./../models/Company");
+const User = require("../models/User");
+const company = require("../models/Company");
 const crypto = require("crypto");
 const { promisify } = require("util");
-const catchAsync = require("./../utils/catchAsync");
-const AppError = require("./../utils/appError");
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
 
 // Methods for generating JWT tokens for the user sign in.
@@ -16,7 +16,7 @@ const signToken = id => {
 const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
-  res.cookie("jwt", token, {
+  res.cookie("token", token, {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
@@ -129,7 +129,7 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.logout = catchAsync(async (req, res, next) => {
-  res.cookie("jwt", "")
+  res.clearCookie('token')
 
   res.status(200).json({
     status: "success"
@@ -138,16 +138,14 @@ exports.logout = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
-  let token = req.headers.cookie.toString();
-  token = token.split('=');
-  token = token[1]
-
-  //if (
-    //req.headers.authorization &&
-    //req.headers.authorization.startsWith("Bearer")
-
-    //token = req.headers.authorization.split(" ")[1];
+  const token = req.cookies.token
   
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
+    console.log(req.headers)
+  //   token2 = req.headers.authorization.split(" ")[1];
+  //   console.log("token2", token2)
+  }
+
   if (!token) {
     return next(
       new AppError("You are not logged in! Please log in to get access.", 401)

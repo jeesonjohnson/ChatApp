@@ -26,14 +26,14 @@ mongoose
 
 
 //If in production server the build folder
-if(process.env.NODE_ENV==="production"){
+// if(process.env.NODE_ENV==="production"){
   //Set static return folder
   app.use(express.static(path.resolve('client/build')));
 
-  app.get("/*",(req,res)=>{
+  app.get("*",(req,res)=>{
     res.sendFile(path.resolve(__dirname,"client","build","index.html"));
   });
-}
+// }
 
 app.listen(process.env.PORT || PORT, () =>
   console.log(`Server running on port ${process.env.PORT || PORT}`)

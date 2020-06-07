@@ -1,39 +1,47 @@
 import React, { useEffect } from 'react';
-import clsx from 'clsx';
 import axios from 'axios'
-import store from './../../store';
+import store from '../../store';
 import { connect } from 'react-redux';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { Redirect } from "react-router-dom";
 
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
-import Paper from '@material-ui/core/Paper';
-import List from '@material-ui/core/List';
-import IconButton from '@material-ui/core/IconButton';
+import AppBar from '@material-ui/core/AppBar';
+import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import Avatar from '@material-ui/core/Avatar';
+import Grid from '@material-ui/core/Grid';
+import Hidden from '@material-ui/core/Hidden';
+import IconButton from '@material-ui/core/IconButton';
+import InputBase from '@material-ui/core/InputBase';
+import List from '@material-ui/core/List';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import InputBase from '@material-ui/core/InputBase';
+import Paper from '@material-ui/core/Paper';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
-import SettingsIcon from '@material-ui/icons/Settings';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SearchIcon from '@material-ui/icons/Search';
 
-import MobileDashboard from '../dashboard/mobileScreen/MobileDashboard.js';
+import MobileDashboard from './mobileScreen/MobileDashboard.js';
 import { CompanyDrawer, WorkspaceDrawer } from './components/drawers/Drawers.js';
 import WorkspacePanelItems from './components/workspace/WorkspaceButtonList.js';
 import EditUserModal from './components/modals/editUserModal.js';
+import DeleteChatModal from './components/modals/chatModals/deleteChatModal.js';
 import WorkspaceMenu from './components/menus/menu.js';
-import { getCompanies } from './DataLoading.js';
+import { getCompanies, checkIfAdmin } from './DataLoading.js';
 
+import Calendar from './calendar/calendar.js';
+// import Calendar from './components/calendar/calendar.js';
+import Chat from './groupchat/Chat.js';
+import Chart from './chart/Charts.js';
 import ToDoPage from './toDoList/toDoPage.js';
-import Chat from '../dashboard/groupchat/Chat.js';
+import Announcements from './announcements/announcements.js';
 
 const drawerWidth = 240;
 
@@ -41,7 +49,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     height:"100vh",
-    backgroundColor: '#202225'
+    backgroundColor: '#202225',
+    width:"100%"
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
@@ -58,9 +67,6 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButtonHidden: {
     display: 'none',
-  },
-  title: {
-    flexGrow: 1,
   },
   drawerPaper: {
     position: 'relative',
@@ -86,9 +92,10 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     marginTop: '1vh',
-    overflow: 'auto',
+    overflowX: "auto", 
+    overflowY: "hidden", 
+    width:"100%",
     backgroundColor: '#36393f',
-    borderTopLeftRadius: 50,
   },
   mobile_content: {
     flexGrow: 1,
@@ -104,15 +111,13 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column',
+    paddingBottom: 50,
   },
-  fixedHeight: {
-    height: 240,
+  title:{
+    flexGrow: 1
   },
   text: {
     padding: theme.spacing(2, 2, 0),
-  },
-  paper: {
-    paddingBottom: 50,
   },
   list: {
     marginBottom: theme.spacing(2),
@@ -132,57 +137,36 @@ const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(0),
+  },
 }));
 
-function checkIfAdmin(){
-  for(var currentCompany in store.getState().companies){
-    if (store.getState().companies[currentCompany] === store.getState().selectedCompany){
-      for(var currentUser in store.getState().companies[currentCompany]){
-        if(store.getState().companies[currentCompany].admins[currentUser] === store.getState().user._id){
-          return("Admin")
-        }
-      }
-    } 
-    else {
-      return("User")
-    }
-  }
-}
-
 function Dashboard() {
-
   const classes = useStyles();
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  var user = store.getState().user
-  useSelector(state=> state.selectedPanel)
-  useSelector(state=> state.selectedWorkspace)
+  let selectedPanel = useSelector(state => state.selectedPanel)
+  const [user, setUser] = React.useState({name: ""})
+  const [redirect, setRedirect] = React.useState(false);
+  let category = useSelector(state => state.chartCategory)
 
   useEffect(() => { 
-    if( store.getState().user.name === ""){
-      axios.get(`/users/status`).then(res =>{
+    axios.get(`/users/status`)
+    .then(res =>{
+      if(res.status === 200 && user.name === ""){
         store.dispatch({ type: 'USER_LOGGED_IN', data: { user: res.data.data }})  
-        user = store.getState().user
+        setUser(store.getState().user)
         getCompanies("")
-      })
-    }
-
-  });
-  
-  const selected_workspace_name = useSelector(state=> state.selectedWorkspace);
-  const selected_workspace_id = useSelector(state=> state.selectedWorkspace);
-  var selectedWorkspace =  {}
-  var selectedPanel = ""
-  var role = user.owner && store.getState().selectedCompany === user.companies[0] ? "Owner" : checkIfAdmin()
-  
-  if(store.getState().workspaces[0] !== undefined){
-    for (var i in store.getState().workspaces){
-      if (store.getState().workspaces[i]._id === store.getState().selectedWorkspace){
-        selectedWorkspace = store.getState().workspaces[i] // Sets the name of the selected Workspace
-        selectedPanel = selectedWorkspace.name
       }
-    }
+    })
+    .catch(() => {
+      setRedirect(true)
+    })
 
-  }
+  }, [store.getState().selectedCompany]);
   
   //Menu Item 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -195,138 +179,240 @@ function Dashboard() {
     setAnchorEl(null);
   };
 
+  const logout = () => {
+    axios.get('/users/logout')
+    .then(() => {
+      store.dispatch({ type: 'USER_LOGGED_OUT', data: { user: { name: "" } }})
+      setRedirect(true)
+    })
+  };
+
+  //Charts select
+  const handleChange = (event) => {
+    store.dispatch({ type: 'CHART_CATEGOREY_CHANGED', data: { chartCategory: event.target.value }})
+  };
+
+  const getRole = () => {
+    return(user.owner && store.getState().selectedCompany === user.companies[0] ? "Owner" : checkIfAdmin())
+  }
+
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      
-      <Hidden smDown>
-        <CompanyDrawer classes={classes} />
+    <div>
+    {redirect ? <Redirect to="/login"/> : null}
+    {user.name !== "" ?
+      <div className={classes.root} style={{overflow:"hidden"}}>
+        <CssBaseline />
+        
+        <Hidden smDown>
+          <CompanyDrawer classes={classes} />
 
-        <WorkspaceDrawer classes={classes} />
-
-        <main className={classes.content} style={{overflow:"hidden" }}> 
- 
-        <Grid container direction="column" justify="space-between" alignItems="stretch" md={2} spacing={0} style={{float:"left"}}>
-
-            <Grid item md={12} >
-              <div style={{ height:"10vh",backgroundColor:"#2f3136"}} className="valign-wrapper center-align">
-                <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                  {selectedPanel}
-                </Typography>  
-                  <WorkspaceMenu classNames={selectedPanel} />
-              </div>
-            </Grid>
-
-            <Grid item md={12} >
-              <div style={{height:"80vh", backgroundColor:"#2f3136", overflow:"auto"}}>
-                <List style={{backgroundColor:"#2f3136",  minWidth:"46px" }} >
-                  <WorkspacePanelItems />
-                </List>
-              </div>
-            </Grid>
-
-            <Grid item md={12} >
-              <div style={{ height:"10vh", backgroundColor:"#202225"}} >
-                <Card elevation={0} style={{backgroundColor:"#202225", shadow:"none"}}>
-                    <CardHeader
-                      avatar={<Avatar aria-label="avatar" className={classes.avatar}>{user.name[0]}</Avatar>}
-                      // action={<IconButton aria-label="settings"><SettingsIcon /></IconButton>}
-                      action={<EditUserModal/>}
-                      title={user.name}
-                      subheader={role}
-                    />
-                </Card>
-                
-              </div>
-            </Grid>
-
-        </Grid>
-
-        <Grid container direction="column" justify="space-between" alignItems="stretch" md={10} spacing={0} style={{}}>
-
-            <Grid item md={12} >
-              <div style={{backgroundColor:"#2f3136", width:"100%", maxHeight:75, height:"10vh", paddingTop:"2vh", paddingBottom:"2vh"}}>
-                <IconButton style={{float:"right", marginRight:"10px"}} type="submit" aria-label="search">
-                  <SearchIcon />
-                </IconButton>
-                <InputBase style={{width:"25%", float:"right"}}
-                  className={classes.input}
-                  placeholder="Search"
-                  inputProps={{ 'aria-label': 'search' }}
-                />
-              </div>
-            </Grid>
-
-            <Grid item md={12} style={{overflow:"scroll"}}>
-              <div style={{height:"90vh"}} >
-                {/* General layout */}
-                {/* Announcements layout */}
-                {/* Text chat layout */}
-                {/*  */}
-
-              <Container item maxWidth="lg" className={classes.container} >
-                <Grid container spacing={3} >
-                    
-                  {/* Calendar layout */}
-                  {store.getState().selectedPanel === "Calendar" ? 
-                    <Grid item xs={12} md={8} lg={9}>
-                      <Paper className={fixedHeightPaper}>
-                        {/* <Calendar /> */}
-                        {"Calendar"}
-                      </Paper>
-                    </Grid>
-                    : null}
-
-                  {/* Charts layout */}
-                  {store.getState().selectedPanel === "Charts" ? 
-                    <Grid item xs={12} md={8} lg={9}>
-                      <Paper className={fixedHeightPaper}>
-                        {/* <Chart /> */}
-                        {"Charts"}
-                      </Paper>
-                    </Grid>
-                    : null}
+          <WorkspaceDrawer classes={classes} />
   
-                  {/* Tasks layout */}
-                  {store.getState().selectedPanel === "Tasks" ? 
-                    <Grid item xs={12} md={12} lg={12} >
-                      <ToDoPage/>
+          {/* Workspace Panel buttons */}
+          <Grid container md={2} spacing={0} style={{minWidth:200}}>
+              {/* Workspace name area */}
+              <Grid item md={12} >
+                <div >
+
+                <Paper className="valign-wrapper" style={{paddingLeft:25, paddingRight:20, width:"100%", height:"10vh", backgroundColor:"#2f3136", borderTopLeftRadius:50, marginTop:"1vh",}}>
+                  <Avatar alt="Logo" src="logo.png"  style={{float:"left"}}/>
+
+                  <Typography  style={{float:"left", marginLeft:15, marginRight:"auto"}}>
+                    {store.getState().allSelectedWorkspaceData.name}
+                  </Typography> 
+
+                  <IconButton aria-label="settings" onClick={handleClick} style={{float:"right"}}>
+                    <MoreVertIcon />
+                  </IconButton>
+
+                    <Menu
+                      id="simple-menu"
+                      anchorEl={anchorEl}
+                      keepMounted
+                      open={Boolean(anchorEl)}
+                      onClose={handleClose}
+                    >
+                      <MenuItem onClick={handleClose}>Add Group Chat</MenuItem>
+                      <MenuItem onClick={handleClose}>Add Private Chat</MenuItem>
+
+                      {selectedPanel === ""}
+                      <MenuItem onClick={logout}>Logout</MenuItem>
+                      {/* 
+                      leave workspace
+
+                      logout
+                      */} 
+                    </Menu>
+                </Paper>
+
+
+                </div>
+              </Grid>
+
+              {/* List of Page buttons */}
+              <Grid item md={12} >
+                <div style={{height:"79vh", backgroundColor:"#2f3136", overflow:"auto" }}>
+                  <List style={{backgroundColor:"#2f3136",  minWidth:"46px" }} >
+                    <WorkspacePanelItems />
+                  </List>
+                </div>
+              </Grid>
+
+              {/* User Card */}
+              <Grid item md={12} >
+                <div style={{ height:"10vh", backgroundColor:"#202225", verticalAlign:"text-top"}} >
+                  <Card elevation={0} style={{backgroundColor:"#202225", shadow:"none", paddingTop:0}}>
+                      <CardHeader
+                        avatar={<Avatar aria-label="avatar" className={classes.avatar}>{user.name !== "" ? user.name[0] : null}</Avatar>}
+                        action={<EditUserModal/>}
+                        title={user.name !== "" ? user.name : null}
+                        subheader={getRole()}
+                      />
+                  </Card>
+                  
+                </div>
+              </Grid>
+
+          </Grid>
+
+          {/* Content panel */}
+          <Grid container id="main" className={classes.content} > 
+          
+            {/* Top bar with search */}
+            <AppBar container id="appbar" position="static" style={{backgroundColor:"#2f3136"}} width={document.getElementById('main') !== null ? document.getElementById('main').scrollWidth : null}>
+              <Toolbar>
+                <Typography variant="h6" style={{float:"left", marginRight:"auto"}}>{selectedPanel}</Typography>
+
+                  {selectedPanel === "Charts" ?
+                        <FormControl className={classes.formControl} style={{marginLeft:50}}>
+                          <FormHelperText>Select Category To View</FormHelperText>
+                        {/* <Typography>Select Category To View</Typography> */}
+                            <Select
+                              value={category}
+                              onChange={handleChange}
+                              displayEmpty
+                              className={classes.selectEmpty}
+                              inputProps={{ 'aria-label': 'Without label' }}
+                            >
+                                <MenuItem value="Collections" >Collections</MenuItem>
+                                <MenuItem value="Deadlines" >Deadlines</MenuItem>
+                            </Select>
+                        </FormControl>
+                    :
+                    null
+                  }
+                  
+                  {selectedPanel === "" ?
+                    <div>
+                      <InputBase style={{width:"25%", float:"right"}} placeholder="Search" inputProps={{ 'aria-label': 'search' }} />
+                      <IconButton  edge="start" color="inherit" aria-label="menu">
+                        <SearchIcon />
+                      </IconButton>
+                    </div>
+                  :
+                    null
+                  }
+
+                  {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "General" && selectedPanel !== "Announcements" && (getRole() === "Owner" || getRole() === "Admin") ?
+                    <DeleteChatModal style={{float:"right", marginLeft:"auto"}} />
+                  :
+                    null
+                  }
+
+              </Toolbar>
+            </AppBar>
+            
+
+            {/* Main body of content */}
+              {/* General layout */}
+              {/* Text chat layout */}
+
+              {/* Tasks layout */}
+                {selectedPanel === "Tasks" ? 
+                  <div item className={classes.container} style={{width:"100%", overflow:"auto", height:"90vh", paddingLeft: 25 }}>
+                    <ToDoPage />
+                  </div>
+                : 
+                null
+                }
+
+              {/* Announcements layout */}
+              {selectedPanel === "Announcements" ? 
+                  <div item className={classes.container} style={{width:"100%", overflow:"auto", height:"90vh", paddingLeft: 25 }}>
+                    <Grid item xs={12} md={8} lg={9}>
+                        <Announcements />
                     </Grid>
-                    : null}
+                  </div>
+              : 
+              null
+              }
 
-                    {store.getState().selectedPanel != "Calendar" && store.getState().selectedPanel != "Charts" && store.getState().selectedPanel != "Tasks" && store.getState().allSelectedWorkspaceData != undefined ? //Checks if non-standard-defined name and there is data for the workspace
-                      store.getState().allSelectedWorkspaceData.group_chats.length > 0 ? //Checks there are group chats available
-                        store.getState().allSelectedWorkspaceData.group_chats.map((group_chat) => { //Loop through each group chat
-                          if(group_chat.title === store.getState().selectedPanel){ //Render the page if the selected panel name is the same as the current group chat being checked
-                            return(<Chat {...group_chat} />)
-                          }
-                        })
-                        :
-                        null
-                      :
-                      null
-                    //store.getState().allSelectedWorkspaceData.group_chats //Array of objects // .map((group) => if store.getState().selectedPanel === store.getState().allSelectedWorkspaceData.groupChats[i].title) 
-                    }
-
+              {/* Calendar layout */}
+              {selectedPanel === "Calendar" ? 
+                <div item className={classes.container} style={{width:"100%", overflow:"auto", height:"90vh", paddingLeft: 25 }}>
+                  <Grid item xs={12} md={12} lg={12}>
+                      <br />
+                      <Calendar />
                   </Grid>
-                </Container>
-              </div>
-            </Grid>
+                </div>
+              : 
+              null
+              }
 
-        </Grid>
+              {/* Charts layout */}
+              {selectedPanel === "Charts" ? 
+                <div item className={classes.container} style={{width:"100%", overflow:"auto",height:"90vh", paddingLeft: 25 }}>
+                  <Chart {...{category}}/>
+                </div>  
+              : 
+              null
+              }
 
-        </main>
-      </Hidden>
+              {/* Chat layout */}
+              {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "Announcements" && store.getState().allSelectedWorkspaceData.group_chats !== undefined ? //Checks if non-standard-defined name and there is data for the workspace
+                store.getState().allSelectedWorkspaceData.group_chats.length > 0 ? //Checks there are group chats available
+                  store.getState().allSelectedWorkspaceData.group_chats.map((group_chat) => { //Loop through each group chat
+                    if(group_chat.title === selectedPanel){ //Render the page if the selected panel name is the same as the current group chat being checked
+                      return(
+                        <div item className={classes.container} style={{width:"100%", overflow:"hidden", height:"90vh", paddingTop:0 }}>
+                          <Chat {...group_chat} />
+                        </div>
+                      )
+                    }
+                  })
+                :
+                null
+              :
+              null
+              }
+                    
 
-      <Hidden mdUp>
-        <MobileDashboard />
-      </Hidden>
+          </Grid>
+
+        </Hidden>
+
+        <Hidden mdUp>
+          <MobileDashboard />
+        </Hidden>
+      </div>
+      :
+      null
+    }
     </div>
   );
 }
 
 const mapStateToProps = state => {
-  return {selectedCompany: state.selectedCompany, companies: state.companies, workspaces: state.workspaces, selectedWorkspace: state.selectedWorkspace, user: state.user}
+  return {
+    selectedCompany: state.selectedCompany, 
+    companies: state.companies, 
+    workspaces: state.workspaces, 
+    selectedWorkspace: state.selectedWorkspace, 
+    user: state.user, 
+    selectedPanel: state.selectedPanel, 
+    allSelectedWorkspaceData: state.allSelectedWorkspaceData, 
+    taskCollectionIDs: state.taskCollectionIDs, 
+    workspaceTaskCollections: state.workspaceTaskCollections}
 }
 
 const mapDispatchToProps = dispatch => {

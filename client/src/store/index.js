@@ -5,7 +5,7 @@ const initalState = {
   user: {
     name: "",
   },
-  selectedPanel: "Calendar",
+  selectedPanel: "Calendar", //Calendar
   selectedCompany: "",
   selectedWorkspace: "",
   companies: [],
@@ -15,13 +15,18 @@ const initalState = {
   groupChats: [],
   privateChats:[],
   allSelectedWorkspaceData:{},
+  chartCategory: ""
 };
 
 const reducer = (state = initalState, action) => {
   switch (action.type) {
     case "USER_LOGGED_IN":
       return Object.assign({}, state, {
-        user: action.data.user,
+        user: action.data.user
+      });
+    case "USER_LOGGED_OUT":
+      return Object.assign({}, state, {
+        user: action.data.user
       });
     case "COMPANIES_LOADED":
       return Object.assign({}, state, {
@@ -61,6 +66,10 @@ const reducer = (state = initalState, action) => {
       return Object.assign({}, state, {
         allSelectedWorkspaceData: action.data.workspaceData,
       });
+    case "CHART_CATEGOREY_CHANGED":
+      return Object.assign({}, state, {
+        chartCategory: action.data.chartCategory
+      })
     default:
       return state;
   }

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
+
 import { makeStyles } from "@material-ui/core/styles";
-import ListSubheader from "@material-ui/core/ListSubheader";
+
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -9,7 +9,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import StarBorder from "@material-ui/icons/StarBorder";
 
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ListIcon from "@material-ui/icons/ListAltRounded";
@@ -18,14 +17,16 @@ import DonutLargeIcon from "@material-ui/icons/DonutLarge";
 import AnnouncementIcon from "@material-ui/icons/Announcement";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 
-import ChatIcon from "@material-ui/icons/Chat";
+import ChatIcon from "@material-ui/icons/SpeakerNotes";
+import GroupIcon from "@material-ui/icons/Group";
+import PrivateChatIcon from "@material-ui/icons/Sms";
+import PersonIcon from '@material-ui/icons/Person';
 import MicIcon from "@material-ui/icons/Mic";
 import VideoChatIcon from "@material-ui/icons/VoiceChat";
-import GroupIcon from "@material-ui/icons/Group";
 
 import { connect } from "react-redux";
 import store from "../../../../store";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 function WorkspaceButtonList() {
   const classes = useStyles();
 
@@ -53,12 +53,12 @@ function WorkspaceButtonList() {
   //Below just stores all workspace data as per Backend response
   const workspaceData = useSelector((state) => state.allSelectedWorkspaceData);
 
-  const [selectedPanel, setSelectedPanel] = React.useState("Calendar");
+  const selectedPanel = useSelector((state) => state.selectedPanel);
   const [plannerOpen, setPlannerOpen] = React.useState(true);
-  const [chatOpen, setChatOpen] = React.useState(false);
+  const [chatOpen, setChatOpen] = React.useState(true);
+  const [privateChatOpen, setPrivateChatOpen] = React.useState(true);
   const [voiceOpen, setVoiceOpen] = React.useState(false);
   const [videoOpen, setVideoOpen] = React.useState(false);
-  
   const [group_chats_names, setGroupChatsNames] = React.useState([]);
 
   useEffect( () => {
@@ -70,6 +70,8 @@ function WorkspaceButtonList() {
       setPlannerOpen(!plannerOpen);
     } else if (e.currentTarget.innerText === "Group Chats") {
       setChatOpen(!chatOpen);
+    } else if (e.currentTarget.innerText === "Private Chats") {
+      setPrivateChatOpen(!privateChatOpen);
     } else if (e.currentTarget.innerText === "Voice Chats") {
       setVoiceOpen(!voiceOpen);
     } else if (e.currentTarget.innerText === "Video Chats") {
@@ -79,7 +81,7 @@ function WorkspaceButtonList() {
   
   //Loads the data for groupchats
   const loadGroupChats = async () => {
-    if(workspaceData.group_chats != undefined){ //Checks if the groupchats were loaded in
+    if(workspaceData.group_chats !== undefined){ //Checks if the groupchats were loaded in
       if(workspaceData.group_chats.length > 0){ //Checks if there are any groupchats for the workspace
         var a = []
         workspaceData.group_chats.map((group_chat) => (
@@ -91,12 +93,15 @@ function WorkspaceButtonList() {
     }
   };
 
-  const handleSelected = (e) => {
-    setSelectedPanel(e.currentTarget.id);
+  const handleSelected = async (e) => {
     store.dispatch({
       type: "SELECTED_PANEL",
       data: { selectedPanel: e.currentTarget.id },
     });
+
+    if(e.currentTarget.id !== "Charts"){
+      store.dispatch({ type: 'CHART_CATEGOREY_CHANGED', data: { chartCategory: "" }})
+    }
   };
 
   const loadButtonContent = (name, icon, selectedClass) => {
@@ -151,7 +156,7 @@ function WorkspaceButtonList() {
         </List>
       </Collapse>
 
-      {loadButton("General", <AssignmentIcon />, false)}
+      {/* {loadButton("General", <AssignmentIcon />, false)} */}
 
       {loadButton("Announcements", <AnnouncementIcon />, false)}
 
@@ -163,7 +168,7 @@ function WorkspaceButtonList() {
         {chatOpen ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
 
-      <Collapse in={chatOpen} timeout="auto" unmountOnExit>
+      <Collapse id="group_chats" in={chatOpen} timeout="auto" unmountOnExit>
         {group_chats_names === [] || group_chats_names === undefined ? //Check if there are any groupchats to load
           null
           :
@@ -174,6 +179,18 @@ function WorkspaceButtonList() {
       </Collapse>
 
       <ListItem button onClick={handleClick}>
+        <ListItemIcon>
+          <PrivateChatIcon />
+        </ListItemIcon>
+        <ListItemText primary="Private Chats" />
+        {privateChatOpen ? <ExpandLess /> : <ExpandMore />}
+      </ListItem>
+
+      <Collapse id="private_chats" in={privateChatOpen} timeout="auto" unmountOnExit>
+        {loadButton(workspaceID, <PersonIcon />, true)}
+      </Collapse>
+
+      {/* <ListItem button onClick={handleClick}>
         <ListItemIcon>
           <MicIcon />
         </ListItemIcon>
@@ -194,8 +211,8 @@ function WorkspaceButtonList() {
       </ListItem>
 
       <Collapse in={videoOpen} timeout="auto" unmountOnExit>
-        {loadButton(workspaceID, <GroupIcon />, true)}
-      </Collapse>
+        {loadButton(workspaceID, <GroupIcon />, true)} */}
+      {/* </Collapse> */}
     </div>
   );
 }

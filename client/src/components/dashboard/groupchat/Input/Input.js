@@ -1,9 +1,9 @@
 import React from "react";
-import store from "../../../../store";
-
 import "./Input.css";
 
 import FileUpload from "../fileUpload/FileUpload";
+
+import SendIcon from '@material-ui/icons/Send';
 
 const Input = ({ message,setMessage,sendMessage,socket,room,name,currentUserID}) => {
   return (
@@ -31,7 +31,7 @@ const Input = ({ message,setMessage,sendMessage,socket,room,name,currentUserID})
           />
         </div>
         <button className="sendButton" onClick={(e) => sendMessage(e)}>
-          Send
+          <SendIcon />
         </button>
       </form>
     </div>

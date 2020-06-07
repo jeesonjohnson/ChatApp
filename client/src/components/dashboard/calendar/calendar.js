@@ -20,7 +20,7 @@ import Sync from '@material-ui/icons/Sync';
 
 import { getTaskCollections } from '../DataLoading.js';
 
-import Timeline from 'react-calendar-timeline';
+import Timeline from 'react-calendar-timeline/lib';
 // make sure you include the timeline stylesheet or the timeline will not be styled
 import './calendar.css';
 // import 'react-calendar-timeline/lib/Timeline.css'
@@ -28,8 +28,12 @@ import './calendar.css';
 import moment from "moment";
 // import "react-big-calendar/lib/css/react-big-calendar.css";
 
+import GSTC from "react-gantt-schedule-timeline-calendar";
+
 moment.locale("en-GB");
 // const localizer = momentLocalizer(moment);
+
+
 
 const groups = [{id:1, title:"tes"}, {id:2,title:"test2"}]
 
@@ -103,71 +107,211 @@ const useStyles = makeStyles((theme) => ({
 
 
 function CalendarPage (  ) {   
+ 
   const classes = useStyles();
   const [collections, setCollections] = React.useState([]);
   const [tasks, setTasks] = React.useState([]);
-  //Load collections as groups
 
   useEffect(() => {
     if(store.getState().selectedWorkspace !== "" && store.getState().selectedPanel === "Calendar" && store.getState().allSelectedWorkspaceData !== undefined){
 
       if(store.getState().allSelectedWorkspaceData.task_collections !== undefined && store.getState().allSelectedWorkspaceData.task_collections.length > 0 ){
+        let collectionList = []
+        let taskList = []
         
         for(var collectionIndex in store.getState().allSelectedWorkspaceData.task_collections){
-          
+
           axios.get('/todocollection', {
             params: { 
               collection_id:  store.getState().allSelectedWorkspaceData.task_collections[collectionIndex]
             }
           })
           .then(res => {
-            collections.push({
-              id: res.data.data.collectionDetails._id,
-              title: res.data.data.collectionDetails.title
-            })
-            let collection_id = res.data.data.collectionDetails._id
-
-            for(var todoIndex in res.data.data.collectionDetails.to_do_elements){
-              axios.get('/todo/', {params: {todo_id: res.data.data.collectionDetails.to_do_elements[todoIndex]}})
-              .then(res => {
-                tasks.push(  {
-                  id: res.data.data.todoDetails._id,
-                  group: collection_id,
-                  title: res.data.data.todoDetails.title,
-                  start_time: new Date (res.data.data.todoDetails.creation_date),
-                  end_time: new Date (res.data.data.todoDetails.due_date)
-                })
+            if(res.data.data.collectionDetails !== null) {
+              collectionList.push({
+                id: res.data.data.collectionDetails._id,
+                title: res.data.data.collectionDetails.title
               })
-              
+              let collection_id = res.data.data.collectionDetails._id
+
+              for(var todoIndex in res.data.data.collectionDetails.to_do_elements){
+                axios.get('/todo/', {params: {todo_id: res.data.data.collectionDetails.to_do_elements[todoIndex]}})
+                .then(res => {
+                  taskList.push(  {
+                    id: res.data.data.todoDetails._id,
+                    group: collection_id,
+                    title: res.data.data.todoDetails.title,
+                    start_time: new Date (res.data.data.todoDetails.creation_date),
+                    end_time: new Date (res.data.data.todoDetails.due_date)
+                  })
+                })
+                
+              }
             }
           })
 
         }
 
+        setCollections(collectionList)
+        setTasks(taskList)
+
+        return () => {
+          subs.forEach(unsub => unsub());
+        };
       }
 
     }
+
+
   }, [store.getState().allSelectedWorkspaceData ,store.getState().selectedWorkspace, store.getState().selectedPanel]);
+
+  const config = {
+    height: 300,
+    list: {
+      rows: {
+        "1": {
+          id: "1",
+          label: "Row 1"
+        },
+        "2": {
+          id: "2",
+          label: "Row 2"
+        },
+        "3": {
+          id: "3",
+          label: "Row 3"
+        },
+        "4": {
+          id: "4",
+          label: "Row 4"
+        }
+      },
+      columns: {
+        data: {
+          id: {
+            id: "id",
+            data: "id",
+            width: 50,
+            header: {
+              content: "ID"
+            }
+          },
+          label: {
+            id: "label",
+            data: "label",
+            width: 200,
+            header: {
+              content: "Label"
+            }
+          }
+        }
+      }
+    },
+    chart: {
+      items: {
+        "1": {
+          id: "1",
+          rowId: "1",
+          label: "Item 1",
+          time: {
+            start: new Date().getTime(),
+            end: new Date().getTime() + 24 * 60 * 60 * 1000
+          }
+        },
+        "2": {
+          id: "2",
+          rowId: "2",
+          label: "Item 2",
+          time: {
+            start: new Date().getTime() + 4 * 24 * 60 * 60 * 1000,
+            end: new Date().getTime() + 5 * 24 * 60 * 60 * 1000
+          }
+        },
+        "3": {
+          id: "3",
+          rowId: "2",
+          label: "Item 3",
+          time: {
+            start: new Date().getTime() + 6 * 24 * 60 * 60 * 1000,
+            end: new Date().getTime() + 7 * 24 * 60 * 60 * 1000
+          }
+        },
+        "4": {
+          id: "4",
+          rowId: "3",
+          label: "Item 4",
+          time: {
+            start: new Date().getTime() + 10 * 24 * 60 * 60 * 1000,
+            end: new Date().getTime() + 12 * 24 * 60 * 60 * 1000
+          }
+        },
+        "5": {
+          id: "5",
+          rowId: "4",
+          label: "Item 5",
+          time: {
+            start: new Date().getTime() + 12 * 24 * 60 * 60 * 1000,
+            end: new Date().getTime() + 14 * 24 * 60 * 60 * 1000
+          }
+        }
+      }
+    }
+  };
+
+  let subs = [];
+
+  function onState(state) {
+    state.update("config.chart.items.1", item1 => {
+      item1.label = "Gantt schedule timeline calendar";
+      item1.time.end = item1.time.end + 2 * 24 * 60 * 60 * 1000;
+      return item1;
+    });
+    subs.push(
+      state.subscribe("config.chart.items", items => {
+        console.log("items changed", items);
+      })
+    );
+    subs.push(
+      state.subscribe("config.list.rows", rows => {
+        console.log("rows changed", rows);
+      })
+    );
+  }
+
+
 
     return(
         <div style={{marginRight:20}}>
 
-          <Timeline
-            id="timeline_id"
-            groups={collections}
-            items={tasks}
-            defaultTimeStart={moment().add(-12, 'hour')}
-            defaultTimeEnd={moment().add(12, 'hour')}
-          />
 
+          { collections !==  [] && tasks !== [] ?
+            <div>
+            {/* <GSTC config={config} onState={onState} /> */}
+              <Timeline id="timeline_id"
+                groups={collections}
+                items={tasks}
+                defaultTimeStart={ moment().days(1)  }
+                defaultTimeEnd={ moment().days(moment().daysInMonth())  }
+                traditionalZoom={true}
+              />
+              
+            </div>
+            :
+            null
+          }
         </div>
     )
 
 }
 
-    
 const mapStateToProps = state => {
-    return {selectedCompany: state.selectedCompany, companies: state.companies, workspaces: state.workspaces, selectedWorkspace: state.selectedWorkspace, taskCollectionIDs: state.taskCollectionIDs, workspaceTaskCollections: state.workspaceTaskCollections}
+    return {
+      selectedCompany: state.selectedCompany, 
+      companies: state.companies, 
+      workspaces: state.workspaces, 
+      selectedWorkspace: state.selectedWorkspace, 
+      taskCollectionIDs: state.taskCollectionIDs, 
+      workspaceTaskCollections: state.workspaceTaskCollections}
 }
       
 const mapDispatchToProps = dispatch => {

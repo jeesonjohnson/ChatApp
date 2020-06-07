@@ -10,8 +10,7 @@ import Dashboard from "./components/dashboard/Dashboard.js";
 
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
-class App extends Component {
-  render() {
+export default function App() {
     const theme = createMuiTheme({
       palette: {
         type: 'dark',
@@ -44,23 +43,18 @@ class App extends Component {
     return (
       <ThemeProvider theme={theme}>
         <Router>
-          <div id="app" style={{fontFamily:"Roboto"}}>
+          <div id="app" style={{fontFamily:"Roboto", overflow:"hidden"}}>
             <Route exact path="/" component={Home}/>
             <Route exact path="/pricing" component={Pricing} />
             <Route exact path="/resources" component={Resources} />
             <Route exact path="/sign_up" component={SignUp} />
             <Route exact path="/login" component={Login} />
-            {//Logout 
-            }
-
           </div>
-          <div id="#app-dashboard">
+          <div id="#app-dashboard" style={{overflow:"hidden"}}>
             <Route exact path="/dashboard" component={Dashboard}/>
           </div>
           
         </Router>
       </ThemeProvider>
     );
-  }
 }
-export default App;

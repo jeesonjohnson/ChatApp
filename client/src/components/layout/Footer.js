@@ -25,7 +25,7 @@ class Footer extends Component {
             <div className="col 8 s4">
               <h5>More</h5>
               <ul>
-                <li><Link to="/help">Help & Support</Link></li>
+                <li><Link to="/help">Help {"&"} Support</Link></li>
                 <li><Link to="/about_us">About Us</Link></li>
                 <li><Link to="/contact">Contact Us</Link></li>
               </ul>

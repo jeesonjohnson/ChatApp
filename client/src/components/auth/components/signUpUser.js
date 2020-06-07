@@ -60,7 +60,7 @@ class SignUpUser extends Component {
       console.log("Valid Created")
   }
   else{
-    this.state.errors= handleValidation(newUser, false)[1];
+    this.setState({errors: handleValidation(newUser, false)[1]});
 
     console.log("Invalid User");
     console.log(this.state.errors);

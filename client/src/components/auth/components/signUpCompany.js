@@ -61,7 +61,7 @@ class SignUpCompany extends Component {
       console.log("Valid Created")
   }
   else{
-    this.state.errors = handleValidation(newUser, true)[1];
+    this.setState({ errors: handleValidation(newUser, true)[1] });
     console.log("Errors");
     console.log(this.state.errors);
     reactDOM.render(this.state.errors.companies, document.getElementById('company-validate'));
