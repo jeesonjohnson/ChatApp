@@ -57,7 +57,7 @@ const AddWorkspaceModal = ( { type, buttonListClasses } ) => {
                 <ListItem button onClick={e => setOpen(true)} >
                     <ListItemAvatar>
                         <Avatar>
-                            <AddCircle />
+                            <AddCircle color="primary" />
                         </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={"Add " + type} />

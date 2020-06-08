@@ -5,10 +5,12 @@ import { connect } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { Redirect } from "react-router-dom";
 
+//UI
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Grid from '@material-ui/core/Grid';
@@ -25,14 +27,24 @@ import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
+//UI ICONS
+import DeleteIcon from '@material-ui/icons/Delete';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SearchIcon from '@material-ui/icons/Search';
 
 import MobileDashboard from './mobileScreen/MobileDashboard.js';
+
 import { CompanyDrawer, WorkspaceDrawer } from './components/drawers/Drawers.js';
 import WorkspacePanelItems from './components/workspace/WorkspaceButtonList.js';
+
 import EditUserModal from './components/modals/editUserModal.js';
+
+import LeaveChatModal from './components/modals/chatModals/leaveChatModal.js';
 import DeleteChatModal from './components/modals/chatModals/deleteChatModal.js';
+import AddGroupChatModal from './components/modals/chatModals/addGroupChatModal.js';
+import AddPrivateChatModal from './components/modals/chatModals/addPrivateChatModal.js';
+import EditChatModal from './components/modals/chatModals/editChatModal.js';
+
 import WorkspaceMenu from './components/menus/menu.js';
 import { getCompanies, checkIfAdmin } from './DataLoading.js';
 
@@ -153,6 +165,8 @@ function Dashboard() {
   const [redirect, setRedirect] = React.useState(false);
   let category = useSelector(state => state.chartCategory)
 
+  const [openAddGroupChat, setOpenGroupChat] = React.useState(false);
+  
   useEffect(() => { 
     axios.get(`/users/status`)
     .then(res =>{
@@ -179,6 +193,15 @@ function Dashboard() {
     setAnchorEl(null);
   };
 
+  const handleAddGroupChat = () => {
+    setOpenGroupChat(true)
+    handleClose()
+  };
+
+  const handleAddPrivateChat = () => {
+    handleClose()
+  };
+
   const logout = () => {
     axios.get('/users/logout')
     .then(() => {
@@ -186,6 +209,7 @@ function Dashboard() {
       setRedirect(true)
     })
   };
+
 
   //Charts select
   const handleChange = (event) => {
@@ -213,39 +237,42 @@ function Dashboard() {
               {/* Workspace name area */}
               <Grid item md={12} >
                 <div >
+                  <Paper className="valign-wrapper" style={{paddingLeft:25, paddingRight:20, width:"100%", height:"10vh", backgroundColor:"#2f3136", borderTopLeftRadius:50, marginTop:"1vh",}}>
+                    <Avatar alt="Logo" src="logo.png"  style={{float:"left"}}/>
 
-                <Paper className="valign-wrapper" style={{paddingLeft:25, paddingRight:20, width:"100%", height:"10vh", backgroundColor:"#2f3136", borderTopLeftRadius:50, marginTop:"1vh",}}>
-                  <Avatar alt="Logo" src="logo.png"  style={{float:"left"}}/>
+                    <Typography  style={{float:"left", marginLeft:15, marginRight:"auto"}}>
+                      {store.getState().allSelectedWorkspaceData.name}
+                    </Typography> 
 
-                  <Typography  style={{float:"left", marginLeft:15, marginRight:"auto"}}>
-                    {store.getState().allSelectedWorkspaceData.name}
-                  </Typography> 
+                    <IconButton aria-label="settings" onClick={handleClick} style={{float:"right"}}>
+                      <MoreVertIcon />
+                    </IconButton>
 
-                  <IconButton aria-label="settings" onClick={handleClick} style={{float:"right"}}>
-                    <MoreVertIcon />
-                  </IconButton>
-
-                    <Menu
-                      id="simple-menu"
-                      anchorEl={anchorEl}
-                      keepMounted
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}
-                    >
-                      <MenuItem onClick={handleClose}>Add Group Chat</MenuItem>
-                      <MenuItem onClick={handleClose}>Add Private Chat</MenuItem>
-
-                      {selectedPanel === ""}
-                      <MenuItem onClick={logout}>Logout</MenuItem>
-                      {/* 
-                      leave workspace
-
-                      logout
-                      */} 
-                    </Menu>
-                </Paper>
+                      <Menu
+                        id="simple-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                      >
+                        {getRole() === "Owner" || getRole() === "Admin" ?
+                          
+                          <MenuItem onClick={handleAddGroupChat}>Add Group Chat
+                          </MenuItem>
+                          :
+                          null
+                        }
+                        {getRole() === "Owner" || getRole() === "Admin" ?
+                        <AddGroupChatModal {...{openAddGroupChat, setOpenGroupChat}} />
+                        :null}
 
 
+                        <MenuItem onClick={handleAddPrivateChat}>Add Private Chat</MenuItem>
+
+                        <MenuItem onClick={logout}>Logout</MenuItem>
+
+                      </Menu>
+                  </Paper>
                 </div>
               </Grid>
 
@@ -298,9 +325,7 @@ function Dashboard() {
                                 <MenuItem value="Deadlines" >Deadlines</MenuItem>
                             </Select>
                         </FormControl>
-                    :
-                    null
-                  }
+                  : null}
                   
                   {selectedPanel === "" ?
                     <div>
@@ -309,20 +334,21 @@ function Dashboard() {
                         <SearchIcon />
                       </IconButton>
                     </div>
-                  :
-                    null
-                  }
+                  : null}
 
+                  {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "General" && selectedPanel !== "Announcements" ?
+                    <LeaveChatModal style={{float:"right", marginLeft:"auto"}} /> : null}
+                    
                   {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "General" && selectedPanel !== "Announcements" && (getRole() === "Owner" || getRole() === "Admin") ?
-                    <DeleteChatModal style={{float:"right", marginLeft:"auto"}} />
-                  :
-                    null
-                  }
+                      <EditChatModal /> : null}
+
+                  {/* Render the delete chat button on appbar if owner/admin */}
+                  {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "General" && selectedPanel !== "Announcements" && (getRole() === "Owner" || getRole() === "Admin") ?
+                      <DeleteChatModal /> : null}
 
               </Toolbar>
             </AppBar>
             
-
             {/* Main body of content */}
               {/* General layout */}
               {/* Text chat layout */}
@@ -385,7 +411,25 @@ function Dashboard() {
               :
               null
               }
-                    
+
+              {/* Chat layout */}
+              {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "Announcements" && store.getState().allSelectedWorkspaceData.private_chats !== undefined ? //Checks if non-standard-defined name and there is data for the workspace
+                store.getState().allSelectedWorkspaceData.private_chats.length > 0 ? //Checks there are group chats available
+                  store.getState().allSelectedWorkspaceData.private_chats.map((private_chat) => { //Loop through each group chat
+                    if(private_chat.title === selectedPanel){ //Render the page if the selected panel name is the same as the current group chat being checked
+                      return(
+                        <div item className={classes.container} style={{width:"100%", overflow:"hidden", height:"90vh", paddingTop:0 }}>
+                          <Chat {...private_chat} />
+                        </div>
+                      )
+                    }
+                  })
+                :
+                null
+              :
+              null
+              }
+                          
 
           </Grid>
 

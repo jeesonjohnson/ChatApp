@@ -25,7 +25,7 @@ import Timeline from 'react-calendar-timeline/lib';
 import './calendar.css';
 // import 'react-calendar-timeline/lib/Timeline.css'
 // import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
+import moment from 'moment';
 // import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import GSTC from "react-gantt-schedule-timeline-calendar";

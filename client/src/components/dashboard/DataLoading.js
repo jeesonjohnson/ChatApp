@@ -5,9 +5,9 @@ import { axiosGet } from "../../helpers/jwt";
 /*
     COMPANIES
 */
-export function getCompanies(company_id) {
+export const getCompanies = async (company_id) => {
   // axios.get('/companies/')
-  axiosGet("/companies/").then((res) => {
+  await axiosGet("/companies/").then((res) => {
     //Set Companies as first company on load, and load workspaces with first one set as selected
     if (company_id === "") {
       store.dispatch({
@@ -72,11 +72,10 @@ export function getWorkspaces(workspace_id) {
           });
         })
             // getTaskCollections();
-      }
-    
-
-    });
+          }        
+      });
   }
+  getAllWorkspaceSpecificData(workspace_id)
 }
 
 /*

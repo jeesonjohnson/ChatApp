@@ -3,35 +3,15 @@ import axios from 'axios'
 import store from '../../../../../store';
 import { connect } from 'react-redux';
 
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
 import Fade from '@material-ui/core/Fade';
-import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import Input from '@material-ui/core/Input';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import Modal from '@material-ui/core/Modal';
-import Select from '@material-ui/core/Select';
-import Slider from '@material-ui/core/Slider';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
-
 import DeleteIcon from '@material-ui/icons/Delete';
-
-import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
-
-
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-
 
   const useStyles = makeStyles((theme) => ({
     modal: {
@@ -46,24 +26,28 @@ import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
         padding: theme.spacing(2, 4, 3),
     },   
     button: {
-        // color: theme.color.delete
+        backgroundColor: '#757575'
     }
   }));
 
   
-  const DeleteChatModal = ( { } ) => {
+const DeleteChatModal = ( { } ) => {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
-    const [users, setUsers] = React.useState([]);
-    const [addTaskOpen, setAddTaskOpen] = React.useState(false); //Add task modal
-    const [newTask, setNewTask] = useState({})
-    const [selectedCreationDate, setSelectedCreationDate] = React.useState(new Date(Date.now()));
-    const [selectedDueDate, setSelectedDueDate] = React.useState(null);
-    const [personName, setPersonName] = React.useState([]);
+    const [chatId, setChatId] = React.useState("");
+    const [element, setElement] = React.useState(null);
 
     const handleOpen = () => {
         if(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes.length > 0){
-            console.log(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes)
+            for(var i in document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes){ //Loop through chats
+                if(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i].nodeName === "DIV" && 
+                document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i].className === "MuiButtonBase-root MuiListItem-root makeStyles-nested-260 makeStyles-selectedButton-261 MuiListItem-gutters MuiListItem-button"){ //Check that the element is a div node and not a function
+                    // console.log(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i].id)
+                    setChatId(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i].childNodes[0].childNodes[0].id)
+                    setElement(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i])
+                    break;
+                }
+            }
         }
 
         if(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes.length > 0){ //Check there are chats
@@ -82,16 +66,44 @@ import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
         setOpen(false);
     };
 
+    const a = (list) => {
+        let b = []
+        for(var i in list){
+            if(chatId !== list[i]._id){
+                b.push(list[i])    
+            }
+        }
+        return(b)
+    }
+
     /* TASK FUNCTIONS */
-    function deleteTask(){
-        //Delete task in database
-        axios.delete(`/todo/`, )
+    const deleteChat = async () =>{
+        //Delete chat in database
+        let workspaceData = store.getState().allSelectedWorkspaceData 
+        let group_chats = []
+        let private_chats = []
 
-        //Remove task element
+        workspaceData.group_chats = await a(workspaceData.group_chats)
+        workspaceData.private_chats = await a(workspaceData.private_chats)
 
-        //Close delete task modal 
+        await store.dispatch({ type: 'ALL_WORKSPACE_DATA', data: { workspaceData: workspaceData } });
 
-        //Close edit task modal
+        axios.delete(`/groupchat/`, {
+            params:{
+                group_id: chatId
+            }
+        })
+        .then(async res => {
+
+            console.log(element)
+            // await element.remove()
+            setElement(null)
+    
+            //Change selected panel to calendar
+            store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: "Calendar" } });
+            console.log("delete", store.getState().allSelectedWorkspaceData)
+        })
+
     }
 
     return(
@@ -102,7 +114,7 @@ import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
                 startIcon={<DeleteIcon style={{color: "#af0000"}} />}
                 onClick={e => handleOpen()}
             >
-                Delete
+                Delete Chat
             </Button>
             
             <Modal 
@@ -121,8 +133,8 @@ import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
                         <Typography variant="h6" align="center">Are you sure you want to delete chat</Typography>
                     </Grid>
     
-                    <Grid item xs={12}>
-                        <Button onClick={deleteTask}>Ok</Button> {/*addTask(document.getElementById("new_task_title"))  */}
+                    <Grid item xs={12} align="center">
+                        <Button onClick={deleteChat}>Ok</Button> {/*addTask(document.getElementById("new_task_title"))  */}
                         <Button onClick={handleClose}>Cancel</Button>
                     </Grid>
                 </Grid>

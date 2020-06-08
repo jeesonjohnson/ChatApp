@@ -6,18 +6,8 @@ const PrivateChat = require("./../models/PrivateChat");
 const PrivateMessage = require("./../models/PrivateMessage");
 const AppError = require("./../utils/appError");
 
-//SHould be deleted on production
-exports.getAllPrivateChats = catchAsync(async (req, res, next) => {
-  const privateData = await PrivateChat.find();
-  res.status(200).json({
-    status: "success",
-    results: privateData.length,
-    data: privateData
-  });
-});
-
 //################ CREATE A NEW GROUP CHAT ##############
-exports.creatPrivateChat = catchAsync(async (req, res, next) => {
+exports.createPrivateChat = catchAsync(async (req, res, next) => {
   var workspaceDetails = await Workspace.findById(req.body.workspaceid);
   //Only a user in a workspace should be able to create groupchat
   if (

@@ -147,7 +147,7 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
                 <ListItem button onClick={e => setManageWorkspaceOpen(true)} >
                     <ListItemAvatar>
                         <Avatar>
-                            <SettingsIcon />
+                            <SettingsIcon color="primary" />
                         </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={"Manage " + type} />

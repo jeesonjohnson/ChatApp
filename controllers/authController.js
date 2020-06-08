@@ -40,7 +40,6 @@ const createSendToken = (user, statusCode, req, res) => {
   Method for registeration of a given user account, appropriate function if the user is as an admin as well. 
 */
 exports.signup = catchAsync(async (req, res, next) => {
-  console.log(res.body);
   //Create new user
   if (req.body.password != req.body.password_confirm) {
     return next(new AppError("The passwords do not match", 500));

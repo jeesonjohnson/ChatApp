@@ -6,19 +6,10 @@ const GroupChat = require("./../models/GroupChat");
 const GroupMessage = require("./../models/GroupMessage");
 const AppError = require("./../utils/appError");
 
-//SHould be deleted on production
-exports.getAllGroupChats = catchAsync(async (req, res, next) => {
-  const groupData = await GroupChat.find();
-  res.status(200).json({
-    status: "success",
-    results: groupData.length,
-    data: groupData
-  });
-});
-
 //################ CREATE A NEW GROUP CHAT ##############
-exports.creatGroupChat = catchAsync(async (req, res, next) => {
+exports.createGroupChat = catchAsync(async (req, res, next) => {
   var workspaceDetails = await Workspace.findById(req.body.workspaceid);
+
   //Only a user in a workspace should be able to create groupchat
   if (!workspaceDetails.users.includes(req.user.id)) {
     return next(
@@ -28,20 +19,25 @@ exports.creatGroupChat = catchAsync(async (req, res, next) => {
       )
     );
   }
+  
   //So that if the owner of a company creates the workspace their id is not repeated...
   var groupUsers = req.body.users;
   if (!groupUsers.includes(req.user.id)) {
     groupUsers.push(req.user.id);
   }
+  
   var newGroupChat = await GroupChat.create({
     workspaceID: req.body.workspaceid,
     title: req.body.name,
     users: groupUsers
   });
+
   workspaceDetails.group_chats.push(newGroupChat.id);
+
   await Workspace.findByIdAndUpdate(workspaceDetails.id, workspaceDetails, {
     new: true
   });
+
   res.status(200).json({
     status: "success",
     data: newGroupChat,

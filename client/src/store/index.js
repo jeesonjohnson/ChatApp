@@ -15,7 +15,12 @@ const initalState = {
   groupChats: [],
   privateChats:[],
   allSelectedWorkspaceData:{},
-  chartCategory: ""
+  chartCategory: "",
+  selectedChat: {
+    id: "",
+    type: ""
+  },
+
 };
 
 const reducer = (state = initalState, action) => {
@@ -70,6 +75,10 @@ const reducer = (state = initalState, action) => {
       return Object.assign({}, state, {
         chartCategory: action.data.chartCategory
       })
+    case "CHAT_SELECTED":
+      return Object.assign({}, state, {
+        selectedChat: action.data.selectedChat
+      })  
     default:
       return state;
   }

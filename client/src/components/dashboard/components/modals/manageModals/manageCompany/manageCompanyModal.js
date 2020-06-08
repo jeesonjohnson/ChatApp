@@ -77,7 +77,7 @@ const ManageCompanyModal = ( { type, buttonListClasses } ) => {
             <ListItem button onClick={e => setManageCompanyOpen(true)} >
                 <ListItemAvatar>
                     <Avatar>
-                        <SettingsIcon />
+                        <SettingsIcon color="primary" />
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={"Manage " + type} />

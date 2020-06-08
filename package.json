@@ -7,8 +7,7 @@
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "heroku-postbuild":"NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
-
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "repository": {
     "type": "git",
@@ -26,6 +25,7 @@
     "bootstrap": "^4.5.0",
     "compression": "^1.7.4",
     "concurrently": "^5.2.0",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
@@ -44,7 +44,8 @@
     "react-youtube": "^7.11.2",
     "socket.io": "^2.3.0",
     "util": "^0.12.2",
-    "validator": "^12.2.0"
+    "validator": "^12.2.0",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"

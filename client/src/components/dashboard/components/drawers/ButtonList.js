@@ -12,7 +12,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 
-import { getCompanies ,getAllWorkspaceSpecificData, checkIfAdmin, getAcronym} from '../../DataLoading.js';
+import { getCompanies,getWorkspaces ,getAllWorkspaceSpecificData, checkIfAdmin, getAcronym} from '../../DataLoading.js';
 
 import ManageCompanyModal from './../modals/manageModals/manageCompany/manageCompanyModal.js'
 import ManageWorkspaceModal from './../modals/manageModals/manageWorkspace/manageWorkspaceModal.js'
@@ -65,19 +65,19 @@ const changeSelectedCompany = e => {
     workspaceButton.className = "MuiButtonBase-root MuiListItem-root MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock MuiListItem-dense MuiListItem-gutters MuiListItem-button selected_company"
 }
 
-const changeSelectedWorkspace = e => {
-    getAllWorkspaceSpecificData(e.currentTarget.id);
+const changeSelectedWorkspace = async (e) => {
     
     //Set all workspace button styles
     for(var i = 0; i < e.currentTarget.parentNode.childNodes.length-1; i++){
-    e.currentTarget.parentNode.childNodes[i].className = "MuiButtonBase-root MuiListItem-root MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock MuiListItem-dense MuiListItem-gutters MuiListItem-button"
+        e.currentTarget.parentNode.childNodes[i].className = "MuiButtonBase-root MuiListItem-root MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock MuiListItem-dense MuiListItem-gutters MuiListItem-button"
     }
 
     //Set active workspace button style
     e.currentTarget.className=`${e.currentTarget.className} selected_company`   
-    
+
     store.dispatch({ type: 'WORKSPACE_SELECTED', data: { selectedWorkspace: e.currentTarget.id }})     
     //When a user selects a workspace, all the data assocaited to a workspace is also saved
+    getWorkspaces(e.currentTarget.id)
     
 }
 
@@ -104,9 +104,7 @@ const ButtonList = ( { type } ) => {
     const [buttonList, setButtonList] = React.useState([]);
     var user = useSelector(state=> state.user)
     var role = user.owner && store.getState().selectedCompany === user.companies[0] ? "Owner" : checkIfAdmin
-    const [companyData, setCompanyData] = React.useState({});
-    const [selectedCompanySection, setSelectedCompanySection] = React.useState('Company'); 
-    const [selectedWorkspaceSection, setSelectedWorkspaceSection] = React.useState('Workspace'); 
+    const [companyData, setCompanyData] = React.useState({}); 
     var workspaceData = useSelector(state=> state.allSelectedWorkspaceData)
 
     useEffect(() => { 

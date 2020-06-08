@@ -60,10 +60,12 @@ function WorkspaceButtonList() {
   const [voiceOpen, setVoiceOpen] = React.useState(false);
   const [videoOpen, setVideoOpen] = React.useState(false);
   const [group_chats_names, setGroupChatsNames] = React.useState([]);
+  const [private_chats_names, setPrivateChatsNames] = React.useState([]);
 
   useEffect( () => {
-    loadGroupChats()
-  }, [store.getState().selectedWorkspace, workspaceData])
+    loadGroupChats() 
+    loadPrivateChats()
+  }, [store.getState().selectedWorkspace, store.getState().selectedCompany, workspaceData])
 
   const handleClick = (e) => {
     if (e.currentTarget.innerText === "Planner") {
@@ -79,17 +81,35 @@ function WorkspaceButtonList() {
     }
   };
   
-  //Loads the data for groupchats
+  //Loads the data for group chats
   const loadGroupChats = async () => {
+    await setGroupChatsNames([])
+    
     if(workspaceData.group_chats !== undefined){ //Checks if the groupchats were loaded in
+      console.log(workspaceData)
       if(workspaceData.group_chats.length > 0){ //Checks if there are any groupchats for the workspace
-        var a = []
+        var group_list = []
         workspaceData.group_chats.map((group_chat) => (
-          a.push({title: group_chat.title, _id: group_chat._id}) //Adds each groupchat with title and id to be used for the group button (NOTE: _id is stored the groupchat icon)
+          group_list.push({title: group_chat.title, _id: group_chat._id}) //Adds each groupchat with title and id to be used for the group button (NOTE: _id is stored the groupchat icon)
         ))
-        setGroupChatsNames(a)
+        setGroupChatsNames(group_list)
+        console.log(group_list)
       }
-      else {setGroupChatsNames([])}
+    }
+  };
+
+  //Loads the data for private chats
+  const loadPrivateChats = async () => {
+    await setPrivateChatsNames([])
+    
+    if(workspaceData.private_chats !== undefined){ //Checks if the private chatswere loaded in
+      if(workspaceData.private_chats.length > 0){ //Checks if there are any private chats for the workspace
+        var private_list = []
+        workspaceData.private_chats.map((private_chat) => (
+          private_list.push({title: private_chat.title, _id: private_chat._id}) //Adds each private chat with title and id to be used for the group button (NOTE: _id is stored the groupchat icon)
+        ))
+        setPrivateChatsNames(private_list)
+      }
     }
   };
 
@@ -99,6 +119,8 @@ function WorkspaceButtonList() {
       data: { selectedPanel: e.currentTarget.id },
     });
 
+    console.log(e.currentTarget.childNodes[0].childNodes[0])
+    console.log(group_chats_names)
     if(e.currentTarget.id !== "Charts"){
       store.dispatch({ type: 'CHART_CATEGOREY_CHANGED', data: { chartCategory: "" }})
     }
@@ -169,12 +191,12 @@ function WorkspaceButtonList() {
       </ListItem>
 
       <Collapse id="group_chats" in={chatOpen} timeout="auto" unmountOnExit>
-        {group_chats_names === [] || group_chats_names === undefined ? //Check if there are any groupchats to load
-          null
+        {workspaceData !== undefined && (group_chats_names !== undefined || group_chats_names !== []) ? //Check if there are any groupchats to load
+          group_chats_names.map((group_chat, index) => (
+            loadButton(group_chat.title, <GroupIcon id={group_chat._id}/>, true)) //LoadButton needs three bits of data (1. Button text, 2. Button Icon, 3. Boolean for whether the button is nested inside the list)
+          )
           :
-            group_chats_names.map((group_chat, index) => (
-                loadButton(group_chat.title, <GroupIcon id={group_chat._id}/>, true)) //LoadButton needs three bits of data (1. Button text, 2. Button Icon, 3. Boolean for whether the button is nested inside the list)
-            )
+          null
         }
       </Collapse>
 
@@ -187,7 +209,13 @@ function WorkspaceButtonList() {
       </ListItem>
 
       <Collapse id="private_chats" in={privateChatOpen} timeout="auto" unmountOnExit>
-        {loadButton(workspaceID, <PersonIcon />, true)}
+        {workspaceData !== undefined && (private_chats_names !== undefined || private_chats_names !== []) ? //Check if there are any groupchats to load
+          private_chats_names.map((private_chat, index) => (
+              loadButton(private_chat.title, <PersonIcon id={private_chat._id}/>, true)) //LoadButton needs three bits of data (1. Button text, 2. Button Icon, 3. Boolean for whether the button is nested inside the list)
+            )
+            :
+            null
+        }
       </Collapse>
 
       {/* <ListItem button onClick={handleClick}>
