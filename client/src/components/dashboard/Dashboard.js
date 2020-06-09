@@ -49,7 +49,6 @@ import WorkspaceMenu from './components/menus/menu.js';
 import { getCompanies, checkIfAdmin } from './DataLoading.js';
 
 import Calendar from './calendar/calendar.js';
-// import Calendar from './components/calendar/calendar.js';
 import Chat from './groupchat/Chat.js';
 import Chart from './chart/Charts.js';
 import ToDoPage from './toDoList/toDoPage.js';

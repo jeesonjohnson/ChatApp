@@ -140,7 +140,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   const token = req.cookies.token
   
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
-    console.log(req.headers)
+    // console.log(req.headers)
   //   token2 = req.headers.authorization.split(" ")[1];
   //   console.log("token2", token2)
   }
