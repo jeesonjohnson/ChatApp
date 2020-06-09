@@ -17,7 +17,7 @@ exports.getAllWorkspaces = catchAsync(async (req, res, next) => {
 });
 
 exports.createWorkspace = catchAsync(async (req, res, next) => {
-  var companyDetails = await company.findById(req.body.company);
+  var companyDetails = await Company.findById(req.body.company);
   //Only an admin should be able to create a workspace
   if (!companyDetails.admins.includes(req.user.id)) {
     return next(
@@ -40,7 +40,7 @@ exports.createWorkspace = catchAsync(async (req, res, next) => {
     users: compUsers
   });
   companyDetails.workspaces.push(newWorkspace.id);
-  await company.findByIdAndUpdate(companyDetails.id, companyDetails, {
+  await Company.findByIdAndUpdate(companyDetails.id, companyDetails, {
     new: true
   });
   res.status(200).json({
