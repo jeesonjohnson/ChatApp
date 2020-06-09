@@ -66,8 +66,6 @@ const changeSelectedCompany = async (e) => {
 }
 
 const changeSelectedWorkspace = async (e) => {
-    getWorkspaces(e.currentTarget.id)
-    // getAllWorkspaceSpecificData(e.currentTarget.id)
     //Set all workspace button styles
     for(var i = 0; i < e.currentTarget.parentNode.childNodes.length-1; i++){
         if(e.currentTarget.parentNode.childNodes[i].id !== ""){
@@ -82,6 +80,8 @@ const changeSelectedWorkspace = async (e) => {
     //When a user selects a workspace, all the data assocaited to a workspace is also saved
     
     
+    // getWorkspaces(e.currentTarget.id)
+    getAllWorkspaceSpecificData(e.currentTarget.id)
 }
 
 

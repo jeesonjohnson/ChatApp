@@ -50,23 +50,24 @@ export const getCompanies = async (company_id) => {
     WORKSPACES
 */
 export const getWorkspaces = async (workspace_id) => {
-  
   //Sets the workspaces after the drawer has been loaded in
   if (workspace_id !== "" && workspace_id === store.getState().selectedWorkspace) {
-    getAllWorkspaceSpecificData(workspace_id)
-    store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: { id: "Calendar", name: "Calendar"} } })
-      
-    store.dispatch({ type: 'CHART_CATEGOREY_CHANGED', data: { chartCategory: "" } });
+    store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: { id: "Calendar", name: "Calendar"} } }) //Set the selected page to Calendar on any changes
+    
+    store.dispatch({ type: 'CHART_CATEGOREY_CHANGED', data: { chartCategory: "" } }); //Reset selected chart category 
+    
+    getAllWorkspaceSpecificData(workspace_id) //Load the selected workspace data in 
+
     await axios.get(`/companies/${store.getState().selectedCompany}`, {params: { id: store.getState().selectedCompany },})
-    .then((res) => {
+    .then(async(res) => {
       let workspacesList = [];
 
       for (var workspaceID in res.data.data.companyData.workspaces) {
-
-        axios.get(`/workspaces/${res.data.data.companyData.workspaces[workspaceID]}`,{params: { id: res.data.data.companyData.workspaces[workspaceID] } })
+        await axios.get(`/workspaces/${res.data.data.companyData.workspaces[workspaceID]}`,{params: { id: res.data.data.companyData.workspaces[workspaceID] } })
         .then((res) => {
           workspacesList.push(res.data.data.workspaceDetails);
           
+
           store.dispatch({
             type: "WORKSPACES_LOADED",
             data: {
