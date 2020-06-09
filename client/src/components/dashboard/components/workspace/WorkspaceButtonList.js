@@ -67,15 +67,16 @@ function WorkspaceButtonList() {
   }, [store.getState().selectedWorkspace, store.getState().selectedCompany, store.getState().allSelectedWorkspaceData])
 
   const handleClick = (e) => {
-    if (e.currentTarget.innerText === "Planner") {
+    console.log(e.currentTarget)
+    if (e.currentTarget.id === "Planner") {
       setPlannerOpen(!plannerOpen);
-    } else if (e.currentTarget.innerText === "Group Chats") {
+    } else if (e.currentTarget.id === "Group Chats") {
       setChatOpen(!chatOpen);
-    } else if (e.currentTarget.innerText === "Private Chats") {
+    } else if (e.currentTarget.id === "Private Chats") {
       setPrivateChatOpen(!privateChatOpen);
-    } else if (e.currentTarget.innerText === "Voice Chats") {
+    } else if (e.currentTarget.id === "Voice Chats") {
       setVoiceOpen(!voiceOpen);
-    } else if (e.currentTarget.innerText === "Video Chats") {
+    } else if (e.currentTarget.id === "Video Chats") {
       setVideoOpen(!videoOpen);
     }
   };
@@ -177,7 +178,7 @@ function WorkspaceButtonList() {
 
   return (
     <div>
-      <ListItem button onClick={handleClick}>
+      <ListItem id="Planner" button onClick={handleClick}>
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>
@@ -199,11 +200,20 @@ function WorkspaceButtonList() {
 
       {loadButton("Announcements", "Announcements", <AnnouncementIcon />, false)}
 
-      <ListItem button onClick={handleClick}>
+      <ListItem id="Group Chats" button onClick={handleClick}>
         <ListItemIcon>
           <ChatIcon />
         </ListItemIcon>
-        <ListItemText primary="Group Chats" />
+        <ListItemText primary={ 
+          workspaceData !== undefined ? 
+            workspaceData.group_chats !== undefined ? 
+              "Group Chats (" + workspaceData.group_chats.length + ")" 
+              : 
+              null
+            :
+            null
+          } 
+        />
         {chatOpen ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
 
@@ -217,11 +227,20 @@ function WorkspaceButtonList() {
         }
       </Collapse>
 
-      <ListItem button onClick={handleClick}>
+      <ListItem id="Private Chats" button onClick={handleClick}>
         <ListItemIcon>
           <PrivateChatIcon />
         </ListItemIcon>
-        <ListItemText primary="Private Chats" />
+        <ListItemText primary={
+          workspaceData !== undefined ? 
+            workspaceData.private_chats !== undefined ?
+              "Private Chats (" + workspaceData.private_chats.length + ")"
+              :
+              null
+            :
+            null
+        } 
+        />
         {privateChatOpen ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
 

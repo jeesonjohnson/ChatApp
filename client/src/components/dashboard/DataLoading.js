@@ -134,32 +134,13 @@ export const getTaskCollections = async () => {
     Get all associated chats in a given workspace, and store to the local array value
 */
 export function getAllWorkspaceSpecificData(workspace_id) {
-  console.log(workspace_id)
   axios.get(`/workspaces/${workspace_id}`).then((res) => {
-    console.log(res)
     store.dispatch({
-        type: "ALL_WORKSPACE_DATA",
-        data: {
-          workspaceData: res.data.data.workspaceDetails,
-        },
-      });
+        type: "ALL_WORKSPACE_DATA", data: { workspaceData: res.data.data.workspaceDetails, } });
 
-    store.dispatch({ 
-      type: 'SELECTED_PANEL', 
-      data: { 
-        selectedPanel: {
-          id: "Calendar",
-          name: "Calendar" 
-        }
-      } 
-    })
+    store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: {id: "Calendar", name: "Calendar" } } })
     
-    store.dispatch({ 
-      type: 'CHART_CATEGOREY_CHANGED', 
-      data: { 
-        chartCategory: "" 
-      } 
-    });
+    store.dispatch({ type: 'CHART_CATEGOREY_CHANGED', data: { chartCategory: "" } });
 
   });
 }

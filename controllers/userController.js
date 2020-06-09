@@ -1,4 +1,5 @@
 const user = require("../models/User");
+const Company = require("../models/Company");
 const catchAsync = require("../utils/catchAsync");
 
 exports.getUser = catchAsync(async (req, res, next) => {
@@ -27,6 +28,7 @@ exports.isUserLoggedIn = catchAsync(async (req, res, next) => {
     return false
   }
 });
+
 exports.updateUser = catchAsync(async (req, res, next) => {
   const {email, current_password, new_password} = req.body
   const checkUser = await user.findOne({email}).select("+password");
@@ -44,7 +46,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 });
 
 exports.addCompany = catchAsync(async (req, res, next) => {
-  var companyDetails = await company.findById(req.query.company_id);
+  var companyDetails = await Company.findById(req.query.company_id);
   await user.findByIdAndUpdate(req.user.id, req.body, { new: true });
   res.status(201).json({
     status: "success",

@@ -76,11 +76,15 @@ PaperProps: {
                 } 
             })
             .then(res => {
-                loadedUsers.push({
-                    id: res.data.data._id,
-                    name: res.data.data.name,
-                    email: res.data.data.email
-                })
+                console.log(res.data.data._id, store.getState().allSelected)
+                
+                if(res.data.data._id !== store.getState().user._id){
+                    loadedUsers.push({
+                        id: res.data.data._id,
+                        name: res.data.data.name,
+                        email: res.data.data.email
+                    })
+                }
             })
         }
         setUsers(loadedUsers)
@@ -89,13 +93,11 @@ PaperProps: {
     const handleChange = (event) => {
         setSelectedUser(event.target.value);
     };
-
     
     const handleClose = () => {
         setOpenPrivateChat(false)
     };
 
-    /* TASK FUNCTIONS */
     function addPrivateChat(){
         if(selectedUser !== {}){                
             //Add chat in database
