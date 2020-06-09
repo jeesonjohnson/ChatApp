@@ -81,7 +81,7 @@ exports.deleteAGroupChat = catchAsync(async (req, res, next) => {
   });
 
   //Remove the collection details
-  await GroupMessage.findByIdAndDelete(groupChatDetails.id);
+  await GroupChat.findByIdAndDelete(groupChatDetails.id);
   res.status(200).json({
     status: "success",
     data: "data has been deleted"

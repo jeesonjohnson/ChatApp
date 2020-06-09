@@ -5,6 +5,7 @@ import axios from 'axios';
 import '../Auth.css';
 import BackButton from './signUpBackButton.js';
 import handleValidation from './validation.js';
+import { TextInput } from 'react-materialize';
 
 class SignUpUser extends Component {
   constructor() {
@@ -47,12 +48,12 @@ class SignUpUser extends Component {
       password_confirm: this.state.password_confirm,
     };
 
-    console.log(newUser);
+    // console.log(newUser);
 
     if(handleValidation(newUser, false)[0]){
       axios.post('/users/signup', {newUser})
       .then(res => {
-        console.log(res.data.status)
+        console.log(res)
         if(res.data.status === "success"){
           window.location.href = '/login'
         }
@@ -85,9 +86,10 @@ class SignUpUser extends Component {
                 </h4>
               <p className="grey-text text-darken-1">Already have an account? <Link to="/login">Log in</Link></p>
             </div>
+
             <form noValidate onSubmit={this.onSubmit}>
-              <div className="input-field col s12">
-                <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text"/>
+              <div className="input-field col s12" >
+                <input onChange={this.onChange} value={this.state.name} error={errors.name} id="name" type="text" data-length={10}/>
                 <label htmlFor="name">Name</label>
               </div>
               <div id="name2-validate"></div>
@@ -110,6 +112,7 @@ class SignUpUser extends Component {
                 <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} type="submit" className="btn btn-large waves-effect waves-light hoverable blue accent-3">Sign up</button>
               </div>
             </form>
+
           </div>
         </div>
       </div>

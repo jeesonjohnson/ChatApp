@@ -27,6 +27,7 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 
+app.use(cors());
 
 //#########################   MAIN BACKEND  ###########################
 //Bodyparser middleware
@@ -91,8 +92,6 @@ app.post('/upload', (req, res) => {
 
 app.use(globalErrorhandler);
 
-
-app.use(cors());
 
 
 module.exports = app;

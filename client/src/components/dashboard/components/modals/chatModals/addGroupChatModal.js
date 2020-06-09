@@ -3,7 +3,7 @@ import axios from 'axios'
 import store from '../../../../../store';
 import { connect } from 'react-redux';
 
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
@@ -12,13 +12,14 @@ import Fade from '@material-ui/core/Fade';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import Input from '@material-ui/core/Input';
-import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Modal from '@material-ui/core/Modal';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+
+import { getAllWorkspaceSpecificData } from '../../../DataLoading.js';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -117,11 +118,7 @@ PaperProps: {
                 name: name
             })
             .then(res => {
-                //Add element
-                console.log(res.data.data)
-                console.log(res.data.workspace)
-                store.dispatch({ type: 'ALL_WORKSPACE_DATA', data: { workspaceData: res.data.workspace } });
-                console.log(store.getState().allSelectedWorkspaceData)
+                getAllWorkspaceSpecificData(store.getState().selectedWorkspace)
             })
             
             //Close modal
@@ -176,9 +173,6 @@ PaperProps: {
                                 >
                                     {users.map((user, index) => (
                                         <MenuItem value={user} key={index}>{user.name + '(' + user.email + ')'}</MenuItem>
-                                        // <MenuItem key={user._id} value={user.name+ " (" + user.email + ")"}> {/*id: user._id, name: user.name*/}
-                                            //{/* {user.name} */}
-                                        //{/* </MenuItem> */}
                                         )
                                     )
                                 }

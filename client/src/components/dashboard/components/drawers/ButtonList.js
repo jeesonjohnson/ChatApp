@@ -46,7 +46,7 @@ function getButtonList(classes, list, changeSelected){
     return buttonList
 }
 
-const changeSelectedCompany = e => {
+const changeSelectedCompany = async (e) => {
     getCompanies(e.currentTarget.id)
 
     // Set UI for Company buttons
@@ -66,18 +66,21 @@ const changeSelectedCompany = e => {
 }
 
 const changeSelectedWorkspace = async (e) => {
-    
+    getWorkspaces(e.currentTarget.id)
+    // getAllWorkspaceSpecificData(e.currentTarget.id)
     //Set all workspace button styles
     for(var i = 0; i < e.currentTarget.parentNode.childNodes.length-1; i++){
-        e.currentTarget.parentNode.childNodes[i].className = "MuiButtonBase-root MuiListItem-root MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock MuiListItem-dense MuiListItem-gutters MuiListItem-button"
+        if(e.currentTarget.parentNode.childNodes[i].id !== ""){
+            e.currentTarget.parentNode.childNodes[i].className = "MuiButtonBase-root MuiListItem-root MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock MuiListItem-dense MuiListItem-gutters MuiListItem-button"
+        }
     }
 
     //Set active workspace button style
     e.currentTarget.className=`${e.currentTarget.className} selected_company`   
-
+    
     store.dispatch({ type: 'WORKSPACE_SELECTED', data: { selectedWorkspace: e.currentTarget.id }})     
     //When a user selects a workspace, all the data assocaited to a workspace is also saved
-    getWorkspaces(e.currentTarget.id)
+    
     
 }
 
@@ -128,7 +131,7 @@ const ButtonList = ( { type } ) => {
             }
 
         }
-    }, [store.getState().companies, store.getState().workspaces, store.getState().allSelectedWorkspaceData, store.getState().user]);
+    }, [store.getState().companies, store.getState().workspaces, store.getState().user]);
 
     return(
             <div>

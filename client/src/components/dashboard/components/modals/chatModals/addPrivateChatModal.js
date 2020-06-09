@@ -3,35 +3,31 @@ import axios from 'axios'
 import store from '../../../../../store';
 import { connect } from 'react-redux';
 
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
+import Divider from '@material-ui/core/Divider';
 import Fade from '@material-ui/core/Fade';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import Input from '@material-ui/core/Input';
-import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Modal from '@material-ui/core/Modal';
 import Select from '@material-ui/core/Select';
-import Slider from '@material-ui/core/Slider';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
+import { getAllWorkspaceSpecificData } from '../../../DataLoading.js';
 
-import DeleteIcon from '@material-ui/icons/Delete';
-
-import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
-
-
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+PaperProps: {
+    style: {
+    maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+    width: 250,
+    },
+},
+};
 
   const useStyles = makeStyles((theme) => ({
     modal: {
@@ -44,85 +40,118 @@ import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
         border: '2px solid #000',
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
-    },   
-    button: {
-        // color: theme.color.delete
-    }
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+    },
   }));
-
   
-  const AddPrivateChatModal = ( { } ) => {
+  const AddPrivateChatModal = ( { openAddPrivateChat, setOpenPrivateChat } ) => {
     const classes = useStyles();
-    const [open, setOpen] = React.useState(false);
     const [users, setUsers] = React.useState([]);
-    const [addTaskOpen, setAddTaskOpen] = React.useState(false); //Add task modal
-    const [newTask, setNewTask] = useState({})
-    const [selectedCreationDate, setSelectedCreationDate] = React.useState(new Date(Date.now()));
-    const [selectedDueDate, setSelectedDueDate] = React.useState(null);
-    const [personName, setPersonName] = React.useState([]);
+    const [selectedUser, setSelectedUser] = React.useState({});
 
-    const handleOpen = () => {
-        if(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes.length > 0){
-            console.log(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes)
-        }
+    useEffect(() => {       
+        if(store.getState().allSelectedWorkspaceData !== undefined && store.getState().allSelectedWorkspaceData !== {} && openAddPrivateChat){
+            setUsers([])
+            setSelectedUser({})
 
-        if(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes.length > 0){ //Check there are chats
-            for(var i in document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes){ //Loop through chats
-                if(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes[i].nodeName === "DIV"){ //Check that the element is a div node and not a function
-                    console.log(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes[i])
-                }
+            if(store.getState().allSelectedWorkspaceData.users !== undefined && store.getState().allSelectedWorkspaceData.users.length > 0){
+                loadUsers()     
             }
-
         }
+    }, [openAddPrivateChat] );
+    
+    const loadUsers = async () => {
+        let loadedUsers = []
         
-        setOpen(true);
+        for(var i in store.getState().allSelectedWorkspaceData.users){
+            await axios.get(`/users/${store.getState().allSelectedWorkspaceData.users[i]}`, {
+                params: {
+                    id : store.getState().allSelectedWorkspaceData.users[i]
+                } 
+            })
+            .then(res => {
+                loadedUsers.push({
+                    id: res.data.data._id,
+                    name: res.data.data.name,
+                    email: res.data.data.email
+                })
+            })
+        }
+        setUsers(loadedUsers)
+    }
+
+    const handleChange = (event) => {
+        setSelectedUser(event.target.value);
     };
 
+    
     const handleClose = () => {
-        setOpen(false);
+        setOpenPrivateChat(false)
     };
 
     /* TASK FUNCTIONS */
-    function deleteTask(){
-        //Delete task in database
-        axios.delete(`/todo/`, )
-
-        //Remove task element
-
-        //Close delete task modal 
-
-        //Close edit task modal
+    function addPrivateChat(){
+        if(selectedUser !== {}){                
+            //Add chat in database
+            axios.post(`/privatechat/`, {
+                workspaceid : store.getState().selectedWorkspace,
+                oppositeid: selectedUser.id,
+            })
+            .then(res => {
+                getAllWorkspaceSpecificData(store.getState().selectedWorkspace)
+            })
+            
+            //Close modal
+            handleClose()
+        }
     }
 
     return(
         <div>
-            <Button
-                variant="contained"
-                className={classes.button}
-                startIcon={<DeleteIcon style={{color: "#af0000"}} />}
-                onClick={e => handleOpen()}
-            >
-                Delete
-            </Button>
-            
             <Modal 
             aria-labelledby="transition-modal-title"
             aria-describedby="transition-modal-description"
             className={classes.modal}
-            open={open}
+            open={openAddPrivateChat}
             onClose={handleClose}
             closeAfterTransition
             BackdropComponent={Backdrop}
             BackdropProps={{timeout: 500}}
             >
-            <Fade in={open}>
+            <Fade in={openAddPrivateChat}>
                 <Grid container xs={4} className={classes.paper}>
                     <Grid item xs={12}>
-                        <Typography variant="h6" align="center">Are you sure you want to delete chat</Typography>
+                        <Typography variant="h6" align="center">New Private Chat</Typography>
+                        <Divider/>
                     </Grid>
-    
-                    <Grid item xs={12}>
-                        <Button onClick={deleteTask}>Ok</Button> {/*addTask(document.getElementById("new_task_title"))  */}
+
+                    {/* Users */}
+                    <Grid item xs={12} style={{marginTop:10}}>
+                        <FormControl className={classes.formControl} item style={{marginTop:10,  width:"100%"}}>
+                            <InputLabel id="demo-simple-select-label">User To Add</InputLabel>
+                            <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={selectedUser}
+                            onChange={handleChange}
+                            >
+                                {users.map((user, index) => (
+                                    <MenuItem value={user} key={index}>{user.name + '(' + user.email + ')'}</MenuItem>
+                                    )
+                                )}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} align="center">
+                        <Divider/>
+                        <Button onClick={addPrivateChat}>Ok</Button> {/*addTask(document.getElementById("new_task_title"))  */}
                         <Button onClick={handleClose}>Cancel</Button>
                     </Grid>
                 </Grid>

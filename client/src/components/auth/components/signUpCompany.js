@@ -48,12 +48,12 @@ class SignUpCompany extends Component {
       password_confirm: this.state.password_confirm,
     };
 
-    console.log(newUser);
+    // console.log(newUser);
 
     if( handleValidation(newUser, true)[0]){
       axios.post('/users/signup', {newUser})
       .then(res => {
-        console.log(res.data.status)
+        console.log(res)
         if(res.data.status === "success"){
           window.location.href = '/login'
         }

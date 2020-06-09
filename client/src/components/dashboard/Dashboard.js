@@ -166,7 +166,8 @@ function Dashboard() {
   let category = useSelector(state => state.chartCategory)
 
   const [openAddGroupChat, setOpenGroupChat] = React.useState(false);
-  
+  const [openAddPrivateChat, setOpenPrivateChat] = React.useState(false);
+
   useEffect(() => { 
     axios.get(`/users/status`)
     .then(res =>{
@@ -199,6 +200,7 @@ function Dashboard() {
   };
 
   const handleAddPrivateChat = () => {
+    setOpenPrivateChat(true)
     handleClose()
   };
 
@@ -218,6 +220,26 @@ function Dashboard() {
 
   const getRole = () => {
     return(user.owner && store.getState().selectedCompany === user.companies[0] ? "Owner" : checkIfAdmin())
+  }
+
+  const adminChatButtons = () =>{
+    for(var i in store.getState().allSelectedWorkspaceData.group_chats){
+      if(store.getState().selectedPanel.id !== undefined && store.getState().allSelectedWorkspaceData.group_chats[i]._id === store.getState().selectedPanel.id){
+        return(
+          <Grid container style={{float:"right", marginLeft:"auto"}} justify="flex-end">
+            <LeaveChatModal item />
+            
+            {getRole() === "Owner" || getRole() === "Admin" ?
+              <EditChatModal item /> : null}
+              
+              {/* Render the delete chat button on appbar if owner/admin */}
+              {getRole() === "Owner" || getRole() === "Admin" ?
+              <DeleteChatModal item /> : null}
+          </Grid>
+        )
+      }
+    }
+    
   }
 
   return (
@@ -268,6 +290,7 @@ function Dashboard() {
 
 
                         <MenuItem onClick={handleAddPrivateChat}>Add Private Chat</MenuItem>
+                        <AddPrivateChatModal {...{openAddPrivateChat, setOpenPrivateChat}} />
 
                         <MenuItem onClick={logout}>Logout</MenuItem>
 
@@ -308,9 +331,9 @@ function Dashboard() {
             {/* Top bar with search */}
             <AppBar container id="appbar" position="static" style={{backgroundColor:"#2f3136"}} width={document.getElementById('main') !== null ? document.getElementById('main').scrollWidth : null}>
               <Toolbar>
-                <Typography variant="h6" style={{float:"left", marginRight:"auto"}}>{selectedPanel}</Typography>
+                <Typography variant="h6" style={{float:"left", marginRight:"auto"}}>{selectedPanel.name}</Typography>
 
-                  {selectedPanel === "Charts" ?
+                  {selectedPanel.id === "Charts" ?
                         <FormControl className={classes.formControl} style={{marginLeft:50}}>
                           <FormHelperText>Select Category To View</FormHelperText>
                         {/* <Typography>Select Category To View</Typography> */}
@@ -327,7 +350,7 @@ function Dashboard() {
                         </FormControl>
                   : null}
                   
-                  {selectedPanel === "" ?
+                  {selectedPanel.id === "" ?
                     <div>
                       <InputBase style={{width:"25%", float:"right"}} placeholder="Search" inputProps={{ 'aria-label': 'search' }} />
                       <IconButton  edge="start" color="inherit" aria-label="menu">
@@ -335,16 +358,12 @@ function Dashboard() {
                       </IconButton>
                     </div>
                   : null}
-
-                  {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "General" && selectedPanel !== "Announcements" ?
-                    <LeaveChatModal style={{float:"right", marginLeft:"auto"}} /> : null}
-                    
-                  {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "General" && selectedPanel !== "Announcements" && (getRole() === "Owner" || getRole() === "Admin") ?
-                      <EditChatModal /> : null}
-
-                  {/* Render the delete chat button on appbar if owner/admin */}
-                  {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "General" && selectedPanel !== "Announcements" && (getRole() === "Owner" || getRole() === "Admin") ?
-                      <DeleteChatModal /> : null}
+                  
+                  {store.getState().allSelectedWorkspaceData.group_chats !== undefined && selectedPanel.id !== "Calendar" && selectedPanel.id !== "Charts" && selectedPanel.id !== "Tasks" && selectedPanel.id !== "Announcements" ?
+                    adminChatButtons()
+                    :
+                    null
+                  }
 
               </Toolbar>
             </AppBar>
@@ -354,7 +373,7 @@ function Dashboard() {
               {/* Text chat layout */}
 
               {/* Tasks layout */}
-                {selectedPanel === "Tasks" ? 
+                {selectedPanel.id === "Tasks" ? 
                   <div item className={classes.container} style={{width:"100%", overflow:"auto", height:"90vh", paddingLeft: 25 }}>
                     <ToDoPage />
                   </div>
@@ -363,7 +382,7 @@ function Dashboard() {
                 }
 
               {/* Announcements layout */}
-              {selectedPanel === "Announcements" ? 
+              {selectedPanel.id === "Announcements" ? 
                   <div item className={classes.container} style={{width:"100%", overflow:"auto", height:"90vh", paddingLeft: 25 }}>
                     <Grid item xs={12} md={8} lg={9}>
                         <Announcements />
@@ -374,7 +393,7 @@ function Dashboard() {
               }
 
               {/* Calendar layout */}
-              {selectedPanel === "Calendar" ? 
+              {selectedPanel.id === "Calendar" ? 
                 <div item className={classes.container} style={{width:"100%", overflow:"auto", height:"90vh", paddingLeft: 25 }}>
                   <Grid item xs={12} md={12} lg={12}>
                       <br />
@@ -386,7 +405,7 @@ function Dashboard() {
               }
 
               {/* Charts layout */}
-              {selectedPanel === "Charts" ? 
+              {selectedPanel.id === "Charts" ? 
                 <div item className={classes.container} style={{width:"100%", overflow:"auto",height:"90vh", paddingLeft: 25 }}>
                   <Chart {...{category}}/>
                 </div>  
@@ -395,10 +414,10 @@ function Dashboard() {
               }
 
               {/* Chat layout */}
-              {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "Announcements" && store.getState().allSelectedWorkspaceData.group_chats !== undefined ? //Checks if non-standard-defined name and there is data for the workspace
+              {selectedPanel.id !== "Calendar" && selectedPanel.id !== "Charts" && selectedPanel.id !== "Tasks" && selectedPanel.id !== "Announcements" && store.getState().allSelectedWorkspaceData.group_chats !== undefined ? //Checks if non-standard-defined name and there is data for the workspace
                 store.getState().allSelectedWorkspaceData.group_chats.length > 0 ? //Checks there are group chats available
                   store.getState().allSelectedWorkspaceData.group_chats.map((group_chat) => { //Loop through each group chat
-                    if(group_chat.title === selectedPanel){ //Render the page if the selected panel name is the same as the current group chat being checked
+                    if(group_chat.title === selectedPanel.name){ //Render the page if the selected panel name is the same as the current group chat being checked
                       return(
                         <div item className={classes.container} style={{width:"100%", overflow:"hidden", height:"90vh", paddingTop:0 }}>
                           <Chat {...group_chat} />
@@ -413,10 +432,10 @@ function Dashboard() {
               }
 
               {/* Chat layout */}
-              {selectedPanel !== "Calendar" && selectedPanel !== "Charts" && selectedPanel !== "Tasks" && selectedPanel !== "Announcements" && store.getState().allSelectedWorkspaceData.private_chats !== undefined ? //Checks if non-standard-defined name and there is data for the workspace
+              {selectedPanel.id !== "Calendar" && selectedPanel.id !== "Charts" && selectedPanel.id !== "Tasks" && selectedPanel.id !== "Announcements" && store.getState().allSelectedWorkspaceData.private_chats !== undefined ? //Checks if non-standard-defined name and there is data for the workspace
                 store.getState().allSelectedWorkspaceData.private_chats.length > 0 ? //Checks there are group chats available
                   store.getState().allSelectedWorkspaceData.private_chats.map((private_chat) => { //Loop through each group chat
-                    if(private_chat.title === selectedPanel){ //Render the page if the selected panel name is the same as the current group chat being checked
+                    if(private_chat.title === selectedPanel.name){ //Render the page if the selected panel name is the same as the current group chat being checked
                       return(
                         <div item className={classes.container} style={{width:"100%", overflow:"hidden", height:"90vh", paddingTop:0 }}>
                           <Chat {...private_chat} />

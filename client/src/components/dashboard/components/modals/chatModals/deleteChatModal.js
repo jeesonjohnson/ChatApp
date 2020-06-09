@@ -13,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 
+import { getWorkspaces, getAllWorkspaceSpecificData } from '../../../DataLoading.js';
+
   const useStyles = makeStyles((theme) => ({
     modal: {
       display: 'flex',
@@ -37,30 +39,26 @@ const DeleteChatModal = ( { } ) => {
     const [chatId, setChatId] = React.useState("");
     const [element, setElement] = React.useState(null);
 
-    const handleOpen = () => {
-        if(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes.length > 0){
-            for(var i in document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes){ //Loop through chats
-                if(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i].nodeName === "DIV" && 
-                document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i].className === "MuiButtonBase-root MuiListItem-root makeStyles-nested-260 makeStyles-selectedButton-261 MuiListItem-gutters MuiListItem-button"){ //Check that the element is a div node and not a function
-                    // console.log(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i].id)
-                    setChatId(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i].childNodes[0].childNodes[0].id)
-                    setElement(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes[i])
+    const handleOpen = () => {       
+        findElement('group_chats')
+        findElement('private_chats')
+
+        setOpen(true);
+    };
+
+    const findElement = (elementID) => {
+        if(document.getElementById(elementID).childNodes[0].childNodes[0].childNodes.length > 0){ //Check there are chats
+            for(var i in document.getElementById(elementID).childNodes[0].childNodes[0].childNodes){ //Loop through chats
+                if(document.getElementById(elementID).childNodes[0].childNodes[0].childNodes[i].nodeName === "DIV" && //Check that the element is a div node and not a function
+                document.getElementById(elementID).childNodes[0].childNodes[0].childNodes[i].className === "MuiButtonBase-root MuiListItem-root makeStyles-nested-260 makeStyles-selectedButton-261 MuiListItem-gutters MuiListItem-button"){ //Check that the element is a div node and not a function
+                    setChatId(document.getElementById(elementID).childNodes[0].childNodes[0].childNodes[i].childNodes[0].childNodes[0].id)
+                    setElement(document.getElementById(elementID).childNodes[0].childNodes[0].childNodes[i])
                     break;
                 }
             }
-        }
-
-        if(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes.length > 0){ //Check there are chats
-            for(var i in document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes){ //Loop through chats
-                if(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes[i].nodeName === "DIV"){ //Check that the element is a div node and not a function
-                    console.log(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes[i])
-                }
-            }
 
         }
-        
-        setOpen(true);
-    };
+    }
 
     const handleClose = () => {
         setOpen(false);
@@ -87,23 +85,27 @@ const DeleteChatModal = ( { } ) => {
         workspaceData.private_chats = await a(workspaceData.private_chats)
 
         await store.dispatch({ type: 'ALL_WORKSPACE_DATA', data: { workspaceData: workspaceData } });
+        await element.remove()
+        await setElement(null)
 
-        axios.delete(`/groupchat/`, {
-            params:{
-                group_id: chatId
-            }
-        })
-        .then(async res => {
-
-            console.log(element)
-            // await element.remove()
-            setElement(null)
-    
-            //Change selected panel to calendar
-            store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: "Calendar" } });
-            console.log("delete", store.getState().allSelectedWorkspaceData)
-        })
-
+        console.log("chats", group_chats, private_chats)
+        if(group_chats.length > 0){
+            axios.delete(`/groupchat/`, {
+                params:{
+                    group_id: chatId
+                }
+            })
+        }
+        else if(private_chats.length > 0){
+            axios.delete(`/privatechat/`, {
+                params:{
+                    private_id: chatId
+                }
+            })            
+        }
+        
+        store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: {id: "Calendar", name: "Calendar"} } });
+        // getWorkspaces(store.getState().selectedWorkspace)
     }
 
     return(

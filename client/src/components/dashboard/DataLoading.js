@@ -42,23 +42,27 @@ export const getCompanies = async (company_id) => {
       }
     }
   });
+
+
 }
 
 /*
     WORKSPACES
 */
-export function getWorkspaces(workspace_id) {
-  store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: "Calendar" } })
+export const getWorkspaces = async (workspace_id) => {
+  getAllWorkspaceSpecificData(workspace_id)
+  store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: { id: "Calendar", name: "Calendar"} } })
     
   store.dispatch({ type: 'CHART_CATEGOREY_CHANGED', data: { chartCategory: "" } });
 
   //Sets the workspaces after the drawer has been loaded in
   if (workspace_id !== "" && workspace_id === store.getState().selectedWorkspace) {
-    axios.get(`/companies/${store.getState().selectedCompany}`, {params: { id: store.getState().selectedCompany },})
+    await axios.get(`/companies/${store.getState().selectedCompany}`, {params: { id: store.getState().selectedCompany },})
     .then((res) => {
       let workspacesList = [];
 
       for (var workspaceID in res.data.data.companyData.workspaces) {
+
         axios.get(`/workspaces/${res.data.data.companyData.workspaces[workspaceID]}`,{params: { id: res.data.data.companyData.workspaces[workspaceID] } })
         .then((res) => {
           workspacesList.push(res.data.data.workspaceDetails);
@@ -70,12 +74,12 @@ export function getWorkspaces(workspace_id) {
               selectedWorkspace: workspacesList[0]._id,
             },
           });
+          
+          
         })
-            // getTaskCollections();
-          }        
-      });
+      }        
+    });
   }
-  getAllWorkspaceSpecificData(workspace_id)
 }
 
 /*
@@ -129,7 +133,9 @@ export const getTaskCollections = async () => {
     Get all associated chats in a given workspace, and store to the local array value
 */
 export function getAllWorkspaceSpecificData(workspace_id) {
+  console.log(workspace_id)
   axios.get(`/workspaces/${workspace_id}`).then((res) => {
+    console.log(res)
     store.dispatch({
         type: "ALL_WORKSPACE_DATA",
         data: {
@@ -140,7 +146,10 @@ export function getAllWorkspaceSpecificData(workspace_id) {
     store.dispatch({ 
       type: 'SELECTED_PANEL', 
       data: { 
-        selectedPanel: "Calendar" 
+        selectedPanel: {
+          id: "Calendar",
+          name: "Calendar" 
+        }
       } 
     })
     
