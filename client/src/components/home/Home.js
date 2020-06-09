@@ -13,18 +13,18 @@ class Home extends Component {
     return (
       <div id="cl">
         <Navbar/>
-        <div style={{  }} className="container valign-wrapper">
+        <div className="container valign-wrapper">
           <div className="row">
             <div className="col s12 center-align" >
               <br/>
               <i>For Developers By Developers</i>
-              <Carousel carouselId="Carousel-2" images={['icon_twitter.png', 'icon_facebook.png', 'icon_instagram.png']} options={{ dist: -200, duration: 200, fullWidth: false, indicators: true, noWrap: false, numVisible: 5, onCycleTo: null, padding: 0, shift: 0 }}/>
+              <Carousel carouselId="Carousel-2" images={['tasks.png', 'chat.png', 'charts.png']} options={{ dist: -200, duration: 200, fullWidth: true, indicators: true, noWrap: false, numVisible: 5, onCycleTo: null, padding: 0, shift: 0 }}/>
               <div style={{paddingTop:100, paddingBottom: 50}}>
                 <h5>What is Oogwai?</h5>
                 <p>Oogwai provides effective communication and organisation within a company. Providing a variety of unique tools specifically designed for developers of both software and hardware.</p>
               </div>
               <br/>
-              <Tabs className="tabs z-depth-1 grey darken-4" style={{ backgroundColor: "#2f3136" }}>
+              <Tabs className="tabs z-depth-1 grey darken-4" id="tabs-container">
                 <Tab active options={{ duration: 300, onShow: null, responsiveThreshold: Infinity, swipeable: false }} title="Tools" >
                   <div className="row" style={{backgroundColor: "#2f3136", margin: 0}}>
                     <img className="col s2" src="icon_translate.png" alt=""/>
