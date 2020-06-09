@@ -67,7 +67,6 @@ function WorkspaceButtonList() {
   }, [store.getState().selectedWorkspace, store.getState().selectedCompany, store.getState().allSelectedWorkspaceData])
 
   const handleClick = (e) => {
-    console.log(e.currentTarget)
     if (e.currentTarget.id === "Planner") {
       setPlannerOpen(!plannerOpen);
     } else if (e.currentTarget.id === "Group Chats") {
@@ -209,9 +208,9 @@ function WorkspaceButtonList() {
             workspaceData.group_chats !== undefined ? 
               "Group Chats (" + workspaceData.group_chats.length + ")" 
               : 
-              null
+              "Group Chats (...)"
             :
-            null
+            "Group Chats (...)"
           } 
         />
         {chatOpen ? <ExpandLess /> : <ExpandMore />}
@@ -236,9 +235,9 @@ function WorkspaceButtonList() {
             workspaceData.private_chats !== undefined ?
               "Private Chats (" + workspaceData.private_chats.length + ")"
               :
-              null
+              "Private Chats (...)"
             :
-            null
+            "Private Chats (...)"
         } 
         />
         {privateChatOpen ? <ExpandLess /> : <ExpandMore />}
