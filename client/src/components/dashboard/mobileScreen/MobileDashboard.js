@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import clsx from 'clsx';
+import axios from 'axios';
 import store from './../../../store';
 import { connect } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { Redirect } from "react-router-dom";
 
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -18,6 +20,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Divider from '@material-ui/core/Divider';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -106,44 +109,84 @@ toolbar: {
 }));
 
 function MobileDashboard() {
-  useEffect(()=> {
-    if (store.getState().selectedCompanies === ""){
-      getCompanies("")
-    }
-
-  }, []);
-  
-
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const [redirect, setRedirect] = React.useState(false);
+  const [user, setUser] = React.useState({name:""});
+  let workspace = useSelector(state=> state.selectedWorkspace)
+  let workspaceData = useSelector(state => state.allSelectedWorkspaceData)
 
-  const user = useSelector(state=> state.user);
-  const workspace = useSelector(state=> state.selectedWorkspace)
+  useEffect(()=> {
+    // console.log(store.getState())
+    // if (store.getState().selectedCompany === ""){
+    //   getCompanies("")
+    // }
+    // else{
+    //   getCompanies(store.getState().selectedCompany)
+    // }
+    if(user.name === ""){
+      axios.get(`/users/status`)
+      .then(res =>{
+        if(res.status === 200 && user.name === ""){
+          store.dispatch({ type: 'USER_LOGGED_IN', data: { user: res.data.data }})  
+          setUser(store.getState().user)
+          getCompanies("")
+        }
+      })
+      .catch(() => {
+        setRedirect(true)
+      })
+    }
 
-
-
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleClick = (event, menuType) => {
-    
-    setAnchorEl(event.currentTarget);
+  }, [store.getState().companies, store.getState().workspaces, store.getState().allSelectedWorkspaceData ]);
+  
+  const [companyAnchorEl, setCompanyAnchorEl] = React.useState(null);
+  const handleCompanyClick = (event) => {
+    setCompanyAnchorEl(event.currentTarget);
+  };
+  const handleCompanyClose = () => {
+    setCompanyAnchorEl(null);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const [workspaceanchorEl, setWorkspaceAnchorEl] = React.useState(null);
+  const handleWorkspaceClick = (event) => {
+    setWorkspaceAnchorEl(event.currentTarget);
+  };
+  const handleWorkspaceClose = () => {
+    setWorkspaceAnchorEl(null);
   };
 
+  const [panelanchorEl, setPanelAnchorEl] = React.useState(null);
+  const handlePanelClick = (event) => {
+    setPanelAnchorEl(event.currentTarget);
+    // workspaceData
+  };
+  const handlePanelClose = () => {
+    setPanelAnchorEl(null);
+  };
 
+  const getPrivateChat = async (private_chat) => {
+    let a
+    axios.get(`/users/${private_chat.user1}`)
+    .then(res => {
+      a =  {
+        id: res.data.data._id,
+        name: res.data.data.name
+      }
+    })
+
+    return(<MenuItem id={a.id} onClick={handlePanelClose}>{a.name}</MenuItem>) 
+  }
+ 
   return (
       <div className={classes.mobile_content}>
-      
+        {redirect ? <Redirect to="/login"/> : null}
+        
         <AppBar color="primary" className={classes.mobileTopAppBar}>
           <Typography variant="h6" className="center-align">
             {workspace + " - " + "(Name of current page)"}
           </Typography>
         </AppBar>
-
 
         <main className={classes.mobile_content} style={{overflow:"auto", marginBottom:60}}> 
           <Container item maxWidth="lg" className={classes.container}>
@@ -177,7 +220,7 @@ function MobileDashboard() {
           <Grid container>
 
             <Grid item xs={4}>
-              <ListItem button  container dense={true} alignItemsFlexStart>
+              <ListItem button  container dense={true} alignItemsFlexStart onClick={handleCompanyClick}>
                 <ListItemAvatar>
                   <Avatar style={{backgroundColor:"#725bda"}}>{"C"}</Avatar>
                 </ListItemAvatar>
@@ -186,16 +229,20 @@ function MobileDashboard() {
                 </Hidden>
               </ListItem>
 
-              <Menu id="company-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-                <MenuItem onClick={handleClose}>{store.getState().selectedCompany}</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <Menu id="company-menu" anchorEl={companyAnchorEl} keepMounted open={Boolean(companyAnchorEl)} onClose={handleCompanyClose}>
+                {store.getState().companies !== [] && store.getState().companies.length > 0 ?
+                  store.getState().companies.map(company => (
+                    <MenuItem>{company.name}</MenuItem>
+                  ))
+                  :
+                  null
+                }
               </Menu>
 
             </Grid>
 
             <Grid item xs={4}>
-              <ListItem button  container dense={true} alignItemsFlexStart aria-controls="workspace-menu" aria-haspopup="true" onClick={handleClick, "workspace-menu"}>
+              <ListItem button  container dense={true} alignItemsFlexStart aria-controls="workspace-menu" aria-haspopup="true" onClick={handleWorkspaceClick}>
                 <ListItemAvatar style={{}}>
                   <Avatar style={{backgroundColor:"#725bda"}}>{"W"}</Avatar>
                 </ListItemAvatar>
@@ -204,16 +251,22 @@ function MobileDashboard() {
                 </Hidden>
               </ListItem>
 
-              <Menu id="workspace-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-                <MenuItem onClick={handleClose}>{store.getState().selectedCompany}</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <Menu id="workspace-menu" anchorEl={workspaceanchorEl} keepMounted open={Boolean(workspaceanchorEl)} onClose={handleWorkspaceClose}>
+                {store.getState().workspaces !== [] && store.getState().workspaces.length > 0 ?
+                  store.getState().workspaces.map(workspace => (
+                    <MenuItem onClick={handleWorkspaceClose}>{workspace.name}</MenuItem>
+                  ))
+                  :
+                  null
+                }
+                
+                
               </Menu>
 
             </Grid>
 
             <Grid item xs={4}>
-              <ListItem button  container dense={true} alignItemsFlexStart aria-controls="panel-menu" aria-haspopup="true" onClick={handleClick, "panel-menu"}>
+              <ListItem button  container dense={true} alignItemsFlexStart aria-controls="panel-menu" aria-haspopup="true" onClick={handlePanelClick}>
                 <ListItemAvatar style={{}}>
                   <Avatar style={{backgroundColor:"#725bda"}}>{"P"}</Avatar>
                 </ListItemAvatar>
@@ -223,14 +276,31 @@ function MobileDashboard() {
               </ListItem>
             </Grid>
 
-            <Menu id="panel-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem onClick={handleClose}>Calendar</MenuItem>
-              <MenuItem onClick={handleClose}>Charts</MenuItem>
-              <MenuItem onClick={handleClose}>Tasks</MenuItem>
-              <MenuItem onClick={handleClose}>General</MenuItem>
-              <MenuItem onClick={handleClose}>Announcements</MenuItem>
-              <MenuItem onClick={handleClose}>CHATS</MenuItem>
-              <MenuItem onClick={handleClose}>{store.getState().selectedCompany}</MenuItem>
+            <Menu id="panel-menu" anchorEl={panelanchorEl} keepMounted open={Boolean(panelanchorEl)} onClose={handlePanelClose}>
+              <MenuItem onClick={e => console.log(store.getState())}>Calendar</MenuItem>
+              <MenuItem onClick={handlePanelClose}>Charts</MenuItem>
+              <MenuItem onClick={handlePanelClose}>Tasks</MenuItem>
+              <MenuItem onClick={handlePanelClose}>General</MenuItem>
+              <MenuItem onClick={handlePanelClose}>Announcements</MenuItem>
+              <Divider />
+              <MenuItem>Group Chats</MenuItem>
+              {workspaceData.group_chats !== undefined && workspaceData.group_chats.length > 0 ?
+                workspaceData.group_chats.map(group_chat =>(
+                  <MenuItem id={group_chat._id} onClick={handlePanelClose}>{group_chat.title}</MenuItem>
+                ))
+                :
+                null
+              }
+              <Divider />
+              <MenuItem>Private Chats</MenuItem>
+              {workspaceData.private_chats !== undefined && workspaceData.private_chats.length > 0 ?
+                workspaceData.private_chats.map( async (private_chat) =>(
+                  // console.log(private_chat)
+                  getPrivateChat(private_chat)
+                ))
+                :
+                null
+              }
             </Menu>
 
           </Grid>
