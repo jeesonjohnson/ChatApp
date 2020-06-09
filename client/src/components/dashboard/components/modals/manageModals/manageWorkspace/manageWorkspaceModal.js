@@ -129,9 +129,17 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
     }
 
     const deleteWorkspace = (e) => {
-        axios.delete('/workspace/', {})
-        getCompanies("")
-        setManageWorkspaceOpen(false)
+        axios.delete(`/workspaces/${store.getState().allSelectedWorkspaceData._id}`, {
+            params:{
+                company_id : store.getState().selectedCompany
+            }
+        })
+
+        setDeleteWorkspaceName("") //Reset the name to enable the delete button
+
+        getCompanies("") //Reload the workspaces list
+        
+        setManageWorkspaceOpen(false) //Close the modal 
     }
 
     const sectionChanged = (e) => {
