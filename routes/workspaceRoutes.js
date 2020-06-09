@@ -4,8 +4,6 @@ const authController = require("./../controllers/authController");
 
 const router = express.Router();
 
-router.route("/all").get(workspaceController.getAllWorkspaces); //Should be deleted from production!!!!!!!
-
 //Routes, that allow the user to get applicable workspaces. And create a workspace if they are admin
 router
   .route("/")

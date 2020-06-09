@@ -6,16 +6,6 @@ const AppError = require("./../utils/appError");
 const GroupChat =  require("./../models/GroupChat")
 const PrivateChat = require("./../models/PrivateChat")
 
-//SHould be deleted on production
-exports.getAllWorkspaces = catchAsync(async (req, res, next) => {
-  const workspaceData = await Workspace.find();
-  res.status(200).json({
-    status: "success",
-    results: workspaceData.length,
-    data: workspaceData
-  });
-});
-
 exports.createWorkspace = catchAsync(async (req, res, next) => {
   var companyDetails = await Company.findById(req.body.company);
   //Only an admin should be able to create a workspace

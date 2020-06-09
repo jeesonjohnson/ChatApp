@@ -6,16 +6,6 @@ const Collection = require("./../models/ToDoCollection");
 const TodoElement = require("./../models/ToDoElement");
 const AppError = require("./../utils/appError");
 
-//SHould be deleted on production
-exports.getAllTodoElements = catchAsync(async (req, res, next) => {
-  const todoData = await TodoElement.find();
-  res.status(200).json({
-    status: "success",
-    results: todoData.length,
-    data: todoData
-  });
-});
-
 //Create a new todocollection
 exports.createTodo = catchAsync(async (req, res, next) => {
   var CollectionDetails = await Collection.findById(req.body.collectionid);
