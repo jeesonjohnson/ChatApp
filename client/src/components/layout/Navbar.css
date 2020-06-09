@@ -14,6 +14,7 @@ div{
 
 #logo{
     margin-top: 7px;
+    margin-right: 50px;
 }
 
 #left-navbar-list{
@@ -31,4 +32,8 @@ a{
 
 img{
     color: #a0f3d7;
+}
+
+#Dropdown_menu{
+    background-color: #202225;
 }
