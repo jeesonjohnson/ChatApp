@@ -19,4 +19,7 @@ router
   .get(authController.protect, companyController.getAllUserCompanies)
   .delete(authController.protect, companyController.deleteUserFromCompany);
 
+router
+  .route("/name/:id")
+  .patch(authController.protect, companyController.editCompanyName)
 module.exports = router;

@@ -104,3 +104,18 @@ exports.addUserToCompany = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+exports.editCompanyName = catchAsync(async (req, res, next) => {
+  var companyDetails = await company.findById(req.params.id)
+
+  companyDetails.name = req.body.params.newName
+  
+  var newCompanyDetails = await company.findByIdAndUpdate(req.params.id, companyDetails)
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      companyDetails: newCompanyDetails
+    }
+  })
+});

@@ -72,6 +72,16 @@ const ManageCompanyModal = ( { type, buttonListClasses } ) => {
         setManageCompanyOpen(false)
     }
 
+    const saveNewCompanyName = async () => {
+        await axios.patch(`/companies/name/${store.getState().selectedCompany}`, {
+            params: {
+                newName: document.getElementById('new_name_text_field').value
+            }
+        })
+        getCompanies('')
+        setManageCompanyOpen(false)
+    };
+
     return(
         <div>
             <ListItem button onClick={e => setManageCompanyOpen(true)} >
@@ -114,8 +124,14 @@ const ManageCompanyModal = ( { type, buttonListClasses } ) => {
                                 
                                     <Divider style={{marginTop:10, marginBottom:10 }} />
 
-                                    <Typography>Delete the workspace {companyData.name}</Typography>
-                                    <TextField id="name_text_field" onChange={e => setDeleteCompanyName(e.currentTarget.value)} helperText={'Type in: '+ companyData.name} style={{ margin: 8 }} placeholder="Enter Workspace Name to Delete" fullWidth margin="normal" InputLabelProps={{ shrink: true, }} />
+                                    <Typography>Change Company Name</Typography>
+                                    <TextField id="new_name_text_field" label="New Company Name" defaultValue={companyData.name !== undefined && companyData.name !== "" ? companyData.name : null} fullWidth margin="normal" InputLabelProps={{ shrink: true, }} />
+                                    <Button onClick={saveNewCompanyName}>Save New Name</Button>
+
+                                    <Divider style={{marginTop:10, marginBottom:10 }} />
+
+                                    <Typography>Delete the Company {companyData.name}</Typography>
+                                    <TextField id="name_text_field" onChange={e => setDeleteCompanyName(e.currentTarget.value)} helperText={'Type in: '+ companyData.name} style={{ margin: 8 }} placeholder="Enter Company Name to Delete" fullWidth margin="normal" InputLabelProps={{ shrink: true, }} />
 
                                     <div>
                                         {deleteCompanyName === companyData.name ?
