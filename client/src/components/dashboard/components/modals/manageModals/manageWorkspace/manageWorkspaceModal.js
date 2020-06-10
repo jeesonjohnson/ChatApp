@@ -187,7 +187,7 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
                         <Divider />
 
                         {selectedWorkspaceSection === "Workspace" ?
-                            <div style={{marginTop:20, overflow:"auto"}}>
+                            <div style={{marginTop:20, overflowX:"hidden", overflowY:"auto", maxHeight:"60vh"}}>
                                 <Typography>Number of Admins: {workspaceData.admins !== undefined? workspaceData.admins.length : null}</Typography>
                                 <Typography>Number of Users: {workspaceData.users !== undefined? workspaceData.users.length - workspaceData.admins.length : null}</Typography>
                                 

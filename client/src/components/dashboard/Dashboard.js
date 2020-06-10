@@ -289,6 +289,10 @@ function Dashboard() {
           <div id="modal_paper" style={{marginTop:"25vh"}}>
             <Typography variant="h6" align="center">Welcome to Oogwai</Typography>
             <Typography variant="body1" align="center">At the current point, you are not assigned to any companies. Please get in to contact with your company administrator to add you to the company.</Typography>
+            <Typography variant="body1" align="center" style={{marginTop:35}}>Please log out and try again later.</Typography>
+            <Typography align="center" style={{marginTop:10}}>
+              <Button align="center" onClick={logout}>Logout</Button>
+            </Typography>
           </div>
       </Fade>
     </Modal>

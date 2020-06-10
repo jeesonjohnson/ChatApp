@@ -12,8 +12,6 @@ const initalState = {
   workspaces: [],
   taskCollectionIDs: [],
   workspaceTaskCollections: [],
-  groupChats: [],
-  privateChats:[],
   allSelectedWorkspaceData:{},
   chartCategory: "",
   selectedChat: {
