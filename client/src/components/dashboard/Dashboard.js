@@ -238,6 +238,16 @@ function Dashboard() {
         )
       }
     }
+
+    for(var i in store.getState().allSelectedWorkspaceData.private_chats){
+      if(store.getState().selectedPanel.id !== undefined && store.getState().allSelectedWorkspaceData.private_chats[i]._id === store.getState().selectedPanel.id){
+        return(
+          <Grid container style={{float:"right", marginLeft:"auto"}} justify="flex-end">
+            <DeleteChatModal item /> 
+        </Grid>
+        )
+      }
+    }
     
   }
 
@@ -330,7 +340,7 @@ function Dashboard() {
             {/* Top bar with search */}
             <AppBar container id="appbar" position="static" style={{backgroundColor:"#2f3136"}} width={document.getElementById('main') !== null ? document.getElementById('main').scrollWidth : null}>
               <Toolbar>
-                <Typography variant="h6" style={{float:"left", marginRight:"auto"}}>{selectedPanel.name}</Typography>
+                <Typography variant="h6" style={{float:"left", width:"50%"}}>{selectedPanel.name}</Typography>
 
                   {selectedPanel.id === "Charts" ?
                         <FormControl className={classes.formControl} style={{marginLeft:50}}>
