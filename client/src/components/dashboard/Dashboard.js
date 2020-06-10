@@ -26,6 +26,9 @@ import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+import Modal from '@material-ui/core/Modal';
 
 //UI ICONS
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -168,13 +171,21 @@ function Dashboard() {
   const [openAddGroupChat, setOpenGroupChat] = React.useState(false);
   const [openAddPrivateChat, setOpenPrivateChat] = React.useState(false);
 
+  const [newUserOpen, setNewUserOpen] = React.useState(false);
+
   useEffect(() => { 
     axios.get(`/users/status`)
     .then(res =>{
       if(res.status === 200 && user.name === ""){
         store.dispatch({ type: 'USER_LOGGED_IN', data: { user: res.data.data }})  
         setUser(store.getState().user)
-        getCompanies("")
+
+        if(res.data.data.companies.length > 0){ //New user won't have any companies
+          getCompanies("")
+        }
+        else{
+          setNewUserOpen(true)
+        }
       }
     })
     .catch(() => {
@@ -263,6 +274,25 @@ function Dashboard() {
   return (
     <div>
     {redirect ? <Redirect to="/login"/> : null}
+
+    <Modal 
+      aria-labelledby="transition-modal-title"
+      aria-describedby="transition-modal-description"
+      className={classes.modal}
+      open={newUserOpen}
+      // onClose={e => setManageWorkspaceOpen(false)}
+      closeAfterTransition
+      BackdropComponent={Backdrop}
+      BackdropProps={{timeout: 500}}
+      >
+      <Fade in={newUserOpen}>
+          <div id="modal_paper" style={{marginTop:"25vh"}}>
+            <Typography variant="h6" align="center">Welcome to Oogwai</Typography>
+            <Typography variant="body1" align="center">At the current point, you are not assigned to any companies. Please get in to contact with your company administrator to add you to the company.</Typography>
+          </div>
+      </Fade>
+    </Modal>
+
     {user.name !== "" ?
       <div className={classes.root} style={{overflow:"hidden"}}>
         <CssBaseline />
