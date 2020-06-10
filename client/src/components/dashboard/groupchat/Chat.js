@@ -181,7 +181,7 @@ function mapAPICALL(
   console.log(`http://api.postcodes.io/postcodes/${apiMessage.toLowerCase()}`);
   axios
     .get(
-      `http://api.postcodes.io/postcodes/${apiMessage.toLowerCase()}`
+      `https://cors-anywhere.herokuapp.com/http://api.postcodes.io/postcodes/${apiMessage.toLowerCase()}`
     )
     .then((result) => {
       console.log("MAIN RESULT");
