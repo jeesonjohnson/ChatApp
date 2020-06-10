@@ -1,9 +1,7 @@
 import React from 'react';
-
-import { connect } from 'react-redux';
+import axios from 'axios';
 import store from '../../../../../../store';
-import { useSelector } from 'react-redux';
-import axios from 'axios'
+import { connect, useSelector } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -29,7 +27,6 @@ import Typography from '@material-ui/core/Typography';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SettingsIcon from '@material-ui/icons/Settings';
 
-
 import { getCompanies, getAllWorkspaceSpecificData, getAcronym} from '../../../../DataLoading.js';
 
 import Admin from '../Admin.js';
@@ -51,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     },   
     paperAddUser: {
         backgroundColor: theme.palette.background.paper,
-        border: '2px solid #000',
+        borderRadius: 10,
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
       },
@@ -82,16 +79,12 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
             }) 
         }
     }
-    
-    const handleOpen = (userToAdd) => {
-        setAddUser(userToAdd)
-        setOpenAddUser(true)
-    }
   
     const addSelectedUser = (e) => {
         let userCardToDelete = 'user_card_'+selectedUserToAdd._id
         document.getElementById(userCardToDelete).remove() //Deletes the added user from the list 
-
+        
+        console.log(selectedUserToAdd)
         axios.post('/workspaces/user',  {
             workspace_id: store.getState().selectedWorkspace,
             user_id: selectedUserToAdd._id,
@@ -130,15 +123,10 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
 
     const deleteWorkspace = (e) => {
         axios.delete(`/workspaces/${store.getState().allSelectedWorkspaceData._id}`, {
-            params:{
-                company_id : store.getState().selectedCompany
-            }
-        })
+            params:{ company_id : store.getState().selectedCompany } })
 
         setDeleteWorkspaceName("") //Reset the name to enable the delete button
-
         getCompanies("") //Reload the workspaces list
-        
         setManageWorkspaceOpen(false) //Close the modal 
     }
 
@@ -151,156 +139,158 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
     }
 
     return(
-            <div>
-                <ListItem button onClick={e => setManageWorkspaceOpen(true)} >
-                    <ListItemAvatar>
-                        <Avatar>
-                            <SettingsIcon color="primary" />
-                        </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary={"Manage " + type} />
-                </ListItem>
+        <div>
+            <ListItem button onClick={e => setManageWorkspaceOpen(true)} >
+                <ListItemAvatar>
+                    <Avatar>
+                        <SettingsIcon color="primary" />
+                    </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={"Manage " + type} />
+            </ListItem>
 
-                <Modal 
-                    aria-labelledby="transition-modal-title"
-                    aria-describedby="transition-modal-description"
-                    className={classes.modal}
-                    open={manageWorkspaceOpen}
-                    onClose={e => setManageWorkspaceOpen(false)}
-                    closeAfterTransition
-                    BackdropComponent={Backdrop}
-                    BackdropProps={{timeout: 500}}
-                    >
-                    <Fade in={manageWorkspaceOpen}>
-                        <div id="modal_paper" className={classes.paper, classes.paperManageWorkspace}>
-                            <Typography variant="h6" align="center">Manage Workspace</Typography>
+            <Modal 
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                className={classes.modal}
+                open={manageWorkspaceOpen}
+                onClose={e => setManageWorkspaceOpen(false)}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{timeout: 500}}
+                >
+                <Fade in={manageWorkspaceOpen}>
+                    <div id="modal_paper" className={classes.paper, classes.paperManageWorkspace}>
+                        <Typography variant="h6" align="center">Manage Workspace</Typography>
 
-                            <ButtonGroup variant="text" color="inherit" aria-label="text primary button group" >
-                                <Button selected onClick={e => sectionChanged(e.target.textContent)}>Workspace</Button>
-                                <Button onClick={e => sectionChanged(e.target.textContent)}>Admins</Button>
-                                <Button onClick={e => sectionChanged(e.target.textContent)}>Users</Button>
-                                <Button onClick={e => sectionChanged(e.target.textContent)}>Add Users</Button>
-                            </ButtonGroup>
+                        <ButtonGroup variant="text" color="inherit" aria-label="text primary button group" >
+                            <Button selected onClick={e => sectionChanged(e.target.textContent)}>Workspace</Button>
+                            <Button onClick={e => sectionChanged(e.target.textContent)}>Admins</Button>
+                            <Button onClick={e => sectionChanged(e.target.textContent)}>Users</Button>
+                            <Button onClick={e => sectionChanged(e.target.textContent)}>Add Users</Button>
+                        </ButtonGroup>
 
-                            <Divider />
+                        <Divider />
 
-                            {selectedWorkspaceSection === "Workspace" ?
-                                <div style={{marginTop:20 }}>
-                                    <Typography>Number of Admins: {workspaceData.admins !== undefined? workspaceData.admins.length : null}</Typography>
-                                    <Typography>Number of Users: {workspaceData.users !== undefined? workspaceData.users.length - workspaceData.admins.length : null}</Typography>
-                                    
-                                    <Divider style={{marginTop:10, marginBottom:10 }} />
+                        {selectedWorkspaceSection === "Workspace" ?
+                            <div style={{marginTop:20 }}>
+                                <Typography>Number of Admins: {workspaceData.admins !== undefined? workspaceData.admins.length : null}</Typography>
+                                <Typography>Number of Users: {workspaceData.users !== undefined? workspaceData.users.length - workspaceData.admins.length : null}</Typography>
+                                
+                                <Divider style={{marginTop:10, marginBottom:10 }} />
 
-                                    <Typography>Delete the workspace {workspaceData.name}</Typography>
-                                    <TextField id="name_text_field" onChange={e => setDeleteWorkspaceName(e.currentTarget.value)} label="Workspace Name" helperText={'Type in: '+ workspaceData.name} style={{ margin: 8 }} placeholder="Enter Workspace Name to Delete" fullWidth margin="normal" InputLabelProps={{ shrink: true, }} />
+                                <Typography>Delete the workspace {workspaceData.name}</Typography>
+                                <TextField id="name_text_field" onChange={e => setDeleteWorkspaceName(e.currentTarget.value)} label="Workspace Name" helperText={'Type in: '+ workspaceData.name} style={{ margin: 8 }} placeholder="Enter Workspace Name to Delete" fullWidth margin="normal" InputLabelProps={{ shrink: true, }} />
 
-                                    <div>
-                                        {deleteWorkspaceName === store.getState().allSelectedWorkspaceData.name ?
-                                            <Button style={{color:"#af0000"}} onClick={e => deleteWorkspace(e)} >Delete</Button>
-                                            :
-                                            <Button disabled>Delete</Button>
-                                        }
-                                    </div>  
-                                </div>
-                                : null
-                            }
-
-                            {selectedWorkspaceSection === "Admins" ?
-                                <div style={{overflow:"auto"}}>
-                                    {workspaceData.admins.map((admin_id, index) =>(
-                                        <Admin {...{admin_id, buttonListClasses}} /> 
-                                    )) 
+                                <div>
+                                    {deleteWorkspaceName === store.getState().allSelectedWorkspaceData.name ?
+                                        <Button style={{color:"#af0000"}} onClick={e => deleteWorkspace(e)} >Delete</Button>
+                                        :
+                                        <Button disabled>Delete</Button>
                                     }
-                                </div>
-                                : null
-                            }
+                                </div>  
+                            </div>
+                            : null
+                        }
 
-                            {selectedWorkspaceSection === "Users" ?
-                                <Grid container direction="column" wrap="nowrap" style={{overflow:"auto", maxHeight:"60vh"}}>
-                                    {workspaceData.users.map((user_id, index) =>( 
-                                        <User item {...{user_id, buttonListClasses}} /> 
-                                    ) )}
-                                </Grid>
-                                : null
-                            }
+                        {selectedWorkspaceSection === "Admins" ?
+                            <Grid container direction="column" wrap="nowrap" style={{overflow:"auto", maxHeight:"60vh"}}>
+                            {workspaceData.admins.map((admin_id, index) =>( 
+                                <Admin item {...{admin_id}} /> 
+                            ) )}
+                            </Grid>
+                            : null
+                        }
 
-                            {selectedWorkspaceSection === "Add Users" ?
+                        {selectedWorkspaceSection === "Users" ?
+                            <Grid container direction="column" wrap="nowrap" style={{overflow:"auto", maxHeight:"60vh"}}>
+                                {workspaceData.users.map((user_id, index) =>( 
+                                    <User item {...{user_id}} /> 
+                                ) )}
+                            </Grid>
+                            : null
+                        }
 
-                            <div >
-                                {/* Text field to search for users */}
-                                <TextField  id="search_textfield" label="Search" margin="small" style={{width:"100%"}} onKeyPress={e => usersFoundInSearch(e.key, e.target.value)} />
+                        {selectedWorkspaceSection === "Add Users" ?
 
-                                {/* List of search results */}
-                                <div style={{overflow:"auto", maxHeight: "50vh", }} >
-                                    {usersInSearch !== [] && usersInSearch.length > 0 ?
-                                        usersInSearch.map((user, index) => (
-                                            <Card id={'user_card_'+user._id} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#2f3136"} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#f1b92e"} style={{backgroundColor: "#2f3136"}}>
-                                            <CardHeader
-                                                avatar={
-                                                <Avatar className={classes.avatar}>
-                                                    {user.name !== undefined ?
-                                                    getAcronym(user.name)
-                                                    :
-                                                    null
-                                                    }
-                                                </Avatar>
+                        <div >
+                            {/* Text field to search for users */}
+                            <TextField  id="search_textfield" label="Search" margin="small" style={{width:"100%"}} onKeyPress={e => usersFoundInSearch(e.key, e.target.value)} />
+
+                            {/* List of search results */}
+                            <div style={{overflow:"auto", maxHeight: "50vh", }} >
+                                {usersInSearch !== [] && usersInSearch.length > 0 ?
+                                    usersInSearch.map((user, index) => (
+                                        <Card id={'user_card_'+user._id} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#2f3136"} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#f1b92e"} style={{backgroundColor: "#2f3136"}}>
+                                        <CardHeader
+                                            avatar={
+                                            <Avatar className={classes.avatar}>
+                                                {user.name !== undefined ?
+                                                getAcronym(user.name)
+                                                :
+                                                null
                                                 }
-                                                action={
-                                                    <div>
-                                                        <IconButton id={user._id} aria-controls="simple-menu" aria-haspopup="true" onClick={e=> handleClick(e, user)} > {/*onClick={e => handleOpen(user)}>*/}
-                                                            <MoreVertIcon />
-                                                        </IconButton>
-                    
-                                                        <Menu
-                                                            id="simple-menu"
-                                                            anchorEl={anchorEl}
-                                                            keepMounted
-                                                            open={Boolean(anchorEl)}
-                                                            onClose={handleClose}
-                                                        >
-                                                            <MenuItem onClick={e => addUser(e)}>Add as User</MenuItem>
-                                                            <MenuItem style={{color:"#f1b92e"}} onClick={e => addAdmin(e)}>Add as Admin</MenuItem>
-                                                        </Menu>
-                                                        
-                                                        <Modal  
-                                                            aria-labelledby="transition-modal-title"
-                                                            aria-describedby="transition-modal-description"
-                                                            className={classes.modal}
-                                                            open={openAddUser}
-                                                            onClose={e => setOpenAddUser(false)}
-                                                            closeAfterTransition
-                                                            BackdropComponent={Backdrop}
-                                                            BackdropProps={{timeout: 500}}
-                                                        >
-                                                            <Fade in={openAddUser}>
-                                                                <div className={classes.paper, classes.paperAddUser}>
-                                                                    <Typography variant="h6" noWrap={true} >Are you sure you wish to add the user <span style={{color:"#f1b92e"}}>{selectedUserToAdd.name}</span> to the workspace <span style={{color:"#f1b92e"}}>{workspaceData.name}</span> as {selectedUserToAdd.admin ? "an Admin" : "a User"}</Typography>
+                                            </Avatar>
+                                            }
+                                            action={
+                                                <div>
+                                                    <IconButton id={user._id} aria-controls="simple-menu" aria-haspopup="true" onClick={e=> handleClick(e, user)} > {/*onClick={e => handleOpen(user)}>*/}
+                                                        <MoreVertIcon />
+                                                    </IconButton>
+                
+                                                    <Menu
+                                                        id="simple-menu"
+                                                        anchorEl={anchorEl}
+                                                        keepMounted
+                                                        open={Boolean(anchorEl)}
+                                                        onClose={handleClose}
+                                                    >
+                                                        <MenuItem onClick={e => addUser(e)}>Add as User</MenuItem>
+                                                        <MenuItem style={{color:"#f1b92e"}} onClick={e => addAdmin(e)}>Add as Admin</MenuItem>
+                                                    </Menu>
+                                                    
+                                                    <Modal  
+                                                        aria-labelledby="transition-modal-title"
+                                                        aria-describedby="transition-modal-description"
+                                                        className={classes.modal}
+                                                        open={openAddUser}
+                                                        onClose={e => setOpenAddUser(false)}
+                                                        closeAfterTransition
+                                                        BackdropComponent={Backdrop}
+                                                        BackdropProps={{timeout: 500}}
+                                                    >
+                                                        <Fade in={openAddUser}>
+                                                            <div className={classes.paper, classes.paperAddUser}>
+                                                                <Typography variant="h6" noWrap={true} >Are you sure you wish to add the user <span style={{color:"#f1b92e"}}>{selectedUserToAdd.name}</span> to the workspace <span style={{color:"#f1b92e"}}>{workspaceData.name}</span> as {selectedUserToAdd.admin ? "an Admin" : "a User"}</Typography>
+                                                                
+                                                                <div className="center-align">
                                                                     <Button id={selectedUserToAdd._id} onClick={e => addSelectedUser()}>Add User</Button>
                                                                     <Button onClick={e => setOpenAddUser(false)}>Cancel</Button>
                                                                 </div>
-                                                            </Fade>
-                                                        </Modal>
-                                                    </div>
-                                                }
-                                                title={user.name}
-                                                subheader={user.email}
-                                            />
-                                            <CardMedia
-                                            />
-                                        </Card>
-                                        ))
-                                        :
-                                        null
-                                    }
-                                </div>
+                                                            </div>
+                                                        </Fade>
+                                                    </Modal>
+                                                </div>
+                                            }
+                                            title={user.name}
+                                            subheader={user.email}
+                                        />
+                                        <CardMedia
+                                        />
+                                    </Card>
+                                    ))
+                                    :
+                                    null
+                                }
                             </div>
-                            :null
-                            }
                         </div>
-                    </Fade>
-                </Modal>
-            </div>
-        )
+                        :null
+                        }
+                    </div>
+                </Fade>
+            </Modal>
+        </div>
+    )
 }
 
 const mapStateToProps = state => {

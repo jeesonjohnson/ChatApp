@@ -47,84 +47,85 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-const Admin = ( { admin_id, buttonListClasses } ) => {
-    const classes = useStyles();
-    const [data, setData] = React.useState({});
-    const [openDeleteAdmin, setOpenDeleteAdmin] = React.useState(false);
+const Admin = ( { admin_id } ) => {
+  const classes = useStyles();
+  const [data, setData] = React.useState({});
+  const [openDeleteAdmin, setOpenDeleteAdmin] = React.useState(false);
 
-    useEffect(() => { 
-        axios.get(`/users/${admin_id}`)
-        .then(res => {
-            setData(res.data.data)
-        })
-    }, []);
-
-    const deleteSelectedUser = (userIDToDeleteButton) => {
-      setOpenDeleteAdmin(false) //Close modal for choosing to delete user
-
-      //Delete user in Database
-      axios.delete('workspaces/user', {params: {
-          workspace_id: store.getState().selectedWorkspace,
-          user_id: userIDToDeleteButton.id,
-      }})
-      .then(res =>{
-          getAllWorkspaceSpecificData(store.getState().selectedWorkspace)
+  useEffect(() => { 
+      axios.get(`/users/${admin_id}`)
+      .then(res => {
+          setData(res.data.data)
       })
+  }, []);
 
-      //Delete user card
-      document.getElementById('admin_card_'+userIDToDeleteButton.id).remove()
+  const deleteSelectedUser = (userIDToDeleteButton) => {
+    setOpenDeleteAdmin(false) //Close modal for choosing to delete user
+
+    //Delete user in Database
+    axios.delete('workspaces/user', {params: {
+        workspace_id: store.getState().selectedWorkspace,
+        user_id: userIDToDeleteButton.id,
+    }})
+    .then( res =>{      
+      getAllWorkspaceSpecificData(store.getState().selectedWorkspace)
+    })
+    
+    //Delete user card
+    document.getElementById('admin_card_'+userIDToDeleteButton.id).remove()
   }
 
-    return(
+  return(
+    <div>
+      {data.companies !== undefined ?
         <Card className={classes.root} id={'admin_card_'+admin_id} onMouseLeave={e => e.currentTarget.style.backgroundColor = "#2f3136"} onMouseEnter={e => e.currentTarget.style.backgroundColor = "#725bda"}>
-        <CardHeader
-            avatar={
-              <Avatar className={classes.avatar}>
-                  {data.name !== undefined ?
-                  getAcronym(data.name)
-                  :
-                  null
-                  }
-              </Avatar>
-            }
-            action={
-              <div>
-                  {data.owner ? 
-                    null
-                    :
-                    <IconButton aria-label="delete" id={admin_id} onClick={e => setOpenDeleteAdmin(true)} >
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-
-                  <Modal  
-                      aria-labelledby="transition-modal-title"
-                      aria-describedby="transition-modal-description"
-                      className={classes.modal}
-                      open={openDeleteAdmin}
-                      onClose={e => setOpenDeleteAdmin(false)}
-                      closeAfterTransition
-                      BackdropComponent={Backdrop}
-                      BackdropProps={{timeout: 500}}
-                  >
-                      <Fade in={openDeleteAdmin}>
-                          <div className={classes.paper}>
-                              <Typography variant="h6">Are you sure you wish to delete the admin: {data.name}</Typography>
-                              
-                              <div className="center-align">
-                                  <Button id={admin_id} onClick={e => deleteSelectedUser(e.currentTarget)}>Delete</Button>
-                                  <Button onClick={e => setOpenDeleteAdmin(false)}>Cancel</Button>
-                              </div>
-                          </div>
-                      </Fade>
-                  </Modal>
-              </div>
-            }
-            title={<Typography>{data.name}</Typography>}
-            subheader={data.email}
-        />
+          <CardHeader
+              avatar={
+                <Avatar className={classes.avatar}>{data.name !== undefined ? getAcronym(data.name) : null}</Avatar>}
+              action={
+                <div>
+                    {data !== {} ? 
+                      !data.owner ? 
+                        <IconButton aria-label="delete" id={admin_id} onClick={e => setOpenDeleteAdmin(true)} >
+                          <DeleteIcon />
+                        </IconButton>
+                        :
+                        null
+                      :
+                      null 
+                    }
+                    <Modal  
+                        aria-labelledby="transition-modal-title"
+                        aria-describedby="transition-modal-description"
+                        className={classes.modal}
+                        open={openDeleteAdmin}
+                        onClose={e => setOpenDeleteAdmin(false)}
+                        closeAfterTransition
+                        BackdropComponent={Backdrop}
+                        BackdropProps={{timeout: 500}}
+                    >
+                        <Fade in={openDeleteAdmin}>
+                            <div className={classes.paper}>
+                                <Typography variant="h6">Are you sure you wish to delete the admin: {data.name}</Typography>
+                                
+                                <div className="center-align">
+                                    <Button id={admin_id} onClick={e => deleteSelectedUser(e.currentTarget)}>Delete</Button>
+                                    <Button onClick={e => setOpenDeleteAdmin(false)}>Cancel</Button>
+                                </div>
+                            </div>
+                        </Fade>
+                    </Modal>
+                </div>
+              }
+              title={<Typography>{data.name}</Typography>}
+              subheader={data.email}
+          />
       </Card>
-    )
+      :
+      null
+      }
+    </div>
+  )
 }
 
 const mapStateToProps = state => {

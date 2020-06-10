@@ -140,14 +140,6 @@ const User = ( { user_id } ) => {
                 null
             }
         </div>
-            
-            // <Avatar>
-            //     A
-            // </Avatar>
-
-            // {data.name}
-            // {data.email}
-            // {/* _id, avatar, companies, owner */}
     )
 }
 
