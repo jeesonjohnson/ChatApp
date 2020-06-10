@@ -50,6 +50,7 @@ import { getCompanies, checkIfAdmin } from './DataLoading.js';
 
 import Calendar from './calendar/calendar.js';
 import Chat from './groupchat/Chat.js';
+import PrivateChat from './groupchat/PrivateChat.js';
 import Chart from './chart/Charts.js';
 import ToDoPage from './toDoList/toDoPage.js';
 import Announcements from './announcements/announcements.js';
@@ -222,6 +223,7 @@ function Dashboard() {
   }
 
   const adminChatButtons = () =>{
+    let type = "Group"
     for(var i in store.getState().allSelectedWorkspaceData.group_chats){
       if(store.getState().selectedPanel.id !== undefined && store.getState().allSelectedWorkspaceData.group_chats[i]._id === store.getState().selectedPanel.id){
         return(
@@ -233,17 +235,18 @@ function Dashboard() {
               
               {/* Render the delete chat button on appbar if owner/admin */}
               {getRole() === "Owner" || getRole() === "Admin" ?
-              <DeleteChatModal item /> : null}
+              <DeleteChatModal item {...{type}} /> : null}
           </Grid>
         )
       }
     }
 
+    type = "Private"
     for(var i in store.getState().allSelectedWorkspaceData.private_chats){
       if(store.getState().selectedPanel.id !== undefined && store.getState().allSelectedWorkspaceData.private_chats[i]._id === store.getState().selectedPanel.id){
         return(
           <Grid container style={{float:"right", marginLeft:"auto"}} justify="flex-end">
-            <DeleteChatModal item /> 
+            <DeleteChatModal item {...{type}} /> 
         </Grid>
         )
       }
@@ -447,7 +450,7 @@ function Dashboard() {
                     if(private_chat.title === selectedPanel.name){ //Render the page if the selected panel name is the same as the current group chat being checked
                       return(
                         <div item className={classes.container} style={{width:"100%", overflow:"hidden", height:"90vh", paddingTop:0 }}>
-                          <Chat {...private_chat} />
+                          <PrivateChat {...private_chat} />
                         </div>
                       )
                     }

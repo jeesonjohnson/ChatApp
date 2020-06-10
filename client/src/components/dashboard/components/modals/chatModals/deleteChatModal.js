@@ -33,78 +33,58 @@ import { getWorkspaces, getAllWorkspaceSpecificData } from '../../../DataLoading
   }));
 
   
-const DeleteChatModal = ( { } ) => {
+const DeleteChatModal = ( {type} ) => {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const [chatId, setChatId] = React.useState("");
-    const [element, setElement] = React.useState(null);
 
-    const handleOpen = () => {       
-        findElement('group_chats')
-        findElement('private_chats')
-
+    const handleOpen = () => {  
+        setChatId(store.getState().selectedPanel.id)
         setOpen(true);
     };
 
-    const findElement = (elementID) => {
-        if(document.getElementById(elementID).childNodes[0].childNodes[0].childNodes.length > 0){ //Check there are chats
-            for(var i in document.getElementById(elementID).childNodes[0].childNodes[0].childNodes){ //Loop through chats
-                if(document.getElementById(elementID).childNodes[0].childNodes[0].childNodes[i].nodeName === "DIV" && //Check that the element is a div node and not a function
-                document.getElementById(elementID).childNodes[0].childNodes[0].childNodes[i].className === "MuiButtonBase-root MuiListItem-root makeStyles-nested-260 makeStyles-selectedButton-261 MuiListItem-gutters MuiListItem-button"){ //Check that the element is a div node and not a function
-                    setChatId(document.getElementById(elementID).childNodes[0].childNodes[0].childNodes[i].childNodes[0].childNodes[0].id)
-                    setElement(document.getElementById(elementID).childNodes[0].childNodes[0].childNodes[i])
-                    break;
-                }
-            }
-
-        }
-    }
 
     const handleClose = () => {
         setOpen(false);
     };
 
-    const a = (list) => {
-        let b = []
+    const removeChatId = (list) => {
+        let chats = []
         for(var i in list){
             if(chatId !== list[i]._id){
-                b.push(list[i])    
+                chats.push(list[i])    
             }
         }
-        return(b)
+        return(chats)
     }
 
     /* TASK FUNCTIONS */
     const deleteChat = async () =>{
         //Delete chat in database
         let workspaceData = store.getState().allSelectedWorkspaceData 
-        let group_chats = []
-        let private_chats = []
 
-        workspaceData.group_chats = await a(workspaceData.group_chats)
-        workspaceData.private_chats = await a(workspaceData.private_chats)
+        if(type === "Group"){
+            workspaceData.group_chats = await removeChatId(workspaceData.group_chats)
 
-        await store.dispatch({ type: 'ALL_WORKSPACE_DATA', data: { workspaceData: workspaceData } });
-        await element.remove()
-        await setElement(null)
-
-        console.log("chats", group_chats, private_chats)
-        if(group_chats.length > 0){
-            axios.delete(`/groupchat/`, {
-                params:{
-                    group_id: chatId
-                }
-            })
+            if(workspaceData.group_chats.length > 0){
+                axios.delete(`/groupchat/`, {params:{ group_id: chatId}})
+            }
         }
-        else if(private_chats.length > 0){
-            axios.delete(`/privatechat/`, {
-                params:{
-                    private_id: chatId
-                }
-            })            
+        else if (type === "Private"){
+            workspaceData.private_chats = await removeChatId(workspaceData.private_chats)
+
+            if(workspaceData.private_chats.length > 0){
+                axios.delete(`/privatechat/`, {params:{ private_id: chatId }})            
+            }
         }
         
+        await store.dispatch({ type: 'ALL_WORKSPACE_DATA', data: { workspaceData: workspaceData } });
         store.dispatch({ type: 'SELECTED_PANEL', data: { selectedPanel: {id: "Calendar", name: "Calendar"} } });
+        
+        // document.getElementById(store.getState().selectedPanel.id).remove()   
+
+        
+        getAllWorkspaceSpecificData(store.getState().selectedWorkspace)
         // getWorkspaces(store.getState().selectedWorkspace)
     }
 

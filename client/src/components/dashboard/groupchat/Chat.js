@@ -283,6 +283,7 @@ const mapStateToProps = (state) => {
     selectedWorkspace: state.selectedWorkspace,
     taskCollectionIDs: state.taskCollectionIDs,
     workspaceTaskCollections: state.workspaceTaskCollections,
+    allSelectedWorkspaceData: state.allSelectedWorkspaceData
   };
 };
 
