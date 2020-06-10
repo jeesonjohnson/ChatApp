@@ -3,35 +3,18 @@ import axios from 'axios'
 import store from '../../../../../store';
 import { connect } from 'react-redux';
 
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
 import Fade from '@material-ui/core/Fade';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import Input from '@material-ui/core/Input';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import Modal from '@material-ui/core/Modal';
-import Select from '@material-ui/core/Select';
-import Slider from '@material-ui/core/Slider';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
-import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
-
-
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-
+import { getCompanies} from '../../../DataLoading.js';
 
   const useStyles = makeStyles((theme) => ({
     modal: {
@@ -50,31 +33,11 @@ import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
     }
   }));
 
-  
-  const LeaveChatModal = ( { } ) => {
+  const LeaveChatModal = () => {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
-    const [users, setUsers] = React.useState([]);
-    const [addTaskOpen, setAddTaskOpen] = React.useState(false); //Add task modal
-    const [newTask, setNewTask] = useState({})
-    const [selectedCreationDate, setSelectedCreationDate] = React.useState(new Date(Date.now()));
-    const [selectedDueDate, setSelectedDueDate] = React.useState(null);
-    const [personName, setPersonName] = React.useState([]);
 
-    const handleOpen = () => {
-        if(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes.length > 0){
-            console.log(document.getElementById('group_chats').childNodes[0].childNodes[0].childNodes)
-        }
-
-        if(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes.length > 0){ //Check there are chats
-            for(var i in document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes){ //Loop through chats
-                if(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes[i].nodeName === "DIV"){ //Check that the element is a div node and not a function
-                    console.log(document.getElementById('private_chats').childNodes[0].childNodes[0].childNodes[i])
-                }
-            }
-
-        }
-        
+    const handleOpen = () => {        
         setOpen(true);
     };
 
@@ -82,16 +45,9 @@ import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
         setOpen(false);
     };
 
-    /* TASK FUNCTIONS */
-    function deleteTask(){
-        //Delete task in database
-        axios.delete(`/todo/`, )
-
-        //Remove task element
-
-        //Close delete task modal 
-
-        //Close edit task modal
+    function leaveChat(){
+        axios.delete(`/groupchat/user/${store.getState().user._id}`, {params: {group_id: store.getState().selectedPanel.id}})
+        setOpen(false)
     }
 
     return(
@@ -118,11 +74,11 @@ import { getCompanies, checkIfAdmin } from '../../../DataLoading.js';
             <Fade in={open}>
                 <Grid container xs={4} className={classes.paper}>
                     <Grid item xs={12}>
-                        <Typography variant="h6" align="center">Are you sure you want to delete chat</Typography>
+                        <Typography variant="h6" align="center">Are you sure you want to leave chat: {store.getState().selectedPanel.name}</Typography>
                     </Grid>
     
                     <Grid item xs={12} align="center">
-                        <Button onClick={deleteTask}>Ok</Button> {/*addTask(document.getElementById("new_task_title"))  */}
+                        <Button onClick={leaveChat}>Ok</Button> {/*addTask(document.getElementById("new_task_title"))  */}
                         <Button onClick={handleClose}>Cancel</Button>
                     </Grid>
                 </Grid>

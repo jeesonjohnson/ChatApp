@@ -111,3 +111,23 @@ exports.addAUserToGroupChat = catchAsync(async (req, res, next) => {
     data: groupChatDetails
   });
 });
+
+exports.deleteUserFromGroupChat = catchAsync(async (req, res, next) => {
+  var groupChatDetails = await GroupChat.findById(req.query.group_id)
+
+  let newUsers = []
+  for(var i in groupChatDetails.users){
+    if(groupChatDetails.users[i] !== req.params.id)
+      await newUsers.push(groupChatDetails.users[i])
+  }
+  
+  groupChatDetails.users = newUsers
+
+  await GroupChat.findByIdAndUpdate(req.query.group_id, groupChatDetails)
+
+  res.status(200).json({
+    status: "success",
+  })
+
+  
+});

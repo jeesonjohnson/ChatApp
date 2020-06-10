@@ -228,7 +228,13 @@ function Dashboard() {
       if(store.getState().selectedPanel.id !== undefined && store.getState().allSelectedWorkspaceData.group_chats[i]._id === store.getState().selectedPanel.id){
         return(
           <Grid container style={{float:"right", marginLeft:"auto"}} justify="flex-end">
-            <LeaveChatModal item />
+            {store.getState().allSelectedWorkspaceData.group_chats.map(group_chat => {
+                if(group_chat.users.length > 1){
+                  return(<LeaveChatModal item />)
+                }
+              }
+            )}
+            
             
             {getRole() === "Owner" || getRole() === "Admin" ?
               <EditChatModal item /> : null}

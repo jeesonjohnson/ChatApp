@@ -11,4 +11,7 @@ router
   .patch(authController.protect, groupChatController.addAUserToGroupChat)
   .post(authController.protect, groupChatController.createGroupChat);
 
+router
+  .route('/user/:id')
+  .delete(authController.protect, groupChatController.deleteUserFromGroupChat)
 module.exports = router;
