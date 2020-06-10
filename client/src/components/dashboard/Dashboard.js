@@ -51,7 +51,8 @@ import EditChatModal from './components/modals/chatModals/editChatModal.js';
 import WorkspaceMenu from './components/menus/menu.js';
 import { getCompanies, checkIfAdmin } from './DataLoading.js';
 
-import Calendar from './calendar/calendar.js';
+// import Calendar from './calendar/calendar.js';
+import Calendar from './components/calendar/calendar.js';
 import Chat from './groupchat/Chat.js';
 import PrivateChat from './groupchat/PrivateChat.js';
 import Chart from './chart/Charts.js';
