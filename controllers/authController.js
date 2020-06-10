@@ -41,22 +41,23 @@ const createSendToken = (user, statusCode, req, res) => {
 */
 exports.signup = catchAsync(async (req, res, next) => {
   //Create new user
-  if (req.body.password != req.body.password_confirm) {
+  if (req.body.newUser.password != req.body.newUser.password_confirm) {
     return next(new AppError("The passwords do not match", 500));
   }
-  if (req.body.password.length < 8) {
+  console.log(req.body.newUser.password)
+  if (req.body.newUser.password.length < 8) {
     return next(new AppError("Password must at least be 8 characters", 500));
   }
   var newUser;
   try {
     newUser = await User.create({
-      avatar: req.body.avatar,
-      companies: req.body.companies,
-      owner: req.body.owner,
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      password_confirm: req.body.password_confirm
+      avatar: req.body.newUser.avatar,
+      companies: req.body.newUser.companies,
+      owner: req.body.newUser.owner,
+      name: req.body.newUser.name,
+      email: req.body.newUser.email,
+      password: req.body.newUser.password,
+      password_confirm: req.body.newUser.password_confirm
     });
 
   } catch (_) {
@@ -73,8 +74,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     //Implemented associated validation to the creation of a user account.
     try {
       newCompany = await company.create({
-        name: req.body.company_name,
-        avatar: req.body.avatar,
+        name: req.body.newUser.company_name,
+        avatar: req.body.newUser.avatar,
         admins: [newUser.id],
         users: [newUser.id],
         ownerID: newUser.id,
