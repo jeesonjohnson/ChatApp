@@ -20,6 +20,7 @@ router
 router
   .route("/:id")
   .get(authController.protect, workspaceController.getAGivenWorkspace)
-  .delete(authController.protect, workspaceController.deleteWorkspace);
+  .delete(authController.protect, workspaceController.deleteWorkspace)
+  .patch(authController.protect, workspaceController.editWorkspaceName);
 
 module.exports = router;

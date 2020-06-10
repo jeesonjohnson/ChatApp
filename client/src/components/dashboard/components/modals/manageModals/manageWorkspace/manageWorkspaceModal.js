@@ -123,20 +123,34 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
 
     const deleteWorkspace = (e) => {
         axios.delete(`/workspaces/${store.getState().allSelectedWorkspaceData._id}`, {
-            params:{ company_id : store.getState().selectedCompany } })
+            params:{ 
+                company_id : store.getState().selectedCompany 
+            } 
+        });
 
-        setDeleteWorkspaceName("") //Reset the name to enable the delete button
-        getCompanies("") //Reload the workspaces list
-        setManageWorkspaceOpen(false) //Close the modal 
-    }
+        setDeleteWorkspaceName("")    // Reset the name to enable the delete button
+        getCompanies("");               // Reload workspaces list
+        setManageWorkspaceOpen(false);  // Close modal 
+    };
 
     const sectionChanged = (e) => {
         if(e !== "Add Users"){
-            setUsersInSearch("")
+            setUsersInSearch("");
         }
         
-        setSelectedWorkspaceSection(e)
-    }
+        setSelectedWorkspaceSection(e);
+    };
+
+    const saveNewWorkspaceName = async () => {
+        await axios.patch(`/workspaces/${store.getState().selectedWorkspace}`, {
+            params: {
+                newName: document.getElementById('new_name_text_field').value
+            }
+        });
+        
+        getCompanies('');               // Reload workspaces list
+        setManageWorkspaceOpen(false)   // Close modal
+    };
 
     return(
         <div>
@@ -173,10 +187,16 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
                         <Divider />
 
                         {selectedWorkspaceSection === "Workspace" ?
-                            <div style={{marginTop:20 }}>
+                            <div style={{marginTop:20, overflow:"auto"}}>
                                 <Typography>Number of Admins: {workspaceData.admins !== undefined? workspaceData.admins.length : null}</Typography>
                                 <Typography>Number of Users: {workspaceData.users !== undefined? workspaceData.users.length - workspaceData.admins.length : null}</Typography>
                                 
+                                <Divider style={{marginTop:10, marginBottom:10 }} />
+
+                                <Typography>Change Workspace Name</Typography>
+                                <TextField id="new_name_text_field" label="New Workspace Name" defaultValue={workspaceData.name} fullWidth margin="normal" InputLabelProps={{ shrink: true, }} />
+                                <Button onClick={saveNewWorkspaceName}>Save New Name</Button>
+
                                 <Divider style={{marginTop:10, marginBottom:10 }} />
 
                                 <Typography>Delete the workspace {workspaceData.name}</Typography>

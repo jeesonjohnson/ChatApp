@@ -92,7 +92,7 @@ exports.addUserToWorkspace = catchAsync(async (req, res, next) => {
     return next(new AppError("Only admins can add people to a workspace", 201));
   }
   //If the user is an admin, then add the user to the workspace admins
-  if (req.body.admin == "true") {
+  if (req.body.admin) {
     workspaceDetails.admins.push(req.body.user_id);
   }
   //Add a given user to the workspace
@@ -150,7 +150,7 @@ exports.deleteUserFromWorkspace = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       user: userToDel,
-      company: workspaceDetails
+      workspace: workspaceDetails
     }
   });
 });
@@ -222,4 +222,19 @@ exports.deleteWorkspace = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
   });
+});
+
+exports.editWorkspaceName = catchAsync(async (req, res, next) => {
+  var workspaceDetails = await Workspace.findById(req.params.id)
+  
+  workspaceDetails.name = req.body.params.newName 
+  
+  var newWorkspaceDetails = await Workspace.findByIdAndUpdate(req.params.id, workspaceDetails)
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      workspaceDetails: newWorkspaceDetails
+    }
+  })
 });
