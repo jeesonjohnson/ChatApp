@@ -59,8 +59,9 @@ const ToDoPage = () => {
     useEffect( () => {
         if(loadedCollections !== [] || reloadCollections){
             loadTodoCollection()
-        }   
-    }, [ store.getState().selectedPanel, taskCollections, reloadCollections ] )
+        }  
+    // }, [taskCollections]) 
+    }, [store.getState().selectedPanel, taskCollections, reloadCollections ] )
 
     //Posts data for new collection, then resets the text field 
     async function addTaskCollection(key){       
@@ -85,7 +86,7 @@ const ToDoPage = () => {
         setNewCollection("")
     }
 
-    const loadTodoCollection = async () => {
+    const loadTodoCollection =  async() => {
         var list = []
         for(var i in taskCollections){
             await axios.get('/todocollection/', {
@@ -99,10 +100,6 @@ const ToDoPage = () => {
         }
         setLoadedCollections(list)
         
-    };
-
-    const loadTodoElement = async (collection_id) => {
-        return await axios.get('/todo/', { params: {collection_id: collection_id} })
     };
 
     const onMouseInTaskCollection = (e) =>{
@@ -136,7 +133,7 @@ const ToDoPage = () => {
                                 <Card style={{marginTop: 15, paddingTop:0}}>
                                     <CardHeader style={{paddingLeft:10, paddingRight:10, paddingTop:0, paddingBottom:0}}
                                         action={
-                                            <AddTaskModal {...{classes, collection}}/>
+                                            <AddTaskModal {...{classes, collection, reloadTodo, setReloadTodo}}/>
                                         } 
                                         title={<Hidden mdup><Typography >Add Task</Typography></Hidden>} />
                                 </Card>        
@@ -147,7 +144,7 @@ const ToDoPage = () => {
                                 null
                                 :
                                 collection.to_do_elements.map((todo, key) => {
-                                    return (<ToDo item key={key} {...{classes, collection, todo, reloadTodo, setReloadTodo}} />)
+                                    return (<ToDo item key={key} {...{classes, collection, todo, reloadTodo, setReloadTodo, loadedCollections}} />)
                                     }
                                 )
                                 

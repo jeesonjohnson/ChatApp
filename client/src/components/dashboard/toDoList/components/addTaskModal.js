@@ -26,11 +26,11 @@ import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers'
 
 import { PlaylistAdd } from '@material-ui/icons';
 
-import { getCompanies, checkIfAdmin } from '../../DataLoading.js';
+import { getCompanies, checkIfAdmin, updateTaskPanel } from '../../DataLoading.js';
 
 const PrettoSlider = withStyles({
     root: {
-      color: '#52af77',
+      color: '#f1b92e',
       height: 8,
     },
     thumb: {
@@ -70,7 +70,7 @@ const PrettoSlider = withStyles({
   };
 
 
-const AddTaskModal = ( { classes, collection } ) => {
+const AddTaskModal = ( { classes, collection, reloadTodo, setReloadTodo } ) => {
     const [users, setUsers] = React.useState([]);
     const [addTaskOpen, setAddTaskOpen] = React.useState(false); //Add task modal
     const [newTask, setNewTask] = useState({})
@@ -129,6 +129,8 @@ const AddTaskModal = ( { classes, collection } ) => {
             })
             .then(res => {
                 setAddTaskOpen(false) //Close Add Task modal
+                updateTaskPanel(store.getState().selectedWorkspace)
+                setReloadTodo(true)
             })
         }  
     }
@@ -145,9 +147,7 @@ const AddTaskModal = ( { classes, collection } ) => {
     }, [addTaskOpen] );
     
     const handleAddTaskOpen = (e, title) => {
-        // console.log(e, title)
-        // setSelectedCollection(title) //Store the title for the selected collection 
-        
+
         setNewTask({
             name: "",
             description: "",

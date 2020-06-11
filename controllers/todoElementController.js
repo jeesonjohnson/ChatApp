@@ -73,6 +73,7 @@ exports.getAlltodoInCollection = catchAsync(async (req, res, next) => {
 exports.deleteATodoElementGivenID = catchAsync(async (req, res, next) => {
   console.log(req.query.todo_id)
   var todoDetails = await TodoElement.findById(req.query.todo_id);
+  console.log(todoDetails)
   var collectionData = await Collection.findById(todoDetails.collectionID);
   console.log(todoDetails)
   console.log(collectionData)
@@ -111,7 +112,7 @@ exports.updateATodoElement = catchAsync(async (req, res, next) => {
 
   var updatedTodo = {
     title: req.body.title,
-    collectionID: req.body.collectionid,
+    collectionID: req.body.collection_id,
     description: req.body.description,
     assigned_users: req.body.assigned_users,
     progress_status: req.body.progress_status,

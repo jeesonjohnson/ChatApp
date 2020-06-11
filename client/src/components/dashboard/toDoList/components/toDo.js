@@ -19,27 +19,24 @@ import { Checkbox } from 'react-materialize';
 import EditTaskModal from './editTaskModal.js';
 import {PieChart, Pie, Cell, Label} from 'recharts';
 
-function Todo ( {classes, collection, todo, reloadTodo, setReloadTodo} ) {    
+function Todo ( {classes, collection, todo, reloadTodo, setReloadTodo, loadedCollections} ) {    
     const colors = [ "#a0f3d7", "#52776c" ] //Light and Dark teal
     const [taskDetails, setTaskDetails] = React.useState({})
-    const [toDoChecked, setToDoChecked] = React.useState(false);
+    const [toDoChecked, setToDoChecked] = React.useState(true);
     const taskCollections = useSelector(state=> state.allSelectedWorkspaceData.task_collections);
 
     const loadToDoElement = async () => {
-        const response = await axios.get('/todo/', { params: { todo_id: todo } })
+        await axios.get('/todo/', { params: { todo_id: todo } })
         .then(res => {
-            return res.data.data.todoDetails
+            setTaskDetails(res.data.data.todoDetails)
+            if(res.data.data.todoDetails.progress_status === 100){
+                setToDoChecked(true)
+            }
+            else{
+                setToDoChecked(false)
+            }
         })
         
-        setTaskDetails(response)
-
-        console.log(taskDetails.progress_status)
-        if(taskDetails.progress_status === 100){
-            setToDoChecked(true)
-        }
-        else{
-            setToDoChecked(false)
-        }
     }
     
     useEffect( () => {
@@ -64,7 +61,7 @@ function Todo ( {classes, collection, todo, reloadTodo, setReloadTodo} ) {
         return(
             <PieChart width={75} height={75}>
                 <Pie data={progress_data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={20} outerRadius={30} >
-                    <Label value={`${taskDetails.progress_status}%`} offset={0} position="center" />
+                    <Label id="percentage" value={`${taskDetails.progress_status}%`} offset={0} position="center" />
                     {
                         progress_data.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={colors[index]} />
@@ -88,6 +85,18 @@ function Todo ( {classes, collection, todo, reloadTodo, setReloadTodo} ) {
         return(name[0])
     }
 
+    // const getUserAvatars = () =>{
+    //     let user_list =[]
+    //     for(var i in taskDetails.assigned_users){
+    //         axios.get(`/users/${taskDetails.assigned_users[i]}`)
+    //         .then(res =>(
+    //             user_list.push(res.data.data.name[0])
+    //         ))
+    //     }
+        
+    //     return(user_list)
+    // }
+
     return(
     <Paper style={{marginTop: 10, maxWidth:220}} id={"task_card_"+ taskDetails._id}>
         {taskDetails === {} ?
@@ -107,7 +116,7 @@ function Todo ( {classes, collection, todo, reloadTodo, setReloadTodo} ) {
 
                 {!toDoChecked ?
                     <Grid item xs={12}>
-                        <Typography style={{overflow:"auto"}}>{taskDetails.description}</Typography>
+                        <Typography id="description" style={{overflow:"auto"}}>{taskDetails.description}</Typography>
                     </Grid>
                 : null}
 
@@ -115,10 +124,10 @@ function Todo ( {classes, collection, todo, reloadTodo, setReloadTodo} ) {
                     <Grid item xs={12} >
                         <MuiPickersUtilsProvider utils={DateFnsUtils} item>
                             <Grid item>
-                                <KeyboardDatePicker disabled margin="normal" id="date-picker-dialog" type="datatime-local" label="Start Date" format="dd/MM/yyyy" value={taskDetails.creation_date} />
+                                <KeyboardDatePicker disabled margin="normal" id="creation-date-picker-dialog" type="datatime-local" label="Start Date" format="dd/MM/yyyy" value={taskDetails.creation_date} />
                             </Grid>
                             <Grid item>
-                                <KeyboardDatePicker disabled margin="normal" id="date-picker-dialog" type="datatime-local" label="Due Date" format="dd/MM/yyyy" value={taskDetails.due_date}  />
+                                <KeyboardDatePicker disabled margin="normal" id="due-date-picker-dialog" type="datatime-local" label="Due Date" format="dd/MM/yyyy" value={taskDetails.due_date}  />
                             </Grid>
                         </MuiPickersUtilsProvider>
                     </Grid>
@@ -127,26 +136,23 @@ function Todo ( {classes, collection, todo, reloadTodo, setReloadTodo} ) {
                 {!toDoChecked ?
                     <Grid item container xs={12} >
                         <AvatarGroup max={4} xs={12} item>
-                            {taskDetails.assigned_users !== undefined ?
-                                taskDetails.assigned_users.length > 0 ?
-                                    taskDetails.assigned_users.map(id => (
-                                        console.log(id)
-                                    ))    
-                                // taskDetails.assigned_users.map(async id => (
-                                        // <Avatar alt="assigned_user" src="" style={{width:30, height:30}}>{getName(id)[0] !== undefined ? getName(id)[0] : null}</Avatar>
-                                    // ))
-                                    :
-                                    null
-                                :
-                                null
-                            }
+                            {/* {taskDetails.assigned_users !== undefined ? */}
+                                {/* taskDetails.assigned_users.length > 0 ? */}
+                                    {/* // getUserAvatars().map(user =>( */}
+                                    {/* //     <Avatar alt="assigned_user" src="" style={{width:30, height:30}}>{user}</Avatar> */}
+                                    {/* // )) */}
+                                {/* // taskDetails.assigned_users.map(async id => ( */}
+                                        {/* // <Avatar alt="assigned_user" src="" style={{width:30, height:30}}>{getName(id)[0] !== undefined ? getName(id)[0] : null}</Avatar> */}
+                                    {/* // )) */}
+                                    {/* : */}
+                                    {/* null */}
+                                {/* : */}
+                                {/* null */}
+                            {/* } */}
                         </AvatarGroup>
                     </Grid>
                 : null}
-
             </Grid>
-                
-            //, taskDetails.creation_date, taskDetails.due_date, taskDetails.progress_status, taskDetails.description, taskDetails.assigned_users
         }
     </Paper>
 )}
@@ -158,7 +164,8 @@ const mapStateToProps = state => {
         workspaces: state.workspaces, 
         selectedWorkspace: state.selectedWorkspace, 
         taskCollectionIDs: state.taskCollectionIDs, 
-        workspaceTaskCollections: state.workspaceTaskCollections
+        workspaceTaskCollections: state.workspaceTaskCollections,
+        allSelectedWorkspaceData: state.allSelectedWorkspaceData
     }
 }
       

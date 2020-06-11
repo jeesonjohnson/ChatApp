@@ -102,6 +102,7 @@ const EditTaskModal = ( { classes, collection, taskDetails, reloadTodo, setReloa
     
     const handleAddTaskClose = () => {
         setOpen(false);
+        setReloadTodo(true)
     };
 
     const loadUsers = async () => {
@@ -183,10 +184,9 @@ const EditTaskModal = ( { classes, collection, taskDetails, reloadTodo, setReloa
                 due_date: document.getElementById('due-date-picker-dialog').value //NEED TO SORT
             })
             .then(res => {
-                // getTaskCollections()
-                // getAllWorkspaceSpecificData(store.getState().selectedWorkspace)
                 setOpen(false) //Close Add Task modal
                 setReloadTodo(true)
+                getTaskCollections(store.getState().selectedWorkspace)
             })
             
         }  
