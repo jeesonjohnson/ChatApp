@@ -10,7 +10,7 @@ window.store = store
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store} style={{overflow:"hidden"}}>
+    <Provider store={store}>
       <App />
     </Provider>
   </React.StrictMode>,
