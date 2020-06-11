@@ -55,9 +55,7 @@ exports.addCompany = catchAsync(async (req, res, next) => {
 });
 
 exports.getUsersByName = catchAsync(async (req, res, next) => {
-  let regexName = new RegExp(req.query.name) 
-  
-  const foundUsers = await user.find({'name': regexName, '_id': {$nin:req.query.users}}, {'_id':1, 'name':1, 'email':1} )
+  const foundUsers = await user.find({'name': {$regex: req.query.name, $options: 'i'}, '_id': {$nin:req.query.users}}, {'_id':1, 'name':1, 'email':1} )
 
   res.status(200).json({
     status: "success",
