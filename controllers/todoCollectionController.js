@@ -74,10 +74,6 @@ exports.deleteACollection = catchAsync(async (req, res, next) => {
 
   //Delete a collection form a workspace
   let new_tasks_collections = []
-
-  console.log("serach", req.query.collection_id)
-  console.log(workspaceData.task_collections)
-  
   
   for (var x in workspaceData.task_collections) {
     if (workspaceData.task_collections[x].toString() !== req.query.collection_id.toString()) {
@@ -85,8 +81,6 @@ exports.deleteACollection = catchAsync(async (req, res, next) => {
     }
   }
   workspaceData.task_collections = new_tasks_collections
-
-  console.log(workspaceData.task_collections)
 
   await Workspace.findByIdAndUpdate(workspaceData._id, workspaceData, {
     new: true

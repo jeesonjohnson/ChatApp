@@ -40,7 +40,7 @@ class TodoCalendar extends Component {
                 <h4>To-do</h4>  
 
                 {  
-                    toDoElemID == 0 ?
+                    toDoElemID === 0 ?
                     <h4 style = {{fontSize: 12}}>No tasks in this workspace</h4>  
                     :  
                     toDoElemID.map(todo => {
