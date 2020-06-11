@@ -34,44 +34,6 @@ moment.locale("en-GB");
 // const localizer = momentLocalizer(moment);
 
 
-
-const groups = [{id:1, title:"tes"}, {id:2,title:"test2"}]
-
-const items = [
-  {
-    id: 1,
-    group: 1,
-    title: 'item 1',
-    start_time: moment(),
-    end_time: moment().add(1, 'hour')
-  },
-  {
-    id: 2,
-    group: 2,
-    title: 'item 2',
-    start_time: moment().add(-0.5, 'hour'),
-    end_time: moment().add(0.5, 'hour')
-  },
-  {
-    id: 3,
-    group: 1,
-    title: 'item 3',
-    start_time: moment().add(2, 'hour'),
-    end_time: moment().add(3, 'hour')
-  }
-]
- 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  }));
-
-
   // if (updateTaskCollections() != undefined) {
   //   for (var i in updateTaskCollections()) {
   //     var taskCollections = [];
@@ -113,54 +75,54 @@ function CalendarPage (  ) {
   const [tasks, setTasks] = React.useState([]);
 
   useEffect(() => {
-    if(store.getState().selectedWorkspace !== "" && store.getState().selectedPanel === "Calendar" && store.getState().allSelectedWorkspaceData !== undefined){
+    // if(store.getState().selectedWorkspace !== "" && store.getState().selectedPanel === "Calendar" && store.getState().allSelectedWorkspaceData !== undefined){
 
-      if(store.getState().allSelectedWorkspaceData.task_collections !== undefined && store.getState().allSelectedWorkspaceData.task_collections.length > 0 ){
-        let collectionList = []
-        let taskList = []
+    //   if(store.getState().allSelectedWorkspaceData.task_collections !== undefined && store.getState().allSelectedWorkspaceData.task_collections.length > 0 ){
+    //     let collectionList = []
+    //     let taskList = []
         
-        for(var collectionIndex in store.getState().allSelectedWorkspaceData.task_collections){
+    //     for(var collectionIndex in store.getState().allSelectedWorkspaceData.task_collections){
 
-          axios.get('/todocollection', {
-            params: { 
-              collection_id:  store.getState().allSelectedWorkspaceData.task_collections[collectionIndex]
-            }
-          })
-          .then(res => {
-            if(res.data.data.collectionDetails !== null) {
-              collectionList.push({
-                id: res.data.data.collectionDetails._id,
-                title: res.data.data.collectionDetails.title
-              })
-              let collection_id = res.data.data.collectionDetails._id
+    //       axios.get('/todocollection', {
+    //         params: { 
+    //           collection_id:  store.getState().allSelectedWorkspaceData.task_collections[collectionIndex]
+    //         }
+    //       })
+    //       .then(res => {
+    //         if(res.data.data.collectionDetails !== null) {
+    //           collectionList.push({
+    //             id: res.data.data.collectionDetails._id,
+    //             title: res.data.data.collectionDetails.title
+    //           })
+    //           let collection_id = res.data.data.collectionDetails._id
 
-              for(var todoIndex in res.data.data.collectionDetails.to_do_elements){
-                axios.get('/todo/', {params: {todo_id: res.data.data.collectionDetails.to_do_elements[todoIndex]}})
-                .then(res => {
-                  taskList.push(  {
-                    id: res.data.data.todoDetails._id,
-                    group: collection_id,
-                    title: res.data.data.todoDetails.title,
-                    start_time: new Date (res.data.data.todoDetails.creation_date),
-                    end_time: new Date (res.data.data.todoDetails.due_date)
-                  })
-                })
+    //           for(var todoIndex in res.data.data.collectionDetails.to_do_elements){
+    //             axios.get('/todo/', {params: {todo_id: res.data.data.collectionDetails.to_do_elements[todoIndex]}})
+    //             .then(res => {
+    //               taskList.push(  {
+    //                 id: res.data.data.todoDetails._id,
+    //                 group: collection_id,
+    //                 title: res.data.data.todoDetails.title,
+    //                 start_time: new Date (res.data.data.todoDetails.creation_date),
+    //                 end_time: new Date (res.data.data.todoDetails.due_date)
+    //               })
+    //             })
                 
-              }
-            }
-          })
+    //           }
+    //         }
+    //       })
 
-        }
+    //     }
 
-        setCollections(collectionList)
-        setTasks(taskList)
+    //     setCollections(collectionList)
+    //     setTasks(taskList)
 
-        return () => {
-          subs.forEach(unsub => unsub());
-        };
-      }
+    //     return () => {
+    //       subs.forEach(unsub => unsub());
+    //     };
+    //   }
 
-    }
+    // }
 
 
   }, [store.getState().allSelectedWorkspaceData ,store.getState().selectedWorkspace, store.getState().selectedPanel]);
