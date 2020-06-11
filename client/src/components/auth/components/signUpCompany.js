@@ -113,6 +113,7 @@ class SignUpCompany extends Component {
               </div>
               <div id="error-validate"></div>
               <div className="col s12" style={{ paddingLeft: "11.250px" }}>
+                <p>By signing up you are agreeing to our <a target="_blank" href="https://www.termsandconditionsgenerator.com/live.php?token=Tjxm9ZVrLi5BoetvhgEE7rA8qcKFkMrc" style={{ color: 'red' }}><b>Terms and Conditions</b></a></p>
                 <button style={{width: "150px", borderRadius: "3px", letterSpacing: "1.5px", marginTop: "1rem"}} type="submit" className="btn btn-large waves-effect waves-light hoverable blue accent-3">Sign up</button>
               </div>              
             </form>

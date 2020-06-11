@@ -18,16 +18,15 @@ class Footer extends Component {
             <div className="col 4 s4">
               <h5>Company</h5>
               <ul>
-                <li><Link to="/jobs">Jobs</Link></li>
-                <li><Link to="/about_us">About Us</Link></li>
+              <li><a target="_blank" href="https://www.termsandconditionsgenerator.com/live.php?token=Tjxm9ZVrLi5BoetvhgEE7rA8qcKFkMrc">Terms and Conditions</a></li>
+                <li><Link to="/">Our ethos</Link></li>
               </ul>
             </div>
             <div className="col 8 s4">
               <h5>More</h5>
               <ul>
-                <li><Link to="/help">Help {"&"} Support</Link></li>
-                <li><Link to="/about_us">About Us</Link></li>
-                <li><Link to="/contact">Contact Us</Link></li>
+              <li><Link to="/pricing">About Us</Link></li>
+              <li><a target="_blank" href="https://www.termsandconditionsgenerator.com/live.php?token=Tjxm9ZVrLi5BoetvhgEE7rA8qcKFkMrc">Terms and Conditions</a></li>
               </ul>
             </div>
           </div>
