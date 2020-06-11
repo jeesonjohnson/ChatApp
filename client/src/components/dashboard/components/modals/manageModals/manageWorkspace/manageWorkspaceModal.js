@@ -232,7 +232,6 @@ const ManageWorkspaceModal = ( { type, buttonListClasses } ) => {
                         }
 
                         {selectedWorkspaceSection === "Add Users" ?
-
                         <div >
                             {/* Text field to search for users */}
                             <TextField  id="search_textfield" label="Search" margin="small" style={{width:"100%"}} onKeyPress={e => usersFoundInSearch(e.key, e.target.value)} />

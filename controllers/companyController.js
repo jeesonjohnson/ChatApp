@@ -3,15 +3,6 @@ const user = require("./../models/User");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 
-exports.getAllCompanies = catchAsync(async (req, res, next) => {
-  const companies = await company.find();
-  res.status(200).json({
-    status: "success",
-    results: companies.length,
-    data: companies
-  });
-});
-
 // Finds details about a given company, provided the company id is given
 exports.getCompany = catchAsync(async (req, res, next) => {
   const companyData = await company.findById(req.params.id);
@@ -60,16 +51,23 @@ exports.deleteUserFromCompany = catchAsync(async (req, res, next) => {
     );
   }
 
+  for(var x in companyDetails.admins){
+    if(companyDetails.admins[x] === userToDel.id){
+      companyDetails.admins.splice(x,1);
+      break;
+    }
+  }
+
   //Now to remove the user from company details.
   for (var x = 0; x < companyDetails.users.length; x++) {
-    if (companyDetails.users[x] == userToDel.id) {
+    if (companyDetails.users[x] === userToDel.id) {
       companyDetails.users.splice(x, 1);
       break;
     }
   }
   //Now to remove the company id from user data
   for (var x = 0; x < userToDel.companies.length; x++) {
-    if (userToDel.companies[x] == companyDetails.id) {
+    if (userToDel.companies[x] === companyDetails.id) {
       userToDel.companies.splice(x, 1);
       break;
     }
@@ -89,19 +87,22 @@ exports.deleteUserFromCompany = catchAsync(async (req, res, next) => {
 
 
 exports.addUserToCompany = catchAsync(async (req, res, next) => {
-  var companyDetails = await company.findById(req.params.id);
-  req.user.companies.push(req.params.id);
-  companyDetails.users.push(req.user.id);
-  await user.findByIdAndUpdate(req.user.id, req.user, { new: true });
-  await company.findByIdAndUpdate(companyDetails.id, companyDetails, {
-    new: true
-  });
+  var companyDetails = await company.findById(req.body.company_id);
+  
+  if(req.body.admin){
+    companyDetails.admins.push(req.params.id)
+  }
+  companyDetails.users.push(req.params.id)
+
+  let newUser = await user.findById(req.params.id)
+
+  newUser.companies.push(req.body.company_id)
+
+  await company.findByIdAndUpdate(req.body.company_id, companyDetails, { new: true });
+  await user.findByIdAndUpdate(req.params.id, newUser, { new: true })
+  
   res.status(200).json({
     status: "success",
-    data: {
-      user: req.user,
-      company: companyDetails
-    }
   });
 });
 
