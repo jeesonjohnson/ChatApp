@@ -22,6 +22,7 @@ const groupChatRouter = require("./routes/groupChatRoutes");
 const groupMessageRouter = require("./routes/groupMessageRoutes");
 const privateChatRouter = require("./routes/privateChatRoutes");
 const privateMessageRouter = require("./routes/privateMessageRoutes");
+const announcementRouter = require("./routes/announcementRoutes");
 //Cookie
 const cookieParser = require('cookie-parser');
 
@@ -65,6 +66,7 @@ app.use("/groupchat", groupChatRouter);
 app.use("/groupmessage", groupMessageRouter);
 app.use("/privatechat", privateChatRouter);
 app.use("/privatemessage", privateMessageRouter);
+app.use("/announcements", announcementRouter)
 
 // Upload Endpoint
 app.post('/upload', (req, res) => {

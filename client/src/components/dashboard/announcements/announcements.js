@@ -9,6 +9,8 @@ import {Timeline, TimelineEvent} from 'react-event-timeline'
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+
 
 import AnnouncementIcon from "@material-ui/icons/Announcement";
 import Sync from '@material-ui/icons/Sync';
@@ -25,13 +27,56 @@ const useStyles = makeStyles((theme) => ({
 
 function Announcements ( props ) {   
     const classes = useStyles();
+    const [events, setEvents] = React.useState([]);
+    const [load, setLoad] = React.useState(false);
 
-    const testEvents = [
-        {time: "2020-09-12 10:06 PM", user: "Jack", isOwner: false, isAdmin: false, content: "This is a test message"},
-        {time: "2020-09-12 10:08 PM", user: "Jack", isOwner: false, isAdmin: false, content: "This is a test message"},
-        {time: "2020-09-12 10:10 PM", user: "Jim", isOwner: true, isAdmin: false, content: "This is a test message"},
-        {time: "2020-09-12 10:20 PM", user: "June", isOwner: false, isAdmin: true, content: "This is a test message"}
-    ]
+    useEffect(() => {
+        if(!load){
+            loadEvents()
+        }
+    }, []);
+
+    const loadEvents = () => {
+        axios.get(`/announcements/`, {params:{
+            company_id: store.getState().selectedCompany,
+            }
+        })
+        .then(res =>(
+            setEvents(res.data.data)
+        ))
+    }
+
+    const addEvent = (e) => {
+        if(e.key === "Enter"){
+
+            let admin = false
+            
+            for(var i in store.getState().allSelectedWorkspaceData.admins){
+                if(store.getState().allSelectedWorkspaceData.admins[i] === store.getState().user._id){
+                    admin = true
+                }
+            }
+        
+            axios.post(`/announcements/`, {
+                company_id: store.getState().selectedCompany,
+                user: store.getState().user.name + " (" + store.getState().user.email + ")",
+                isOwner: store.getState().user.owner,
+                isAdmin: admin,
+                time: Date.now(),
+                content: document.getElementById('message_text').value
+            })
+            .then(res =>(
+                setEvents(res.data.data)
+            ))
+        }
+    };
+
+    const deleteEvent = (event_id) => {
+        axios.delete(`/announcements/${event_id}`, {params: {company_id: store.getState().selectedCompany}})
+        .then(res => {
+            setEvents(res.data.data)
+        })
+    }
 
     const loadTimeLineEvent = (event) => {
         var userColour = "#a0f3d7"
@@ -43,32 +88,40 @@ function Announcements ( props ) {
         if(event.isOwner){
             userColour = "#f1b92e"
         }
-        
+
         return(
-        <TimelineEvent // title="John Doe sent a SMS" 
+        <TimelineEvent
         createdAt={event.time} 
         subtitle={event.user}
         subtitleStyle={{color: '#2962FF'}}
-      
-        icon={<AnnouncementIcon style={{color: userColour}}/>} 
+        
+        icon={<AnnouncementIcon  style={{color: userColour}}/>} 
         iconColor={userColour} 
+        buttons={<AnnouncementIcon onClick={e => deleteEvent(e.currentTarget.parentNode.parentNode.parentNode.childNodes[2].childNodes[0].id)} />}
         bubbleStyle={{backgroundColor: '#2f3136'}}
 
         contentStyle={{backgroundColor: '#2f3136',color: '#fff'}}
         >
-            <Typography variant="caption text" >{event.content}</Typography>
+            <Typography id={event._id} variant="caption text" >{event.content}</Typography>
         </TimelineEvent>
         )
     }
 
+    //Reset the new collection name text field when click detected outside textfield
+    function unfocusCollection(e){
+        e.value = ""
+    }
+
     return(
-        <div>
-            <IconButton style={{ marginLeft:15}}>
+        <div>        
+            <IconButton style={{ marginLeft:15}} onClick={loadEvents}>
                 <Sync style={{color: "#f1b92e"}}/>
             </IconButton>
 
+            <TextField id="message_text" size="small" onBlur={e => unfocusCollection(e.currentTarget)} fullwidth onKeyPress={e => addEvent(e)} label="Message" variant="outlined" color="secondary" style={{display:"inline-block"}}/>
+
             <Timeline  lineStyle={{background: '#a0f3d7',width: 3}}>
-                {testEvents.map((event) =>(
+                {events.map((event) =>(
                         loadTimeLineEvent(event)
                 ))}
             </Timeline>
