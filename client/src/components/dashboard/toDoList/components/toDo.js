@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import store from '../../../../store';
 import axios from 'axios';
 
@@ -19,11 +19,12 @@ import { Checkbox } from 'react-materialize';
 import EditTaskModal from './editTaskModal.js';
 import {PieChart, Pie, Cell, Label} from 'recharts';
 
-function Todo ( {classes, collection, todo} ) {    
+function Todo ( {classes, collection, todo, reloadTodo, setReloadTodo} ) {    
     const colors = [ "#a0f3d7", "#52776c" ] //Light and Dark teal
     const [taskDetails, setTaskDetails] = React.useState({})
     const [toDoChecked, setToDoChecked] = React.useState(false);
-    
+    const taskCollections = useSelector(state=> state.allSelectedWorkspaceData.task_collections);
+
     const loadToDoElement = async () => {
         const response = await axios.get('/todo/', { params: { todo_id: todo } })
         .then(res => {
@@ -32,15 +33,21 @@ function Todo ( {classes, collection, todo} ) {
         
         setTaskDetails(response)
 
+        console.log(taskDetails.progress_status)
         if(taskDetails.progress_status === 100){
             setToDoChecked(true)
+        }
+        else{
+            setToDoChecked(false)
         }
     }
     
     useEffect( () => {
-        loadToDoElement( todo )
-        
-    }, [])
+        if(taskDetails !== undefined && reloadTodo){
+            loadToDoElement( todo )
+            setReloadTodo(false)
+        }
+    }, [taskCollections, reloadTodo])
     
     const loadPieChart = () => {
         const progress_data = [
@@ -55,7 +62,7 @@ function Todo ( {classes, collection, todo} ) {
         ]
         
         return(
-            <PieChart width={75} height={75} >
+            <PieChart width={75} height={75}>
                 <Pie data={progress_data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={20} outerRadius={30} >
                     <Label value={`${taskDetails.progress_status}%`} offset={0} position="center" />
                     {
@@ -72,26 +79,35 @@ function Todo ( {classes, collection, todo} ) {
         setToDoChecked(event.currentTarget.checked);
     };
 
+    const getName = (id) => {
+        let name = []
+         axios.get(`/users/${id}`)
+        .then(res => (
+            name.push(res.data.data.name)
+        ))
+        return(name[0])
+    }
+
     return(
-    <Paper style={{marginTop: 10, maxWidth:220}} >
+    <Paper style={{marginTop: 10, maxWidth:220}} id={"task_card_"+ taskDetails._id}>
         {taskDetails === {} ?
             null
             :
             <Grid container >
                 <Grid item container xs={12} className="valign-wrapper" style={{marginLeft:10}} > 
-                    <Checkbox style={{float:"left", marginRight:"auto"}} checked={toDoChecked} filledIn id={`Checkbox_${todo}`} label={taskDetails.title} onChange={e=> handleToDoChecked(e)} />
-                    <EditTaskModal {...{classes, collection, todo}} />
+                    <Checkbox disabled style={{float:"left", marginRight:"auto"}} checked={toDoChecked} filledIn id={`Checkbox_${todo}`} label={taskDetails.title} onChange={e=> handleToDoChecked(e)} />
+                    <EditTaskModal {...{classes, collection, taskDetails, reloadTodo, setReloadTodo}} />
                 </Grid>
 
                 {!toDoChecked ? 
-                    <Grid item xs={12}>
+                    <Grid item xs={12} align="center">
                         {loadPieChart()}
                     </Grid>
                 : null}
 
                 {!toDoChecked ?
                     <Grid item xs={12}>
-                        <Typography style={{noWrap:"pre", overflow:"auto"}}>{taskDetails.description}</Typography>
+                        <Typography style={{overflow:"auto"}}>{taskDetails.description}</Typography>
                     </Grid>
                 : null}
 
@@ -113,9 +129,12 @@ function Todo ( {classes, collection, todo} ) {
                         <AvatarGroup max={4} xs={12} item>
                             {taskDetails.assigned_users !== undefined ?
                                 taskDetails.assigned_users.length > 0 ?
-                                    taskDetails.assigned_users.map((name, index) => (
-                                        <Avatar alt="assigned_user" src="" style={{width:30, height:30}}>{name[0]}</Avatar>
-                                    ))
+                                    taskDetails.assigned_users.map(id => (
+                                        console.log(id)
+                                    ))    
+                                // taskDetails.assigned_users.map(async id => (
+                                        // <Avatar alt="assigned_user" src="" style={{width:30, height:30}}>{getName(id)[0] !== undefined ? getName(id)[0] : null}</Avatar>
+                                    // ))
                                     :
                                     null
                                 :

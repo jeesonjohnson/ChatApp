@@ -27,13 +27,13 @@ import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers'
 import { Delete, PlaylistAdd } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-import { getCompanies, checkIfAdmin } from '../../DataLoading.js';
+import { getCompanies, checkIfAdmin, getAllWorkspaceSpecificData, getTaskCollections } from '../../DataLoading.js';
 
 import DeleteTaskModal from './deleteTaskModal.js';
 
 const PrettoSlider = withStyles({
     root: {
-      color: '#52af77',
+      color: '#f1b92e',
       height: 8,
     },
     thumb: {
@@ -73,22 +73,17 @@ const PrettoSlider = withStyles({
   };
 
 
-const EditTaskModal = ( { classes, collection, todo } ) => {
-    const [open, setOpen] = React.useState(false);
+const EditTaskModal = ( { classes, collection, taskDetails, reloadTodo, setReloadTodo } ) => {
+    const [open, setOpen] = React.useState(false)    
     const [users, setUsers] = React.useState([]);
-    const [addTaskOpen, setAddTaskOpen] = React.useState(false); //Add task modal
+    const [selectedUsers, setSelectedUsers] = React.useState([]);
     const [newTask, setNewTask] = useState({})
     const [selectedCreationDate, setSelectedCreationDate] = React.useState(new Date(Date.now()));
     const [selectedDueDate, setSelectedDueDate] = React.useState(null);
-    const [personName, setPersonName] = React.useState([]);
     const [selectedCollection, setSelectedCollection] = React.useState(collection.title);
+    const [selectedTodo, setTodo] = React.useState({});
 
-    const handleChange = (event) => {
-        setPersonName(event.target.value);
-    };
-
-
-    const handleAddTaskOpen = (e, title) => {
+    const handleAddTaskOpen = async (e, title) => {
         // console.log(e, title)
         // setSelectedCollection(title) //Store the title for the selected collection 
         
@@ -102,11 +97,58 @@ const EditTaskModal = ( { classes, collection, todo } ) => {
         }) //Reset the new task when opening task modal
         
         setOpen(true); //Open Add Task Modal
+        loadUsers()
       };
     
     const handleAddTaskClose = () => {
         setOpen(false);
     };
+
+    const loadUsers = async () => {
+        let loadedUsers = []
+        
+        for(var i in store.getState().allSelectedWorkspaceData.users){
+            await axios.get(`/users/${store.getState().allSelectedWorkspaceData.users[i]}`, {
+                params: {
+                    id : store.getState().allSelectedWorkspaceData.users[i]
+                } 
+            })
+            .then(res => {
+                loadedUsers.push({
+                    id: res.data.data._id,
+                    name: res.data.data.name,
+                    email: res.data.data.email
+                })
+            })
+
+        }
+        setUsers(loadedUsers)
+
+        let user_list = []
+        for(var i in loadedUsers){
+            for(var j in taskDetails.assigned_users){
+                if(loadedUsers[i].id === taskDetails.assigned_users[j]){
+                    user_list.push(loadedUsers[i])
+                }
+            }
+        }
+        setSelectedUsers(user_list)
+    }
+
+    const handleChange = (event) => {
+        setSelectedUsers(event.target.value);
+    };
+
+    const handleChangeMultiple = (event) => {
+        const { options } = event.target;
+        const value = [];
+        for (let i = 0, l = options.length; i < l; i += 1) {
+          if (options[i].selected) {
+            value.push(options[i].value);
+          }
+        }
+        setSelectedUsers(value);
+      };
 
     const dueDatePickedBeforeCreationDate = (e) => {
         setSelectedCreationDate(e); 
@@ -119,27 +161,19 @@ const EditTaskModal = ( { classes, collection, todo } ) => {
     }
 
     /* TASK FUNCTIONS */
-    function addTask(){
+    function editTask(){
         let assigned_users = []
-
-        //Find the assigned user ids 
-        if(personName.length > 0){
-            for(var i in personName){
-                let a = personName[i].split('(')[1].replace(')','')
-                for(var j in users){
-                    if(a === users[j].email){
-                        assigned_users.push(users[j]._id)
-                    }
-                }
-            }
+        
+        for(var i in selectedUsers){
+            assigned_users.push(selectedUsers[i].id)
         }
-
+        
         let title = document.getElementById('new_task_title').value
         let description = document.getElementById('new_task_description').value
 
-        console.log(document.getElementById('due-date-picker-dialog').value)
         if(title !== undefined && title !== ""){
-            axios.post('/todo/', {
+            axios.patch('/todo/', {
+                todoid: taskDetails._id,
                 title: title,
                 description: description,
                 assigned_users: assigned_users,
@@ -149,10 +183,12 @@ const EditTaskModal = ( { classes, collection, todo } ) => {
                 due_date: document.getElementById('due-date-picker-dialog').value //NEED TO SORT
             })
             .then(res => {
-                console.log(res)
+                // getTaskCollections()
+                // getAllWorkspaceSpecificData(store.getState().selectedWorkspace)
+                setOpen(false) //Close Add Task modal
+                setReloadTodo(true)
             })
             
-            setAddTaskOpen(false) //Close Add Task modal
         }  
     }
 
@@ -174,43 +210,30 @@ const EditTaskModal = ( { classes, collection, todo } ) => {
             >
             <Fade in={open}>
                 <Grid container xs={4} className={classes.paper}>
-                    <Grid item container xs={12}>
-                        <Typography item variant="h6" align="center">Edit Task to {collection.title}</Typography>
-                        <DeleteTaskModal item  {...{ classes, collection }} />
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <FormControl className={classes.formControl} style={{marginTop:10,  width:"100%"}}>
-                            <InputLabel id="demo-simple-select-label">Collection</InputLabel>
-                            <Select
-                            fullwidth
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={selectedCollection}
-                            onChange={e => setSelectedCollection(e.target.value)}
-                            >
-                                <MenuItem value={"a"}>Ten</MenuItem>
-                                <MenuItem value={"b"}>Twenty</MenuItem>
-                                <MenuItem value={"c"}>Thirty</MenuItem>
-                            </Select>
-                        </FormControl>
+                    <Grid item container xs={12} >
+                        <Typography item variant="h6">Edit Task to {collection.title}</Typography>
+                        {taskDetails !== undefined ? 
+                            <DeleteTaskModal item  {...{ classes, collection, taskDetails, setOpen, reloadTodo, setReloadTodo }} />
+                            :
+                            null
+                        }
                     </Grid>
     
                     {/*title text field*/}
                     <Grid item  xs={12} style={{marginTop:20}}>
-                        <TextField style={{width:"100%"}}  id="new_task_title" size="small" label="Task Name" variant="outlined" color="secondary" onChange={e => newTask["title"] = e.currentTarget.value}  /> {/*style={{display:"inline-block"}}*/}
+                        <TextField style={{width:"100%"}} defaultValue={taskDetails.title} id="new_task_title" size="small" label="Task Name" variant="outlined" color="secondary" onChange={e => newTask["title"] = e.currentTarget.value}  /> {/*style={{display:"inline-block"}}*/}
                     </Grid>
                     {/* description text field */}
                     
                     <Grid item xs={12} style={{marginTop:10}}>
-                        <TextField style={{width:"100%"}} rowsMax={5} multiline id="new_task_description" size="small" label="Description" variant="outlined" color="secondary" onChange={e => newTask["description"] = e.currentTarget.value}/>
+                        <TextField style={{width:"100%"}} defaultValue={taskDetails.description} rowsMax={5} multiline id="new_task_description" size="small" label="Description" variant="outlined" color="secondary" onChange={e => newTask["description"] = e.currentTarget.value}/>
                     </Grid>
                     {/* users multiple select field */}
 
                     {/* progress status scale  */}
                     <Grid item xs={12} style={{marginTop:10}}>
                         <Typography variant="body2" align="center">Progress Status</Typography>
-                        <PrettoSlider item id="slider" valueLabelDisplay="auto" aria-label="pretto slider" defaultValue={0}  />
+                        <PrettoSlider item id="slider" valueLabelDisplay="auto" aria-label="pretto slider" defaultValue={taskDetails.progress_status}  />
                     </Grid>
             
                     <Grid item container xs={12} style={{marginTop:10}}>
@@ -235,21 +258,21 @@ const EditTaskModal = ( { classes, collection, todo } ) => {
                                 labelId="chip-label"
                                 id="demo-mutiple-chip"
                                 multiple
-                                value={personName}
+                                value={selectedUsers}
                                 onChange={handleChange}
                                 input={<Input id="select-multiple-chip" />}
                                 renderValue={(selected) => (
                                     <div className={classes.chips}>
                                     {selected.map((value) => (
-                                        <Chip key={value} label={value} className={classes.chip} />
+                                        <Chip key={value.id} label={value.name} className={classes.chip} />
                                     ))}
                                     </div>
                                 )}
                                 MenuProps={MenuProps}
                                 >
                                     {users.map((user, index) => (
-                                        <MenuItem key={user._id} value={user.name+ " (" + user.email + ")"}> {/*id: user._id, name: user.name*/}
-                                            {user.name}
+                                        <MenuItem key={user._id} value={user}> {/*id: user._id, name: user.name*/}
+                                            {user.name+ " (" + user.email + ")"}
                                         </MenuItem>
                                         )
                                     )
@@ -259,7 +282,7 @@ const EditTaskModal = ( { classes, collection, todo } ) => {
                     </Grid>
     
                     <Grid item xs={12}>
-                        <Button onClick={addTask}>Ok</Button> {/*addTask(document.getElementById("new_task_title"))  */}
+                        <Button onClick={editTask}>Ok</Button> {/*addTask(document.getElementById("new_task_title"))  */}
                         <Button onClick={handleAddTaskClose}>Cancel</Button>
                     </Grid>
                 </Grid>

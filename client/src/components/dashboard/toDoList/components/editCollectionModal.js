@@ -27,23 +27,24 @@ import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers'
 import { Delete, PlaylistAdd } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-import { getTaskCollections,getCompanies, checkIfAdmin } from '../../DataLoading.js';
+import { updateTaskPanel } from '../../DataLoading.js';
 
 import DeleteCollectionModal from './deleteCollectionModal.js';
 
-const EditCollectionModal = ( { classes, collection, selectedCollection, index } ) => {
+const EditCollectionModal = ( { classes, collection, selectedCollection, index, reloadCollections, setReloadCollections } ) => {
     const [editCollectionOpen, setEditCollection] = React.useState(false) //Edit Collection modal
     const [editCollection, setEditCollectionName] = useState("") //For the Edit collection text field
 
     const editTaskCollection = (id) => {
         axios.patch('/todocollection/', 
         {
-            collectionid: id,
+            collectionid: collection._id,
             title: editCollection,
             todo_id: ""
         })
         handleEditCollectionClose()
-        getTaskCollections()
+        setReloadCollections(true)
+        updateTaskPanel(store.getState().selectedWorkspace)
     };
 
     const handleEditCollectionOpen = (collection, index) => {
@@ -77,12 +78,12 @@ return(
             <div className={classes.paper}>
                 <Grid container>
                     <Typography item variant="h6" style={{marginBottom:20}}>Edit Collection {collection.title}</Typography>
-                    <DeleteCollectionModal item {...{classes, index, collection}} />
+                    <DeleteCollectionModal item {...{classes, index, collection, editCollectionOpen, setEditCollection}} />
                 </Grid>
 
                 <Grid container>
                     <TextField item id="editCollectionName" onLoadedData={e => e.value = collection.title} size="small" onChange={e => setEditCollectionName(e.target.value) } label="Collection Name" variant="outlined" color="secondary"/>
-                    <Button item onClick={e => console.log(editCollection)}>Save</Button>
+                    <Button item onClick={e => editTaskCollection(editCollection)}>Save</Button>
                 </Grid>
                 
             </div>

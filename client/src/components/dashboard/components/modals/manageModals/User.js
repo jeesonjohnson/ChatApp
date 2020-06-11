@@ -20,8 +20,8 @@ import { getAcronym, getAllWorkspaceSpecificData } from '../../../DataLoading.js
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      maxWidth: 345,
-      marginTop: 10,
+    //   maxWidth: 345,
+    //   marginTop: 10,
       backgroundColor: "#2f3136"
     },
     media: {

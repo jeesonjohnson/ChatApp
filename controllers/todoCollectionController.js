@@ -25,8 +25,10 @@ exports.createCollection = catchAsync(async (req, res, next) => {
     title: req.body.name,
     workspaceID: req.body.workspaceid
   });
-  workspaceDetails.task_collections.push(newCollection.id);
-  await Workspace.findByIdAndUpdate(workspaceDetails.id, workspaceDetails, {
+
+  workspaceDetails.task_collections.push(newCollection._id);
+
+  await Workspace.findByIdAndUpdate(workspaceDetails._id, workspaceDetails, {
     new: true
   });
   res.status(200).json({
@@ -66,18 +68,21 @@ exports.deleteACollection = catchAsync(async (req, res, next) => {
   var workspaceData = await Workspace.findById(collectionDetails.workspaceID);
 
   // Delete all todo elements form a user account
-  for (var x = 0; x < collectionDetails.to_do_elements.length; x++) {
+  for (var x in collectionDetails.to_do_elements.length) {
     await TodoElement.findByIdAndDelete(collectionDetails.to_do_elements[x]);
   }
 
   //Delete a collection form a workspace
-  for (var x = 0; x < workspaceData.task_collections.length; x++) {
-    if (workspaceData.task_collections[x] == collectionDetails.id) {
-      workspaceData.task_collections.splice(x, 1);
-      break;
+  let new_tasks_collections = []
+  
+  for (var x in workspaceData.task_collections) {
+    if (workspaceData.task_collections[x].toString() !== req.query.collection_id.toString()) {
+      await new_tasks_collections.push(workspaceData.task_collections[x])      
     }
   }
-  await Workspace.findByIdAndUpdate(workspaceData.id, workspaceData, {
+  workspaceData.task_collections = new_tasks_collections
+
+  await Workspace.findByIdAndUpdate(workspaceData._id, workspaceData, {
     new: true
   });
 
@@ -85,7 +90,6 @@ exports.deleteACollection = catchAsync(async (req, res, next) => {
   await Collection.findByIdAndDelete(req.query.collection_id);
   res.status(200).json({
     status: "success",
-    data: "data has been deleted"
   });
 });
 

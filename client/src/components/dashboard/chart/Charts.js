@@ -7,10 +7,7 @@ import axios from 'axios';
 import {BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend, PieChart, Pie, Sector} from 'recharts';
 
 import { makeStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
-import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
@@ -37,9 +34,8 @@ function Charts ( props ) {
 
     useEffect(() => {
         if (store.getState().selectedWorkspace !== "" && store.getState().allSelectedWorkspaceData.task_collections !== undefined && 
-        store.getState().allSelectedWorkspaceData.task_collections.length > 0){
+            store.getState().allSelectedWorkspaceData.task_collections.length > 0){
             loadData()
-            console.log("load",collections, tasks)
         }  
     }, [store.getState().selectedCompany ,store.getState().selectedWorkspace, store.getState().selectedPanel]);
     
@@ -97,21 +93,6 @@ function Charts ( props ) {
         return(data)
     }
 
-    function loadTasksData(){
-        let data = []
-        for(var i in tasks){
-            data.push({
-                "name": tasks[i].title,
-                "group": tasks[i].group,
-                "start_time": tasks[i].start_time,
-                "end_time": tasks[i].end_time,
-                "progress_status": tasks[i].progress_status,
-                "users": tasks[i].users
-            })
-        }
-        return(data)
-    }
-
     function loadCollectionsTasksProgress(){
         let data = []
         
@@ -154,14 +135,49 @@ function Charts ( props ) {
     };
 
 
+    // function loadTasksData(){
+    //     let data = []
+    //     for(var i in tasks){
+    //         data.push({
+    //             "name": tasks[i].title,
+    //             "group": tasks[i].group,
+    //             "start_time": tasks[i].start_time,
+    //             "end_time": tasks[i].end_time,
+    //             "progress_status": tasks[i].progress_status,
+    //             "users": tasks[i].users
+    //         })
+    //     }
+    //     return(data)
+    // }
+
+    const loadTasksData = () => {
+        let data = []
+        for(var i in tasks){
+            for(var j in data){
+                if(tasks[i].end_time === data[j].date){
+                    data[j].amount += 1;
+                }
+                else{
+                    data.push({
+                        "date": tasks[i].end_time.toString(),
+                        "amount": 1
+                    });
+                }
+            }
+
+        }
+
+        console.log(data)
+        return(data)
+    }
+
     return(
         <div>
-            {console.log(store.getState().chartCategory)}
             {store.getState().chartCategory === "Collections" ?
             <Grid container>         
                 { console.log(collections) }
                     <Paper item className={classes.paper}>
-                        <Typography>Number of tasks in each collection</Typography>
+                        <Typography variant="h6" align="center">Number of tasks in each collection</Typography>
                         <BarChart width={500} height={250} data={loadCollectionsData()}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
@@ -173,14 +189,14 @@ function Charts ( props ) {
                     </Paper>
                     
                     <Paper item className={classes.paper}>
-                        <Typography>Percentage of tasks for each collection</Typography>                       
+                        <Typography variant="h6" align="center">Percentage of tasks for each collection</Typography>                       
                         <PieChart width={300} height={250}>
                             <Pie data={loadCollectionsData()} dataKey="Number of tasks" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#725bda" label={renderCustomizedLabel} />
                         </PieChart>
                     </Paper>
 
                     <Paper item className={classes.paper}>
-                        <Typography>Number of tasks in each collection</Typography>
+                        <Typography variant="h6" align="center">Number of tasks in each collection</Typography>
                         <BarChart width={500} height={250} data={loadCollectionsTasksProgress()}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
@@ -200,22 +216,21 @@ function Charts ( props ) {
 
             {store.getState().chartCategory === "Deadlines" ?
                 <Paper item className={classes.paper}>
-                    <Typography>Number of tasks by deadlines</Typography>
-                    {/* <BarChart width={730} height={250} data={loadCollectionsData()}>
+                    <Typography variant="h6" align="center">Number of tasks by deadlines</Typography>
+                    <BarChart width={730} height={250} data={loadTasksData()}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
+                        <XAxis dataKey="date" />
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        <Bar dataKey="pv" fill="#8884d8" />
-                        <Bar dataKey="uv" fill="#82ca9d" />
+                        <Bar dataKey="amount" fill="#8884d8" />
                     </BarChart>
 
-                    <Typography>Percentage of tasks by deadline</Typography>
+                    <Typography variant="h6" align="center">Percentage of tasks by deadline</Typography>
                     <PieChart width={730} height={250}>
                         <Pie data={loadCollectionsData()} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={50} fill="#8884d8" />
                         <Pie data={loadCollectionsData()} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} fill="#82ca9d" label />
-                    </PieChart> */}
+                    </PieChart>
                 </Paper>
                 :
                 null

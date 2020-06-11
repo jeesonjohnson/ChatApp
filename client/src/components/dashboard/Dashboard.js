@@ -51,7 +51,8 @@ import EditChatModal from './components/modals/chatModals/editChatModal.js';
 import WorkspaceMenu from './components/menus/menu.js';
 import { getCompanies, checkIfAdmin } from './DataLoading.js';
 
-import Calendar from './calendar/calendar.js';
+// import Calendar from './calendar/calendar.js';
+import Calendar from './components/calendar/calendar.js';
 import Chat from './groupchat/Chat.js';
 import PrivateChat from './groupchat/PrivateChat.js';
 import Chart from './chart/Charts.js';
@@ -173,7 +174,9 @@ function Dashboard() {
 
   const [newUserOpen, setNewUserOpen] = React.useState(false);
 
+
   useEffect(() => { 
+    document.getElementById('html').style.overflow = "hidden"
     axios.get(`/users/status`)
     .then(res =>{
       if(res.status === 200 && user.name === ""){
@@ -194,6 +197,7 @@ function Dashboard() {
 
   }, [store.getState().selectedCompany]);
   
+
   //Menu Item 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -301,7 +305,7 @@ function Dashboard() {
       <div className={classes.root} style={{overflow:"hidden"}}>
         <CssBaseline />
         
-        <Hidden smDown>
+        {/* <Hidden smDown> */}
           <CompanyDrawer classes={classes} />
 
           <WorkspaceDrawer classes={classes} />
@@ -397,7 +401,7 @@ function Dashboard() {
                               inputProps={{ 'aria-label': 'Without label' }}
                             >
                                 <MenuItem value="Collections" >Collections</MenuItem>
-                                <MenuItem value="Deadlines" >Deadlines</MenuItem>
+                                {/* <MenuItem value="Deadlines" >Deadlines</MenuItem> */}
                             </Select>
                         </FormControl>
                   : null}
@@ -487,7 +491,7 @@ function Dashboard() {
               {selectedPanel.id !== "Calendar" && selectedPanel.id !== "Charts" && selectedPanel.id !== "Tasks" && selectedPanel.id !== "Announcements" && store.getState().allSelectedWorkspaceData.private_chats !== undefined ? //Checks if non-standard-defined name and there is data for the workspace
                 store.getState().allSelectedWorkspaceData.private_chats.length > 0 ? //Checks there are group chats available
                   store.getState().allSelectedWorkspaceData.private_chats.map((private_chat) => { //Loop through each group chat
-                    if(private_chat.title === selectedPanel.name){ //Render the page if the selected panel name is the same as the current group chat being checked
+                    if(private_chat._id === selectedPanel.id){ //Render the page if the selected panel name is the same as the current group chat being checked
                       return(
                         <div item className={classes.container} style={{width:"100%", overflow:"hidden", height:"90vh", paddingTop:0 }}>
                           <PrivateChat {...private_chat} />
@@ -504,11 +508,11 @@ function Dashboard() {
 
           </Grid>
 
-        </Hidden>
+        {/* </Hidden> */}
 
-        <Hidden mdUp>
+        {/* <Hidden mdUp>
           <MobileDashboard />
-        </Hidden>
+        </Hidden> */}
       </div>
       :
       null

@@ -92,12 +92,9 @@ exports.deleteAGroupChat = catchAsync(async (req, res, next) => {
 exports.addAUserToGroupChat = catchAsync(async (req, res, next) => {
   var groupChatDetails = await GroupChat.findById(req.body.groupid);
   //Only if the appropaite methods are present then does it add the data for the update field
-  if (req.body.title != "") {
-    groupChatDetails.title = req.body.title;
-  }
-  if (req.body.todo_id != "") {
-    groupChatDetails.users.push(req.body.userid);
-  }
+  
+
+  groupChatDetails.users.push(req.body.userid);
 
   groupChatDetails = await GroupChat.findByIdAndUpdate(
     groupChatDetails.id,

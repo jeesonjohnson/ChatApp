@@ -13,7 +13,7 @@ const initalState = {
   taskCollectionIDs: [],
   workspaceTaskCollections: [],
   allSelectedWorkspaceData:{},
-  chartCategory: "",
+  chartCategory: "Collections",
   selectedChat: {
     id: "",
     type: ""
