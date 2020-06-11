@@ -13,7 +13,7 @@
     padding: 5%;
     width: 75%;
     font-size: 1.2em;
-    color: black;
+    color: white !important;
     /* border-right: 2px solid #D3D3D3; */
     background-color: #2f3136 !important;
   }
