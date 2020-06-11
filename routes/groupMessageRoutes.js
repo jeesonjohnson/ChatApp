@@ -12,7 +12,7 @@ router
 
 router
   .route("/")
-  .get(authController.protect, groupMessageController.getAGroupMessage)
+  .get(groupMessageController.getAGroupMessage)
   .post(groupMessageController.createAGroupMessage);
 
 module.exports = router;

@@ -41,7 +41,7 @@ const Chat = (props) => {
 
     //Loading OLD messages into chat.
     axios
-      .get(`/groupmessage/all/?group_id=${room}&page=1&limit=50`)
+      .get(`/groupmessage/all/?group_id=${room}&page=1&limit=500`)
       .then((result) => {
         var tempMessageStore = [];
         var resultsStore = result.data.data;
