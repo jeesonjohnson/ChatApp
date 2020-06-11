@@ -81,8 +81,8 @@ function WorkspaceButtonList() {
   };
   
   //Loads the data for group chats
-  const loadGroupChats = async () => {
-    await setGroupChatsNames([])
+  const loadGroupChats = () => {
+    setGroupChatsNames([])
     
     if(workspaceData.group_chats !== undefined){ //Checks if the groupchats were loaded in
       if(workspaceData.group_chats.length > 0){ //Checks if there are any groupchats for the workspace
@@ -96,14 +96,14 @@ function WorkspaceButtonList() {
   };
 
   //Loads the data for private chats
-  const loadPrivateChats = async () => {
-    await setPrivateChatsNames([])
+  const loadPrivateChats = () => {
+    setPrivateChatsNames([])
 
     if(workspaceData.private_chats !== undefined){ //Checks if the private chatswere loaded in
       if(workspaceData.private_chats.length > 0){ //Checks if there are any private chats for the workspace
         let private_list = []
         
-        await workspaceData.private_chats.map(async(private_chat) => {
+         workspaceData.private_chats.map(async(private_chat) => {
           let name = await getPrivateUserName(private_chat.user1)
           
           private_list.push({

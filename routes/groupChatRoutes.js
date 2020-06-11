@@ -14,4 +14,9 @@ router
 router
   .route('/user/:id')
   .delete(authController.protect, groupChatController.deleteUserFromGroupChat)
+
+router
+  .route('/name/')
+  .patch(authController.protect, groupChatController.editChatName)
+
 module.exports = router;

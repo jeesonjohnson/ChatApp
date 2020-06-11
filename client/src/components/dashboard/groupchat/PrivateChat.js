@@ -30,7 +30,7 @@ const Chat = (props) => {
   const roomTitle = props.title;
 
   useEffect(() => {
-    const room = props._id;
+    const room = store.getState().selectedPanel.name;
     const name = store.getState().user.name;
     const user_id = store.getState().user._id;
 
