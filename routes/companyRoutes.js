@@ -4,8 +4,6 @@ const authController = require("../controllers/authController");
 
 const router = express.Router();
 
-router.route("/all").get(companyController.getAllCompanies); //Should be deleted from production!!!!!!!
-
 //Get details about a given company provided their details are present
 router
   .route("/:id")

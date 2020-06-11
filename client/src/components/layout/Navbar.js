@@ -14,6 +14,7 @@ export default function Navbar() {
   const [user, setUser] = useState("");
 
   useEffect(() => {
+    document.getElementById('html').style.overflow = "auto"
     axios('/users/status')
     .then(res =>{
       if (res.status === 200){

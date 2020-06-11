@@ -129,6 +129,12 @@ export const getTaskCollections = async () => {
   }
 }
 
+export function updateTaskPanel(workspace_id) {
+  axios.get(`/workspaces/${workspace_id}`).then((res) => {
+    store.dispatch({
+        type: "ALL_WORKSPACE_DATA", data: { workspaceData: res.data.data.workspaceDetails, } });
+  });
+}
 
 /*
     Get all associated chats in a given workspace, and store to the local array value

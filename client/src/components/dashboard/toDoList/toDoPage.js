@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import Hidden from '@material-ui/core/Hidden';
 
 import ToDo from './components/toDo.js'
-import { getTaskCollections } from '../DataLoading.js';
+import { getTaskCollections, updateTaskPanel } from '../DataLoading.js';
 import AddTaskModal from './components/addTaskModal.js';
 import EditCollectionModal from './components/editCollectionModal.js';
 
@@ -51,19 +51,16 @@ const ToDoPage = () => {
     const classes = useStyles();
     const [selectedCollection, setSelectedCollection] = React.useState({})
     const [newCollection, setNewCollection] = useState("") //For the New collection text field 
-    const [selectedDate, setSelectedDate] = React.useState(new Date(Date.now()));
-    const taskCollections = useSelector(state=> state.workspaceTaskCollections);
-    const [selectedUsers, setSelectedUsers] = React.useState([]);
-
-    const a = useSelector(state=> state)
+    const taskCollections = useSelector(state=> state.allSelectedWorkspaceData.task_collections);
+    const [loadedCollections, setLoadedCollections] = React.useState([])
+    const [reloadTodo, setReloadTodo] = React.useState({})
+    const [reloadCollections, setReloadCollections] = React.useState(false);
 
     useEffect( () => {
-        console.log("taskpage",   a)
-        if(newCollection === ""){
-            getTaskCollections()
-        }
-
-    }, [store.getState().selectedWorkspace, store.getState().selectedPanel, newCollection ] )
+        if(loadedCollections !== [] || reloadCollections){
+            loadTodoCollection()
+        }   
+    }, [ store.getState().selectedPanel, taskCollections, reloadCollections ] )
 
     //Posts data for new collection, then resets the text field 
     async function addTaskCollection(key){       
@@ -75,8 +72,10 @@ const ToDoPage = () => {
                 name: newCollection,
                 workspaceid: store.getState().selectedWorkspace
             })
-
-            getTaskCollections()
+            .then(res =>(
+                updateTaskPanel(store.getState().selectedWorkspace)
+                // setReloadCollections(true)
+            ))
         }
     }
 
@@ -86,10 +85,25 @@ const ToDoPage = () => {
         setNewCollection("")
     }
 
+    const loadTodoCollection = async () => {
+        var list = []
+        for(var i in taskCollections){
+            await axios.get('/todocollection/', {
+                params : {
+                    collection_id: taskCollections[i]
+                }
+            })
+            .then(res => {
+                list.push(res.data.data.collectionDetails)
+            })
+        }
+        setLoadedCollections(list)
+        
+    };
+
     const loadTodoElement = async (collection_id) => {
         return await axios.get('/todo/', { params: {collection_id: collection_id} })
-    }
-
+    };
 
     const onMouseInTaskCollection = (e) =>{
         e.currentTarget.style.overflowY = "scroll"
@@ -103,46 +117,50 @@ const ToDoPage = () => {
 
     return(
         <div container style={{whiteSpace:"nowrap", minHeight:"50vh"}}>
-            {taskCollections === [] ?
-            null
-            :
-            taskCollections.map((collection, index) => (
-                // <Grid container xs={2} id={`collection${index}`} index={index} zeroMinWidth wrap='nowrap' direction='column' style={{marginRight: 20, display:"inline-block",  verticalAlign:"text-top", flexGrow: 1}} onMouseEnter={e => l(e)} onMouseLeave={e => k(e)}>
-                <div  item xs={2} id={`collection${index}`} index={index}  wrap='nowrap' direction='column' style={{marginRight: 20, display:"inline-block",  verticalAlign:"text-top", flexGrow: 1, marginTop: 0, paddingTop:0}} > {/*onMouseEnter={e => onMouseInTaskCollection(e)} onMouseLeave={e => onMouseOutTaskCollection(e)}> */}
-                    <div item >
-                        <Card style={{marginTop: 0, paddingTop:0, backgroundColor:"#52776c"}}>
-                            <CardHeader style={{paddingLeft:10, paddingRight:10, paddingTop:0, paddingBottom:0, }}
-                                action={
-                                    <EditCollectionModal {...{classes, collection, selectedCollection, index}} />
-                                    } 
-                                title={<Typography variant="h6">{collection.title}</Typography>} />
-                        </Card>        
-                    </div>
+            {loadedCollections !== undefined && loadedCollections !== [] && loadedCollections.length > 0 ?
+                loadedCollections.map((collection, index) => (
+                    collection !== null && collection !== undefined ?
+                        // <Grid container xs={2} id={`collection${index}`} index={index} zeroMinWidth wrap='nowrap' direction='column' style={{marginRight: 20, display:"inline-block",  verticalAlign:"text-top", flexGrow: 1}} onMouseEnter={e => l(e)} onMouseLeave={e => k(e)}>
+                        <div  item xs={2} id={`collection${index}`} index={index}  wrap='nowrap' direction='column' style={{marginRight: 20, display:"inline-block",  verticalAlign:"text-top", flexGrow: 1, marginTop: 0, paddingTop:0}} > {/*onMouseEnter={e => onMouseInTaskCollection(e)} onMouseLeave={e => onMouseOutTaskCollection(e)}> */}
+                            <div item >
+                                <Card style={{marginTop: 0, paddingTop:0, backgroundColor:"#52776c"}}>
+                                    <CardHeader style={{paddingLeft:10, paddingRight:10, paddingTop:0, paddingBottom:0, }}
+                                        action={
+                                            <EditCollectionModal {...{classes, collection, selectedCollection, index, reloadCollections, setReloadCollections}} />
+                                            } 
+                                        title={<Typography variant="h6">{collection.title}</Typography>} />
+                                </Card>        
+                            </div>
 
-                    <div item >
-                        <Card style={{marginTop: 15, paddingTop:0}}>
-                            <CardHeader style={{paddingLeft:10, paddingRight:10, paddingTop:0, paddingBottom:0}}
-                                action={
-                                    <AddTaskModal {...{classes, collection}}/>
-                                } 
-                                title={<Hidden mdup><Typography >Add Task</Typography></Hidden>} />
-                        </Card>        
-                    </div>
+                            <div item >
+                                <Card style={{marginTop: 15, paddingTop:0}}>
+                                    <CardHeader style={{paddingLeft:10, paddingRight:10, paddingTop:0, paddingBottom:0}}
+                                        action={
+                                            <AddTaskModal {...{classes, collection}}/>
+                                        } 
+                                        title={<Hidden mdup><Typography >Add Task</Typography></Hidden>} />
+                                </Card>        
+                            </div>
 
-                    <div item style={{minHeight:"100vh"}}>
-                    {collection.to_do_elements === [] ?
-                        null
-                        :
-                        collection.to_do_elements.map((todo, key) => {
-                            return (<ToDo item key={key} {...{classes, collection, todo}} />)
+                            <div item style={{minHeight:"100vh"}}>
+                            { collection.to_do_elements !== undefined && collection.to_do_elements === [] ?
+                                null
+                                :
+                                collection.to_do_elements.map((todo, key) => {
+                                    return (<ToDo item key={key} {...{classes, collection, todo, reloadTodo, setReloadTodo}} />)
+                                    }
+                                )
+                                
                             }
-                        )
-                        
-                    }
-                    </div>
+                            </div>
 
-                </div>
-            ))}
+                        </div>
+                    :
+                    null
+                ))
+            :
+            null
+            }
 
                 {newCollection === "" ?
                     <TextField id="addCollectionName" size="small" onBlur={e => unfocusCollection(e.currentTarget)} onChange={e => setNewCollection(e.target.value) } label="Collection Name" variant="outlined" color="secondary" style={{display:"inline-block"}}/>
@@ -160,7 +178,8 @@ const mapStateToProps = state => {
         workspaces: state.workspaces, 
         selectedWorkspace: state.selectedWorkspace, 
         taskCollectionIDs: state.taskCollectionIDs, 
-        workspaceTaskCollections: state.workspaceTaskCollections
+        workspaceTaskCollections: state.workspaceTaskCollections,
+        allSelectedWorkspaceData: state.allSelectedWorkspaceData
     }
 }
       

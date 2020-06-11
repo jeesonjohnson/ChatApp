@@ -8,10 +8,22 @@ const AppError = require("./../utils/appError");
 
 //Create a new todocollection
 exports.createTodo = catchAsync(async (req, res, next) => {
+  console.log(req.body)
   var CollectionDetails = await Collection.findById(req.body.collectionid);
   //Creates the todo element with appropriate parameters
-  var dueDate = Date(req.body.due_date);
-  var creationDate = Date(req.body.creation_date);
+
+  let dueDate = ""
+  if(req.body.due_date !== ""){
+    dueDate = new Date(req.body.due_date.split('/')[1] + "/"
+    + req.body.due_date.split('/')[0] + "/"
+    + req.body.due_date.split('/')[2] );
+  }
+
+  var creationDate = new Date(req.body.creation_date.split('/')[1] + "/" 
+  +  req.body.creation_date.split('/')[0] + "/" 
+  + req.body.creation_date.split('/')[2]);
+  console.log(creationDate)
+
   var newTodo = await TodoElement.create({
     title: req.body.title,
     collectionID: req.body.collectionid,
@@ -59,11 +71,13 @@ exports.getAlltodoInCollection = catchAsync(async (req, res, next) => {
 
 //Deletes a given collection and its associated collection values
 exports.deleteATodoElementGivenID = catchAsync(async (req, res, next) => {
+  console.log(req.query.todo_id)
   var todoDetails = await TodoElement.findById(req.query.todo_id);
   var collectionData = await Collection.findById(todoDetails.collectionID);
-
+  console.log(todoDetails)
+  console.log(collectionData)
   //Delete a todo element form a collection
-  for (var x = 0; x < collectionData.to_do_elements.length; x++) {
+  for (var x in collectionData.to_do_elements.length) {
     if (collectionData.to_do_elements[x] == todoDetails.id) {
       collectionData.to_do_elements.splice(x, 1);
       break;
@@ -83,8 +97,18 @@ exports.deleteATodoElementGivenID = catchAsync(async (req, res, next) => {
 
 //Adds a given todo element to a collection
 exports.updateATodoElement = catchAsync(async (req, res, next) => {
-  var dueDate = Date(req.body.due_date);
-  var creationDate = Date(req.body.creation_date);
+  let dueDate = ''
+  if(req.body.due_date !== ""){
+    dueDate = new Date(req.body.due_date.split('/')[1] + "/"
+    + req.body.due_date.split('/')[0] + "/"
+    + req.body.due_date.split('/')[2] );
+  }
+
+
+  var creationDate = new Date(req.body.creation_date.split('/')[1] + "/" 
+  +  req.body.creation_date.split('/')[0] + "/" 
+  + req.body.creation_date.split('/')[2]);
+
   var updatedTodo = {
     title: req.body.title,
     collectionID: req.body.collectionid,

@@ -43,7 +43,7 @@ export default function App() {
     return (
       <ThemeProvider theme={theme}>
         <Router>
-          <div id="app" style={{fontFamily:"Roboto", overflow:"hidden"}}>
+          <div id="app" style={{fontFamily:"Roboto"}}>
             <Route exact path="/" component={Home}/>
             <Route exact path="/pricing" component={Pricing} />
             <Route exact path="/resources" component={Resources} />

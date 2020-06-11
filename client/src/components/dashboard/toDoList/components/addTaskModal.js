@@ -124,14 +124,12 @@ const AddTaskModal = ( { classes, collection } ) => {
                 assigned_users: assigned_users,
                 progress_status: document.getElementById('slider').childNodes[2].value,
                 creation_date: document.getElementById('creation-date-picker-dialog').value,
-                collection_id: collection._id,
+                collectionid: collection._id,
                 due_date: document.getElementById('due-date-picker-dialog').value //NEED TO SORT
             })
             .then(res => {
-                console.log(res)
+                setAddTaskOpen(false) //Close Add Task modal
             })
-            
-            setAddTaskOpen(false) //Close Add Task modal
         }  
     }
 
