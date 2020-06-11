@@ -27,9 +27,9 @@ import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers'
 import { Delete, PlaylistAdd } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-import { getCompanies, checkIfAdmin } from '../../DataLoading.js';
+import { updateTaskPanel } from '../../DataLoading.js';
 
-const DeleteCollectionModal = ( { classes, index, collection } ) => {
+const DeleteCollectionModal = ( { classes, index, collection, editCollectionOpen, setEditCollection } ) => {
     const [deleteCollectionOpen, setDeleteCollection] = React.useState(false) //Delete Collection modal
 
     const handleDeleteCollectionOpen = () => {
@@ -42,15 +42,19 @@ const DeleteCollectionModal = ( { classes, index, collection } ) => {
 
     //Deletes Selected Task collection
     function deleteTaskCollection() {
-        //open delete modal
-        axios.delete('/todocollection/', { params: { collection_id: collection._id } }) //Deletes task collection in database
-
-        document.getElementById(`collection${collection.index}`).remove() //Deletes task collection rendered elements
-
-        handleDeleteCollectionClose()
-        // handleEditCollectionClose()
-
-        // setSelectedCollection("")   
+        //Deletes task collection in database
+        axios.delete('/todocollection/', { 
+            params: { 
+                collection_id: collection._id 
+            } 
+        })
+        .then(res => {
+            console.log(res)
+            handleDeleteCollectionClose()
+            setEditCollection(false)
+            updateTaskPanel(store.getState().selectedWorkspace)
+        })
+        // document.getElementById(`collection${collection.index}`).remove() //Deletes task collection rendered elements
     }
 
     return(
