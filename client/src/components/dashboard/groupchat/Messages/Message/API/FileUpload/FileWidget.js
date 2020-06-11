@@ -1,10 +1,7 @@
 import React from "react";
 import "./FileWidget.css";
-import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
-import {
-  Box,
-  IconButton
-} from "@material-ui/core";
+import GetAppRoundedIcon from "@material-ui/icons/GetAppRounded";
+import { Box, IconButton } from "@material-ui/core";
 
 export default function FileWidget({ text }) {
   var fileStartLocation = text.substring(text.indexOf("!FILE!", 0) + 6);
@@ -20,10 +17,13 @@ export default function FileWidget({ text }) {
       <div>
         <a href={fileLocation} className="downloadTitle" download>
           <center>
-            <h4>Download: {fileName}</h4>      
-          <IconButton className="svg_scale" size="large">
-            <GetAppRoundedIcon className="svg_scale" style={{ fontSize: 60 }}/>
-          </IconButton>
+            <h4 style={{ color: "black" }}><b>Download: {fileName}</b></h4>
+            <IconButton className="svg_scale" size="large">
+              <GetAppRoundedIcon
+                className="svg_scale"
+                style={{ fontSize: 60 }}
+              />
+            </IconButton>
           </center>
         </a>
       </div>

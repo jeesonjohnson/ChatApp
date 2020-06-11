@@ -25,7 +25,7 @@ const Chat = (props) => {
   const [users, setUsers] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const ENDPOINT = "https://cors-anywhere.herokuapp.com/https://oogwai-chat-server.herokuapp.com/"; //"localhost:8083"; //'https://project-chat-application.herokuapp.com/';//'localhost:8083';
+  const ENDPOINT = "https://jeesoncors.herokuapp.com/https://oogwai-chat-server.herokuapp.com/"; //"localhost:8083"; //'https://project-chat-application.herokuapp.com/';//'localhost:8083';
 
   const roomTitle = props.title;
 

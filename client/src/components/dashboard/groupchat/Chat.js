@@ -181,7 +181,7 @@ function mapAPICALL(
   console.log(`http://api.postcodes.io/postcodes/${apiMessage.toLowerCase()}`);
   axios
     .get(
-      `https://cors-anywhere.herokuapp.com/http://api.postcodes.io/postcodes/${apiMessage.toLowerCase()}`
+      `https://jeesoncors.herokuapp.com/http://api.postcodes.io/postcodes/${apiMessage.toLowerCase()}`
     )
     .then((result) => {
       console.log("MAIN RESULT");
@@ -235,7 +235,7 @@ function weatherAPICall(
 ) {
   axios
     .get(
-      `https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/weather?q=${apiMessage.toLowerCase()}&appid=${WEATHER_API_KEY}`
+      `https://jeesoncors.herokuapp.com/http://api.openweathermap.org/data/2.5/weather?q=${apiMessage.toLowerCase()}&appid=${WEATHER_API_KEY}`
     )
     .then((result) => {
       if (result.cod === 200) {

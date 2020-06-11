@@ -1,5 +1,6 @@
 .svg_scale{
     /* transform: scale(3); */
+    color: black;
     width: 400px;
     height: 300px;
   }
@@ -11,3 +12,4 @@
      
   
   }
+
